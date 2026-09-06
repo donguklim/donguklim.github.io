@@ -94,6 +94,26 @@ sub-pixel geometry — is the root of the pixel-thickness problem.
 
 ## Core Idea
 
+### The Goal: Reconstruct the Edge, Not Just Detect It
+
+Everything above treats the G-buffer algorithm as a binary detector: does a
+contour cross this one-render-pixel-long segment, yes or no. The goal of
+this algorithm is to go a step further and reconstruct the actual
+line-segment equation of the edge or contour near each render pixel,
+instead of just detecting whether one exists. Concretely, the edge is
+reconstructed as $y = a + bx$ in that pixel's local space — coordinates
+measured relative to the render pixel itself, rather than screen space —
+which is also the form the OLS fit further down solves for.
+
+Once you have that line equation, rendering the outline becomes a distance
+check: draw the outline at a render pixel only when the distance from that
+pixel's jittered sample position to the reconstructed edge line falls within
+some desired thickness. Because that threshold is a property of the
+reconstructed edge rather than of the render-pixel grid, it can be set
+arbitrarily thin — even below the display pixel's width — and it stays
+consistent regardless of the upscaler's screen percentage. That's the
+sub-render-pixel-accurate, TAA-compatible outline this post opened with.
+
 ### What G-Buffer Algorithms Do
 
 Take a really simple G-buffer algorithm as an example. For a given target
@@ -156,6 +176,8 @@ So, for each neighbor-comparison direction, the detected/not-detected jitter
 samples accumulated across many frames give you the data to infer the shape
 of that direction's parallelogram.
 
+### Using Statistical Methods with a Temporal Record
+
 You can fit that data with a statistical method like [ordinary least squares
 regression](https://en.wikipedia.org/wiki/Ordinary_least_squares) to find
 the line running through the middle of the detected samples, or
@@ -178,6 +200,82 @@ its far edge — recovers both boundaries of the band. One of those boundaries
 is, by construction, the true geometric edge itself.
 
 ![Same three-pixel row and right-neighbor band as before. Black dots fill the parallelogram (detected samples) while red dots sit outside it on both sides (not-detected samples, one cluster on the near/purple side and one on the far/gray side). Two green dashed lines, fitted via LDA, trace the band's two boundaries — the near one has no corresponding real edge, while the far one lands exactly on the true black edge line](/assets/images/taa-toon-outline/lda-edge-fit-right.svg)
+
+This sounds nice, but it seems like you'd need to hold onto every sampled
+point to compute either statistic. Actually, you don't — both OLS and LDA
+can be computed from a handful of running sums, so you can apply them to
+data that's accumulated temporally, with decay, instead of keeping every
+sample around.
+
+#### Ex. OLS with Temporal Accumulation
+
+As a quick illustration of that pattern, here's what it looks like for OLS
+specifically — I'll go into the full implementation, as a dedicated section
+of its own, later in this post.
+
+Given accumulated samples $(x_i, y_i)$, OLS fits the line $y = a + bx$ using
+only four running statistics — $E[x]$, $E[y]$, $E[x^2]$, and $E[xy]$ — each
+of which can be maintained as a decayed running average, updated by one new
+sample per frame:
+
+$$
+b = \frac{E[xy] - E[x]\,E[y]}{E[x^2] - E[x]^2}, \qquad a = E[y] - b\,E[x]
+$$
+
+
+And each of those four expectations can be maintained without needing to
+store any history, by keeping a single decayed running value per variable
+and updating it once per frame:
+
+$$
+\langle v \rangle_i = (1-d)\,\langle v \rangle_{i-1} + d\, v_i,
+\qquad v \in \{\,x,\ y,\ x^2,\ xy\,\}
+$$
+
+where $v_i$ is that frame's new sample for whichever variable — $x$, $y$,
+$x^2$, or $xy$ — and $d \in (0,1)$ is the decay rate. After enough frames,
+$\langle v \rangle_i$ tracks $E[v]$ closely enough to plug directly into the
+OLS formula above.
+
+
+## Actual Implementation with Temporal OLS
+
+My first try was to implement the core idea with use of OLS.
+
+Each rendering pixel historically accumulates required data for each edge inducing direction(top, bottom, right and left).
+So each of the statistical estimator uses float4 data type to save the four inducer direction data.
+
+The first problem I faced with the core idea is that the sampled data are cut by pixel boundary.
+
+In each inducer direction, an edge yields edge-detected jittering positions over two pixels.
+The pixel actually containing the edge, and the pixel located at the opposite direction of the inducer direction.
+
+If you know which one is the containing pixel, you can just merge the other pixel's data.
+If there is a single isolated edge, where no other edge is within the radius of two rendering pixel, this is doable.
+For each inducer direction, you just check if the neighboring pixel at the inducer direction 
+also have the same inducer direction data.
+
+However, what if two edges are less than two rendering pixels apart?
+This would yield 3 consecutive pixels to have left induced edge data.
+
+![Four horizontally adjacent pixels. A second edge, with a slightly different slope, sits inside the first pixel, and the original edge sits inside the third pixel. Each edge has its own one-render-pixel-wide, left-neighbor-detectable band — the first edge's band overlaps the first and second pixels, the second edge's band overlaps the third and fourth. As a result the first pixel is labeled "left edge not detected" while the second, third, and fourth pixels are all labeled "left edge detected"](/assets/images/taa-toon-outline/two-edges-left-detection.svg)
+
+
+Well, the solution is actually simple. Just don't merge neighborhood data.
+Just apply OLS for each rendering pixel independently with their own data made from their jittering positions.
+
+This would yield line segment not going through the middle of the parallelogram, 
+but the trapezoid made by cutting the parallelogram by the pixel boundaries.
+
+However, assuming the data is accurate enough, you can reconstruct the edge line segment with those segments.
+
+A pixel not containing the actual edge, would always have the intercept greater than 0.5.
+So you can examine the intercept to identify edge containing pixel and not edge containing pixel.
+
+Then, with edge containing pixel, you are given the line segment equation that goes through middle of the trapezoid.
+
+You can use a simple algebra to construct the equation for the edge.
+
 
 ## Results
 
