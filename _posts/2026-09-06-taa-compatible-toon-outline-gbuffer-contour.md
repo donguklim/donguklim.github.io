@@ -368,6 +368,38 @@ Blend line segments of the selected neighbors.
 ![Same 3×3 grid, with one continuous blue line now drawn across it, built by blending the three black line segments' historical estimator variables — the blue line threads through all three rather than matching any single one exactly](/assets/images/taa-toon-outline/spatial-filter-blended-line.svg)
 
 
+## History Reprojection
+
+Each render pixel can be easily reprojected if the camera only translates.
+With camera rotation, though, the accumulated historical estimators can't
+be reused directly, since the pixel's local x/y axes rotate along with the
+camera.
+
+In my current implementation, I just invalidate the history whenever the
+camera rotates.
+
+If you want to support history reprojection under camera rotation, you need
+to split outlines into two types and handle each differently.
+
+### Silhouette
+
+This is the outline that occurs at a depth discontinuity. It's
+camera-view-dependent: the outline appears and disappears as the camera's
+view direction rotates. So, on camera rotation, just invalidate the entire
+history — only reproject it when the camera's movement is a pure
+translation.
+
+By the way, if your silhouette outline gets rendered onto the background
+object as well as the foreground one, overwrite the background pixel's
+velocity and depth with the foreground pixel's.
+
+### Crease
+
+This is the outline that occurs at a steep change in the normal vector —
+basically, the edge is painted directly onto the geometry. So reprojecting
+this kind of edge under camera rotation can still be worthwhile.
+
+
 ## Limitation of the Algorithm
 
 This outline-reconstruction algorithm's sampling interval is limited by the
