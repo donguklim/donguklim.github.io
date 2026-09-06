@@ -91,7 +91,10 @@ rasterized triangle edge would produce. That mismatch — a discrete,
 grid-locked detector feeding into a system built to accumulate continuous
 sub-pixel geometry — is the root of the pixel-thickness problem.
 
-## What G-Buffer Algorithms Do
+
+## Core Idea
+
+### What G-Buffer Algorithms Do
 
 Take a really simple G-buffer algorithm as an example. For a given target
 pixel, it checks whether the depth or normal value differs from each of its
@@ -123,6 +126,15 @@ the jitter offset for that frame falls inside this parallelogram, the edge
 is detected between the two pixels; otherwise, it isn't.
 
 ![Three horizontally adjacent pixels with a slanted geometric edge through the center pixel, and a hatched parallelogram straddling it as the edge-detectable area — the edge runs through the middle of the parallelogram, and a jittered sample pair only detects the edge if its shared offset falls inside the hatched band](/assets/images/taa-toon-outline/edge-detectable-parallelogram.svg)
+
+Let's ignore the top and bottom comparisons of the G-buffer algorithm and
+just look at the left and right neighbor comparisons. The edge line segment
+splits the parallelogram into two one-pixel-wide halves: the left half
+detects the edge when a pixel's jittered sample is compared with its right
+neighbor, and the right half detects it when compared with its left
+neighbor.
+
+![Same three-pixel row with only the left half of the parallelogram drawn — a one-render-pixel-wide band bounded by the edge on its right. A green pair (left pixel sample, center pixel sample) and a yellow pair (center pixel sample, right pixel sample), each at the same local jitter offset, both land inside the band and are connected by an arrow from the left sample to the right sample, showing both are detected against their right neighbor](/assets/images/taa-toon-outline/edge-detectable-neighbor-pairs.svg)
 
 ## Core Idea of Algorithm
 
