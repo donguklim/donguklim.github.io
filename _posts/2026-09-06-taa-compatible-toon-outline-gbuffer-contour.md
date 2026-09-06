@@ -152,6 +152,22 @@ at all.
 ![Same three-pixel row and left-neighbor band as before, but now a teal pair (center pixel sample, left pixel sample) and an amber pair (right pixel sample, center pixel sample) both fall outside the hatched band — each pair's samples land on the same surface, so neither pair detects a contour against the left neighbor](/assets/images/taa-toon-outline/edge-not-detected-left.svg)
 
 
+So, for each neighbor-comparison direction, the detected/not-detected jitter
+samples accumulated across many frames give you the data to infer the shape
+of that direction's parallelogram.
+
+You can fit that data with a statistical method like [ordinary least squares
+regression](https://en.wikipedia.org/wiki/Ordinary_least_squares) to find
+the line running through the middle of the detected samples, or
+[linear discriminant analysis](https://en.wikipedia.org/wiki/Linear_discriminant_analysis)
+to find the boundary between the detected and not-detected samples instead.
+Either way, you end up with an estimate of the edge's position and
+orientation that's noticeably more accurate than any single frame's
+one-pixel-wide detection.
+
+![Same three-pixel row and left-neighbor band as before, but the colored sample pairs are replaced with many small black dots scattered inside the hatched band, accumulated over many frames. A red trend line fitted through these dots via OLS regression runs close and roughly parallel to the true black edge line, recovering an estimate of the edge's position and slope](/assets/images/taa-toon-outline/ols-edge-fit-left.svg)
+
+
 ## Results
 
 _(placeholder — fill in)_
