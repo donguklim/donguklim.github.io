@@ -349,6 +349,8 @@ jitter positions.
 
 This fixed the outline color fading.
 
+#### Visualization Example
+
 ![A 3×3 grid of pixels. The center (target) pixel contains its own reconstructed edge, a slanted line segment](/assets/images/taa-toon-outline/spatial-filter-target-edge.svg)
 
 ![Same 3×3 grid. The target pixel's edge is now extended outward (dashed) in both directions until it reaches the grid's outer boundary, landing inside the top-left and bottom-right diagonal neighbor pixels](/assets/images/taa-toon-outline/spatial-filter-extend-edge.svg)
@@ -365,4 +367,48 @@ Blend line segments of the selected neighbors.
 
 ![Same 3×3 grid, with one continuous blue line now drawn across it, built by blending the three black line segments' historical estimator variables — the blue line threads through all three rather than matching any single one exactly](/assets/images/taa-toon-outline/spatial-filter-blended-line.svg)
 
-_(placeholder — fill in)_
+
+## Limitation of the Algorithm
+
+This outline-reconstruction algorithm's sampling interval is limited by the
+G-buffer's resolution. If there's a hole smaller than one pixel, the edge it
+creates is only detected when one of the two compared jitter positions
+lands inside the hole and the other doesn't.
+
+## Further Improvements
+
+I have a few improvement ideas in mind — this algorithm is still under
+active development.
+
+### Data Accumulation
+
+#### Don't Discard Not-Detected Jitter Positions
+
+My current implementation just discards jitter positions where no edge was
+detected — that's wasted statistical data.
+
+I'm thinking of running two separate OLS fits per inducer direction: one
+over the edge-detected samples, one over the not-detected samples — and
+then blending the two resulting line segments.
+
+#### Don't Cut Statistical Data at the Pixel Boundary
+
+I said earlier that you can just apply OLS independently for each pixel,
+but that's also an act of discarding statistical data. I should combine the
+statistical data whenever it's obvious no overlap can occur — for instance,
+when only two consecutive pixels share the same inducer-direction data.
+
+#### What Would This Improvement Give Us?
+
+It would make the reconstructed line segment converge faster under
+temporal accumulation.
+
+### Spatial Filter
+
+The spatial filter I used here is something I put together quickly —
+there's probably a better approach, and I should do more research into it.
+
+Currently, the spatial filter has improved the outline color fading at
+lower screen percentages, but hasn't eliminated it completely.
+
+
