@@ -1,13 +1,13 @@
 <svg viewBox="0 0 560 345" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
   <defs>
-    <pattern id="hatch8" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+    <pattern id="hatch9" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
       <line x1="0" y1="0" x2="0" y2="8" stroke="#2e6fa3" stroke-width="2"/>
     </pattern>
   </defs>
 
   <rect x="0" y="0" width="560" height="345" fill="#ffffff" stroke="#e0e0e0" rx="8"/>
 
-  <text x="280" y="32" text-anchor="middle" font-size="14" font-weight="600" fill="#222">Two Nearby Edges Cause More Than Two Consecutive Left-Detections</text>
+  <text x="280" y="32" text-anchor="middle" font-size="14" font-weight="600" fill="#222">Fitting Each Pixel Independently: One Line per Trapezoid</text>
 
   <!-- four horizontally adjacent pixels -->
   <rect x="40"  y="70" width="120" height="120" fill="#c9a0dc" stroke="#333" stroke-width="1.5"/> <!-- P1 -->
@@ -20,11 +20,15 @@
 
   <!-- edge 1's left-neighbor-detectable band: one render pixel wide, overlapping P1 and P2 -->
   <polygon points="85,70 205,70 241,190 121,190" fill="#4e79a7" fill-opacity="0.15" stroke="#2e6fa3" stroke-width="1.5"/>
-  <polygon points="85,70 205,70 241,190 121,190" fill="url(#hatch8)"/>
+  <polygon points="85,70 205,70 241,190 121,190" fill="url(#hatch9)"/>
 
   <!-- edge 2's left-neighbor-detectable band: one render pixel wide, overlapping P3 and P4 -->
   <polygon points="310,70 430,70 490,190 370,190" fill="#4e79a7" fill-opacity="0.15" stroke="#2e6fa3" stroke-width="1.5"/>
-  <polygon points="310,70 430,70 490,190 370,190" fill="url(#hatch8)"/>
+  <polygon points="310,70 430,70 490,190 370,190" fill="url(#hatch9)"/>
+
+  <!-- the pixel boundary cuts each band into two trapezoids -->
+  <line x1="160" y1="70" x2="160" y2="190" stroke="#333" stroke-width="1.5"/>
+  <line x1="400" y1="70" x2="400" y2="190" stroke="#333" stroke-width="1.5"/>
 
   <!-- edge 1: a second geometric edge, close to edge 2, with a slightly different slope -->
   <line x1="85" y1="70" x2="121" y2="190" stroke="#1b1b1b" stroke-width="3"/>
@@ -32,27 +36,27 @@
   <!-- edge 2: the original edge -->
   <line x1="310" y1="70" x2="370" y2="190" stroke="#1b1b1b" stroke-width="3"/>
 
-  <!-- per-pixel detection labels -->
-  <text x="100" y="207" text-anchor="middle" font-size="12" fill="#333">left edge</text>
-  <text x="100" y="221" text-anchor="middle" font-size="12" fill="#333">detected</text>
+  <!-- four red lines, each through the middle of its own trapezoid (midpoint of top edge to midpoint of bottom edge) -->
+  <line x1="122.5" y1="70" x2="140.5" y2="190" stroke="#d62728" stroke-width="2.5"/> <!-- P1's trapezoid -->
+  <line x1="182.5" y1="70" x2="200.5" y2="190" stroke="#d62728" stroke-width="2.5"/> <!-- P2's trapezoid -->
+  <line x1="355"   y1="70" x2="385"   y2="190" stroke="#d62728" stroke-width="2.5"/> <!-- P3's trapezoid -->
+  <line x1="415"   y1="70" x2="445"   y2="190" stroke="#d62728" stroke-width="2.5"/> <!-- P4's trapezoid -->
 
-  <text x="220" y="207" text-anchor="middle" font-size="12" fill="#333">left edge</text>
-  <text x="220" y="221" text-anchor="middle" font-size="12" fill="#333">detected</text>
+  <!-- per-pixel labels -->
+  <text x="100" y="214" text-anchor="middle" font-size="12" fill="#333">edge containing pixel</text>
 
-  <text x="340" y="207" text-anchor="middle" font-size="12" fill="#333">left edge</text>
-  <text x="340" y="221" text-anchor="middle" font-size="12" fill="#333">detected</text>
-
-  <text x="460" y="207" text-anchor="middle" font-size="12" fill="#333">left edge</text>
-  <text x="460" y="221" text-anchor="middle" font-size="12" fill="#333">detected</text>
+  <text x="340" y="214" text-anchor="middle" font-size="12" fill="#333">edge containing pixel</text>
 
   <!-- legend -->
   <rect x="40" y="252" width="18" height="18" fill="#4e79a7" fill-opacity="0.15" stroke="#2e6fa3" stroke-width="1.5"/>
-  <rect x="40" y="252" width="18" height="18" fill="url(#hatch8)"/>
+  <rect x="40" y="252" width="18" height="18" fill="url(#hatch9)"/>
   <text x="66" y="265" font-size="12" fill="#333">edge-detectable area vs. the left neighbor (one render pixel wide)</text>
 
   <line x1="40" y1="284" x2="58" y2="284" stroke="#1b1b1b" stroke-width="3"/>
   <text x="66" y="288" font-size="12" fill="#333">actual geometric edge</text>
 
-  <text x="280" y="312" text-anchor="middle" font-size="11" fill="#555">Two edges less than two render pixels apart can put more than two</text>
-  <text x="280" y="326" text-anchor="middle" font-size="11" fill="#555">consecutive pixels inside a left-detectable band.</text>
+  <line x1="40" y1="306" x2="58" y2="306" stroke="#d62728" stroke-width="2.5"/>
+  <text x="66" y="310" font-size="12" fill="#333">per-pixel fit: line through the middle of that pixel's own trapezoid</text>
+
+  <text x="280" y="325" text-anchor="middle" font-size="11" fill="#555">Fitting each pixel's own trapezoid independently gives four different line estimates, not one.</text>
 </svg>

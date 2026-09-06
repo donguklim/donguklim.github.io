@@ -240,43 +240,78 @@ OLS formula above.
 
 ## Actual Implementation with Temporal OLS
 
-My first try was to implement the core idea with use of OLS.
+My first attempt implemented the core idea using OLS.
 
-Each rendering pixel historically accumulates required data for each edge inducing direction(top, bottom, right and left).
-So each of the statistical estimator uses float4 data type to save the four inducer direction data.
+Each render pixel maintains a historically accumulated record of the
+required data for each of its four edge-inducing directions (top, bottom,
+left, right). Each of the four running statistics — $E[x]$, $E[y]$,
+$E[x^2]$, $E[xy]$ — is stored as a single `float4`, one component per
+inducer direction.
 
-The first problem I faced with the core idea is that the sampled data are cut by pixel boundary.
+The first problem I ran into was that the sampled data gets cut off at the
+pixel boundary.
 
-In each inducer direction, an edge yields edge-detected jittering positions over two pixels.
-The pixel actually containing the edge, and the pixel located at the opposite direction of the inducer direction.
+For a given inducer direction, an edge produces edge-detected jitter
+positions across two pixels: the pixel that actually contains the edge, and
+the pixel on the opposite side from the inducer direction.
 
-If you know which one is the containing pixel, you can just merge the other pixel's data.
-If there is a single isolated edge, where no other edge is within the radius of two rendering pixel, this is doable.
-For each inducer direction, you just check if the neighboring pixel at the inducer direction 
-also have the same inducer direction data.
+Once you know which of the two is the containing pixel, you can simply
+merge the other pixel's data into it. This is doable as long as the edge is
+isolated — no other edge within a radius of two render pixels. For each
+inducer direction, you just check whether the neighboring pixel in that
+direction also has data for the same inducer direction.
 
-However, what if two edges are less than two rendering pixels apart?
-This would yield 3 consecutive pixels to have left induced edge data.
+However, what if two edges are less than two render pixels apart? This
+would leave more than two consecutive pixels holding left-induced edge
+data.
 
-![Four horizontally adjacent pixels. A second edge, with a slightly different slope, sits inside the first pixel, and the original edge sits inside the third pixel. Each edge has its own one-render-pixel-wide, left-neighbor-detectable band — the first edge's band overlaps the first and second pixels, the second edge's band overlaps the third and fourth. As a result the first pixel is labeled "left edge not detected" while the second, third, and fourth pixels are all labeled "left edge detected"](/assets/images/taa-toon-outline/two-edges-left-detection.svg)
-
-
-Well, the solution is actually simple. Just don't merge neighborhood data.
-Just apply OLS for each rendering pixel independently with their own data made from their jittering positions.
-
-This would yield line segment not going through the middle of the parallelogram, 
-but the trapezoid made by cutting the parallelogram by the pixel boundaries.
-
-However, assuming the data is accurate enough, you can reconstruct the edge line segment with those segments.
-
-A pixel not containing the actual edge, would always have the intercept greater than 0.5.
-So you can examine the intercept to identify edge containing pixel and not edge containing pixel.
-
-Then, with edge containing pixel, you are given the line segment equation that goes through middle of the trapezoid.
-
-You can use a simple algebra to construct the equation for the edge.
+![Four horizontally adjacent pixels. A second edge, with a slightly different slope, sits inside the first pixel, and the original edge sits inside the third pixel. Each edge has its own one-render-pixel-wide, left-neighbor-detectable band — the first edge's band overlaps the first and second pixels, the second edge's band overlaps the third and fourth. All four pixels are labeled "left edge detected"](/assets/images/taa-toon-outline/two-edges-left-detection.svg)
 
 
-## Results
+Well, the solution turns out to be simple: don't merge neighboring pixels'
+data at all. Instead, apply OLS to each render pixel independently, using
+only the data built from that pixel's own jitter samples.
+
+This yields a line that runs not through the middle of the full
+parallelogram, but through the middle of the trapezoid formed by cutting
+that parallelogram at the pixel boundary.
+
+![Same four-pixel setup as before, but now four red line segments are added, one per pixel, each running through the middle of that pixel's own trapezoid — the piece of its edge's detectable parallelogram left after the vertical pixel-boundary cut. The four red lines are visibly different from each other and from the two black true-edge lines, since each pixel only fit its own half of the data](/assets/images/taa-toon-outline/two-edges-per-pixel-trapezoid-fit.svg)
+
+Even so, assuming the accumulated data is accurate enough, you can
+reconstruct the true edge segment from these per-pixel fits.
+
+A pixel that doesn't contain the actual edge will always have an intercept
+less than 0.5, so checking the intercept alone tells you whether a given
+pixel contains the edge or not.
+
+![Same four-pixel setup as before, but the per-pixel labels now show the intercept test instead of the detection outcome: the first and third pixels — which actually contain an edge — are labeled "intercept ≥ 0.5", while the second and fourth pixels — which only detect their neighbor's edge without containing it — are labeled "intercept ≤ 0.5"](/assets/images/taa-toon-outline/two-edges-per-pixel-intercept.svg)
+
+For the edge-containing pixel, you're left with the line equation that runs
+through the middle of its trapezoid — and from there, simple algebra
+reconstructs the actual edge equation.
+
+Work in local pixel coordinates, $x, y \in [0, 1]$, and parametrize the edge
+as $x = A + By$ rather than $y = A + Bx$ — every edge in this post enters
+through the top of its pixel and exits through the bottom, so solving for
+$x$ as a function of $y$ avoids the near-vertical slope that form would
+otherwise have. For the edge-containing pixel, the left trapezoid is the
+region $0 \le x \le A + By$, so at each height $y$ its horizontal slice runs
+from $0$ to $A + By$, and the midpoint of that slice is $(A+By)/2$. The line
+through the middle of the trapezoid is exactly the line through all of
+those midpoints:
+
+$$
+x = \frac{A + By}{2} = \underbrace{\frac{A}{2}}_{a} + \underbrace{\frac{B}{2}}_{b}\,y
+$$
+
+So if $x = a + by$ is the line through the middle of the trapezoid, the
+actual edge is just that line doubled:
+
+$$
+A = 2a, \qquad B = 2b \qquad \Longrightarrow \qquad x_{\text{edge}} = 2a + 2by
+$$
+
+
 
 _(placeholder — fill in)_
