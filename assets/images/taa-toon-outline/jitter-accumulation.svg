@@ -1,0 +1,48 @@
+<svg viewBox="0 0 610 210" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrowHead2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#333"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="610" height="210" fill="#ffffff" stroke="#e0e0e0" rx="8"/>
+
+  <!-- Frame panels: x = 20,140,260,380 ; accumulated panel at x=500 -->
+  <!-- Frame 1 -->
+  <text x="65" y="35" text-anchor="middle" font-size="13" font-weight="600" fill="#222">Frame 1</text>
+  <rect x="20" y="50" width="90" height="90" fill="#f7f7f7" stroke="#333" stroke-width="1.5"/>
+  <circle cx="47" cy="68" r="5" fill="#e15759"/>
+
+  <!-- Frame 2 -->
+  <text x="185" y="35" text-anchor="middle" font-size="13" font-weight="600" fill="#222">Frame 2</text>
+  <rect x="140" y="50" width="90" height="90" fill="#f7f7f7" stroke="#333" stroke-width="1.5"/>
+  <circle cx="207.5" cy="81.5" r="5" fill="#4e79a7"/>
+
+  <!-- Frame 3 -->
+  <text x="305" y="35" text-anchor="middle" font-size="13" font-weight="600" fill="#222">Frame 3</text>
+  <rect x="260" y="50" width="90" height="90" fill="#f7f7f7" stroke="#333" stroke-width="1.5"/>
+  <circle cx="314" cy="122" r="5" fill="#59a14f"/>
+
+  <!-- Frame 4 -->
+  <text x="425" y="35" text-anchor="middle" font-size="13" font-weight="600" fill="#222">Frame 4</text>
+  <rect x="380" y="50" width="90" height="90" fill="#f7f7f7" stroke="#333" stroke-width="1.5"/>
+  <circle cx="393.5" cy="108.5" r="5" fill="#f28e2b"/>
+
+  <!-- Arrow -->
+  <line x1="475" y1="95" x2="495" y2="95" stroke="#333" stroke-width="2" marker-end="url(#arrowHead2)"/>
+
+  <!-- Accumulated panel -->
+  <text x="555" y="35" text-anchor="middle" font-size="13" font-weight="600" fill="#222">Accumulated</text>
+  <text x="555" y="49" text-anchor="middle" font-size="11" fill="#555">(4 frames)</text>
+  <rect x="500" y="50" width="90" height="90" fill="#f7f7f7" stroke="#333" stroke-width="1.5"/>
+  <line x1="500" y1="95" x2="590" y2="95" stroke="#bbb" stroke-width="1" stroke-dasharray="3,3"/>
+  <line x1="545" y1="50" x2="545" y2="140" stroke="#bbb" stroke-width="1" stroke-dasharray="3,3"/>
+  <circle cx="527" cy="68" r="5" fill="#e15759"/>
+  <circle cx="567.5" cy="81.5" r="5" fill="#4e79a7"/>
+  <circle cx="554" cy="122" r="5" fill="#59a14f"/>
+  <circle cx="513.5" cy="108.5" r="5" fill="#f28e2b"/>
+
+  <!-- caption -->
+  <text x="305" y="175" text-anchor="middle" font-size="12" fill="#444">Each frame jitters the camera to a different sub-pixel offset within the render pixel.</text>
+  <text x="305" y="193" text-anchor="middle" font-size="12" fill="#444">Reprojecting and blending frames together accumulates several sub-pixel samples per render pixel.</text>
+</svg>

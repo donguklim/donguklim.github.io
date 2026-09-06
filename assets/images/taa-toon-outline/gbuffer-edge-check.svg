@@ -1,0 +1,49 @@
+<svg viewBox="0 0 480 520" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="480" height="520" fill="#ffffff" stroke="#e0e0e0" rx="8"/>
+
+  <text x="240" y="32" text-anchor="middle" font-size="14" font-weight="600" fill="#222">G-Buffer Edge Check at the Jittered Sample Position</text>
+
+  <!-- pixels: touching, forming a cross/plus shape -->
+  <rect x="190" y="70"  width="100" height="100" fill="#f7f7f7" stroke="#333" stroke-width="1.5"/>  <!-- up -->
+  <rect x="90"  y="170" width="100" height="100" fill="#f7f7f7" stroke="#333" stroke-width="1.5"/>  <!-- left -->
+  <rect x="190" y="170" width="100" height="100" fill="#f7f7f7" stroke="#333" stroke-width="1.5"/>  <!-- center -->
+  <rect x="290" y="170" width="100" height="100" fill="#f7f7f7" stroke="#333" stroke-width="1.5"/>  <!-- right -->
+  <rect x="190" y="270" width="100" height="100" fill="#f7f7f7" stroke="#333" stroke-width="1.5"/>  <!-- down -->
+
+  <!-- pixel labels -->
+  <text x="240" y="88"  text-anchor="middle" font-size="11" fill="#777">up</text>
+  <text x="140" y="188" text-anchor="middle" font-size="11" fill="#777">left</text>
+  <text x="240" y="188" text-anchor="middle" font-size="11" fill="#777">target</text>
+  <text x="340" y="188" text-anchor="middle" font-size="11" fill="#777">right</text>
+  <text x="240" y="288" text-anchor="middle" font-size="11" fill="#777">down</text>
+
+  <!-- check segments: target sample to each neighbor's sample (same local jitter offset in every pixel) -->
+  <line x1="220" y1="235" x2="220" y2="135" stroke="#888" stroke-width="2" stroke-dasharray="4,4"/> <!-- target-up -->
+  <line x1="220" y1="235" x2="220" y2="335" stroke="#888" stroke-width="2" stroke-dasharray="4,4"/> <!-- target-down -->
+  <line x1="220" y1="235" x2="320" y2="235" stroke="#888" stroke-width="2" stroke-dasharray="4,4"/> <!-- target-right -->
+  <line x1="220" y1="235" x2="120" y2="235" stroke="#d62728" stroke-width="2.5" stroke-dasharray="4,4"/> <!-- target-left: crosses the edge -->
+
+  <!-- actual geometric edge in the scene, slanted, sitting inside the left pixel -->
+  <line x1="150" y1="190" x2="175" y2="260" stroke="#1b1b1b" stroke-width="3"/>
+  <circle cx="166" cy="235" r="4" fill="#d62728" stroke="#ffffff" stroke-width="1"/>
+
+  <!-- jittered sample dots: same local offset in every pixel -->
+  <circle cx="220" cy="135" r="5" fill="#2e2e2e"/>
+  <circle cx="220" cy="335" r="5" fill="#2e2e2e"/>
+  <circle cx="120" cy="235" r="5" fill="#2e2e2e"/>
+  <circle cx="220" cy="235" r="5" fill="#2e2e2e"/>
+  <circle cx="320" cy="235" r="5" fill="#2e2e2e"/>
+
+  <!-- legend -->
+  <circle cx="55" cy="410" r="5" fill="#2e2e2e"/>
+  <text x="70" y="414" font-size="12" fill="#333">jittered sample position (same local offset in every pixel)</text>
+
+  <line x1="40" y1="435" x2="70" y2="435" stroke="#1b1b1b" stroke-width="3"/>
+  <text x="80" y="439" font-size="12" fill="#333">actual geometric edge in the scene</text>
+
+  <line x1="40" y1="460" x2="70" y2="460" stroke="#d62728" stroke-width="2.5" stroke-dasharray="4,4"/>
+  <text x="80" y="464" font-size="12" fill="#333">check segment crosses the edge &#8594; contour detected</text>
+
+  <line x1="40" y1="485" x2="70" y2="485" stroke="#888" stroke-width="2" stroke-dasharray="4,4"/>
+  <text x="80" y="489" font-size="12" fill="#333">check segment doesn't cross &#8594; no contour</text>
+</svg>

@@ -51,11 +51,69 @@ and normal G-buffer data. Now, in this post, I'm proposing an algorithm that
 keeps the outline crisp without those trade-offs — see below for the core
 idea.
 
-### How Does Temporal Upscalers Reconstruct Sub-Rendering Pixel details
+### How Do Temporal Upscalers Reconstruct Sub-Render-Pixel Detail
 
+Temporal upscalers don't get extra detail from any single frame — a single
+frame is still only rendered, and G-buffer-sampled, at render resolution.
+What they add is time.
 
+Each frame, the camera's projection is offset by a small **sub-pixel
+jitter** — typically a low-discrepancy sequence like a Halton sequence,
+cycling through a handful of offsets that together cover the pixel footprint
+fairly evenly. So frame *N* samples the scene at one sub-pixel position
+within each render pixel, frame *N+1* samples it at a different sub-pixel
+position, and so on. The upscaler then reprojects previous frames into the
+current frame using per-pixel motion vectors and blends them with the
+current frame's jittered sample into a **history buffer**. After a handful
+of frames, that history buffer holds several samples per render pixel — this
+jitter-and-accumulate loop is basically how temporal upscalers scan out
+sub-render-pixel detail over time, rather than any single frame having more
+resolution than the G-buffer it was built from.
+
+![Four frames each sample the scene at a different jittered sub-pixel offset; accumulating them builds up several sub-pixel samples inside one render pixel](/assets/images/taa-toon-outline/jitter-accumulation.svg)
+
+This is why geometry-based outline techniques like inverted hull don't have
+the thickness problem described above: an outline mesh is rasterized like
+any other triangle in the scene, at whatever jittered sub-pixel offset that
+frame happens to use. Its silhouette edge lands at a slightly different
+sub-pixel position each frame, gets accumulated the same way ordinary
+geometry edges do, and comes out anti-aliased and sub-render-pixel-accurate
+after temporal accumulation — with no extra work.
+
+A G-buffer contour detector doesn't get that benefit for free. Even though
+the underlying G-buffer samples are taken at a jittered sub-pixel offset
+each frame, the detector's output — is there a contour here, yes or no — is
+still a value computed once per render pixel, on a fixed pixel grid. There's
+no continuous edge for the accumulation to refine the position of; the
+history buffer just receives four frames' worth of "yes, this pixel is on a
+contour," instead of four different sub-pixel edge positions the way a
+rasterized triangle edge would produce. That mismatch — a discrete,
+grid-locked detector feeding into a system built to accumulate continuous
+sub-pixel geometry — is the root of the pixel-thickness problem.
 
 ## What G-Buffer Algorithms Do
+
+Take a really simple G-buffer algorithm as an example. For a given target
+pixel, it checks whether the depth or normal value differs from each of its
+four axial neighbors — up, down, left, right — by more than some threshold.
+If the difference exceeds the threshold against any one of those neighbors,
+the target pixel is marked as containing an outline.
+
+Marking both sides of every discontinuity like this produces an outline
+that's two render pixels thick. You can narrow that down to one render
+pixel by only drawing the outline on whichever side of the pair has the
+higher depth (i.e. is farther from the camera), or the more camera-facing
+normal.
+
+Here's the important part: what the algorithm is actually doing is checking
+whether an edge exists between the *jittered sample positions* of the
+target pixel and each neighbor — not between the pixels' centers or their
+full footprints. So, effectively, it's detecting whether an edge crosses the
+one-render-pixel-long line segment connecting the target's jittered sample
+to that neighbor's jittered sample, because G-buffer data is collected from the jittering positions.
+
+![Five pixels in a plus shape, each with a dot at the same local jitter offset. The geometric edge sits between the left and target pixel and crosses the check segment between their sample dots, so that segment is highlighted red as a detected contour, while the other three check segments stay gray for no contour](/assets/images/taa-toon-outline/gbuffer-edge-check.svg)
+
 
 ## Core Idea of Algorithm
 
