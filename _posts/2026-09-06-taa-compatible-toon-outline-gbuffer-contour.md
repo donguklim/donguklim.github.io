@@ -313,5 +313,56 @@ A = 2a, \qquad B = 2b \qquad \Longrightarrow \qquad x_{\text{edge}} = 2a + 2by
 $$
 
 
+### Inducer Direction Selection
+
+So each pixel ends up with four reconstructed edges, one per inducer
+direction. My shader picks whichever one has the lower combined score of
+two terms: the OLS [SDE](https://en.wikipedia.org/wiki/Reduced_chi-squared_statistic),
+and the area between the reconstructed line segment and the pixel boundary
+on the inducer side.
+
+The SDE, scaled by a custom factor, is added to that area to form the final
+criterion value.
+
+I used the area term because I wanted to favor whichever edge stays more
+closely aligned with — sticks more closely to — its inducer-direction axis.
+
+### Spatial Filter
+
+My first attempt got outlines as thin as one display pixel. However, the
+outline color faded intermittently along the contour as the screen
+percentage dropped.
+
+I eventually realized why: I'd only reconstructed edges that are temporally
+stable within each pixel, but not spatially stable across neighboring
+pixels.
+
+So I added a spatial filter that blends outlines across neighboring pixels.
+
+For a given target pixel, extend its reconstructed edge outward in both
+directions and find whichever neighboring pixel it overlaps the most in
+each direction. Then blend the historical estimator variables between the
+two pixels to produce a blended line.
+
+To do that, I also keep a separate decayed running count of edge-detected
+jitter positions.
+
+This fixed the outline color fading.
+
+![A 3×3 grid of pixels. The center (target) pixel contains its own reconstructed edge, a slanted line segment](/assets/images/taa-toon-outline/spatial-filter-target-edge.svg)
+
+![Same 3×3 grid. The target pixel's edge is now extended outward (dashed) in both directions until it reaches the grid's outer boundary, landing inside the top-left and bottom-right diagonal neighbor pixels](/assets/images/taa-toon-outline/spatial-filter-extend-edge.svg)
+
+Select the two most overlapping pixels in each extended direction.
+
+![Same 3×3 grid, with the top-left and bottom-right pixels now colored to show they've been selected as the most overlapping neighbor in each extended direction](/assets/images/taa-toon-outline/spatial-filter-selected-neighbors.svg)
+
+Fetch the line segments in the selecting neighboring pixels.
+
+![Same 3×3 grid, but now the top-left and bottom-right neighbor pixels also show their own reconstructed edges — each with a slightly different slope and intercept from the target pixel's edge](/assets/images/taa-toon-outline/spatial-filter-neighbor-edges.svg)
+
+Blend line segments of the selected neighbors.
+
+![Same 3×3 grid, with one continuous blue line now drawn across it, built by blending the three black line segments' historical estimator variables — the blue line threads through all three rather than matching any single one exactly](/assets/images/taa-toon-outline/spatial-filter-blended-line.svg)
 
 _(placeholder — fill in)_

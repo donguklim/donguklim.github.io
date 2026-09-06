@@ -1,0 +1,23 @@
+<svg viewBox="0 0 380 400" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="380" height="400" fill="#ffffff" stroke="#e0e0e0" rx="8"/>
+
+  <text x="190" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#222">Spatial Filter: The Target Pixel's Reconstructed Edge</text>
+
+  <!-- 3x3 grid of pixels -->
+  <rect x="40"  y="50"  width="100" height="100" fill="#f7f7f7" stroke="#333" stroke-width="1.5"/>
+  <rect x="140" y="50"  width="100" height="100" fill="#f7f7f7" stroke="#333" stroke-width="1.5"/>
+  <rect x="240" y="50"  width="100" height="100" fill="#f7f7f7" stroke="#333" stroke-width="1.5"/>
+
+  <rect x="40"  y="150" width="100" height="100" fill="#f7f7f7" stroke="#333" stroke-width="1.5"/>
+  <rect x="140" y="150" width="100" height="100" fill="#f7f7f7" stroke="#333" stroke-width="1.5"/> <!-- target pixel -->
+  <rect x="240" y="150" width="100" height="100" fill="#f7f7f7" stroke="#333" stroke-width="1.5"/>
+
+  <rect x="40"  y="250" width="100" height="100" fill="#f7f7f7" stroke="#333" stroke-width="1.5"/>
+  <rect x="140" y="250" width="100" height="100" fill="#f7f7f7" stroke="#333" stroke-width="1.5"/>
+  <rect x="240" y="250" width="100" height="100" fill="#f7f7f7" stroke="#333" stroke-width="1.5"/>
+
+  <!-- the target pixel's own reconstructed edge -->
+  <line x1="160" y1="150" x2="220" y2="250" stroke="#1b1b1b" stroke-width="3"/>
+
+  <text x="190" y="368" text-anchor="middle" font-size="12" fill="#555">target pixel (with its own reconstructed edge)</text>
+</svg>
