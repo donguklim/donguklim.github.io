@@ -1,0 +1,48 @@
+<svg viewBox="0 0 660 260" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <pattern id="gridLeft" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#8a8a8a" stroke-width="1"/>
+    </pattern>
+    <pattern id="gridRight" width="15" height="15" patternUnits="userSpaceOnUse">
+      <path d="M 15 0 L 0 0 0 15" fill="none" stroke="#8a8a8a" stroke-width="1"/>
+    </pattern>
+    <marker id="arrowHead" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#333"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="660" height="260" fill="#ffffff" stroke="#e0e0e0" rx="8"/>
+
+  <!-- Titles -->
+  <text x="150" y="30" text-anchor="middle" font-size="14" font-weight="600" fill="#222">Render resolution (100%)</text>
+  <text x="510" y="30" text-anchor="middle" font-size="14" font-weight="600" fill="#222">Display resolution (after upscale)</text>
+
+  <!-- Left grid: 8 cols x 4 rows, cell = 30px, origin (30,60) -->
+  <rect x="30"  y="60" width="120" height="120" fill="#cfe3f5"/>            <!-- character, cols 0-3 -->
+  <rect x="150" y="60" width="30"  height="120" fill="#1b2a4a"/>            <!-- 1-px contour, col 4 -->
+  <rect x="180" y="60" width="90"  height="120" fill="#ffffff"/>            <!-- background, cols 5-7 -->
+  <rect x="30"  y="60" width="240" height="120" fill="url(#gridLeft)"/>
+  <rect x="30"  y="60" width="240" height="120" fill="none" stroke="#333" stroke-width="1.5"/>
+
+  <!-- Right grid: 16 cols x 8 rows, cell = 15px, origin (390,60) -->
+  <rect x="390" y="60" width="120" height="120" fill="#cfe3f5"/>            <!-- character, cols 0-7 -->
+  <rect x="510" y="60" width="30"  height="120" fill="#1b2a4a"/>            <!-- 2-px contour, cols 8-9 -->
+  <rect x="540" y="60" width="90"  height="120" fill="#ffffff"/>            <!-- background, cols 10-15 -->
+  <rect x="390" y="60" width="240" height="120" fill="url(#gridRight)"/>
+  <rect x="390" y="60" width="240" height="120" fill="none" stroke="#333" stroke-width="1.5"/>
+
+  <!-- Upscale arrow -->
+  <line x1="278" y1="120" x2="382" y2="120" stroke="#333" stroke-width="2" marker-end="url(#arrowHead)"/>
+  <text x="330" y="105" text-anchor="middle" font-size="12" font-weight="600" fill="#333">upscale &#215;2</text>
+  <text x="330" y="150" text-anchor="middle" font-size="11" fill="#555">50% screen percentage</text>
+
+  <!-- Contour width brackets -->
+  <path d="M 150 188 L 150 196 L 180 196 L 180 188" fill="none" stroke="#1b2a4a" stroke-width="1.5"/>
+  <text x="165" y="212" text-anchor="middle" font-size="12" fill="#1b2a4a">1 render px</text>
+
+  <path d="M 510 188 L 510 196 L 540 196 L 540 188" fill="none" stroke="#1b2a4a" stroke-width="1.5"/>
+  <text x="525" y="212" text-anchor="middle" font-size="12" fill="#1b2a4a">2 display px</text>
+
+  <!-- Caption -->
+  <text x="330" y="245" text-anchor="middle" font-size="12" fill="#444">A 1-pixel-wide G-buffer contour becomes 2 pixels wide once upscaled from a 50% render resolution.</text>
+</svg>

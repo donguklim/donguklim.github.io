@@ -1,0 +1,27 @@
+# Site settings
+# Full reference: https://jekyllrb.com/docs/configuration/
+
+title: "Notes on Rendering"
+description: >-
+  Graphics algorithms, game engine internals, and rendering pipeline notes —
+  written up as I build and debug them.
+author: Dominic Lim
+
+# Once GitHub Pages is enabled for this repo, uncomment and set this to your
+# pages URL (e.g. https://donguklim.github.io) so RSS/SEO links resolve correctly.
+# url: "https://donguklim.github.io"
+
+theme: minima
+markdown: kramdown
+
+minima:
+  skin: auto
+
+plugins:
+  - jekyll-feed
+
+show_excerpts: true
+
+# Jekyll processes everything except these by default; list is here for clarity.
+exclude:
+  - README.md
