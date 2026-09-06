@@ -115,6 +115,15 @@ to that neighbor's jittered sample, because G-buffer data is collected from the 
 ![Five pixels in a plus shape, each with a dot at the same local jitter offset. The geometric edge sits between the left and target pixel and crosses the check segment between their sample dots, so that segment is highlighted red as a detected contour, while the other three check segments stay gray for no contour](/assets/images/taa-toon-outline/gbuffer-edge-check.svg)
 
 
+So, given an actual geometric edge — the line along which the real
+discontinuity occurs — the set of jitter offsets that would place it between
+two neighboring pixels forms a parallelogram: two render pixels wide,
+running parallel to the edge, with the edge itself as its middle line. If
+the jitter offset for that frame falls inside this parallelogram, the edge
+is detected between the two pixels; otherwise, it isn't.
+
+![Three horizontally adjacent pixels with a slanted geometric edge through the center pixel, and a hatched parallelogram straddling it as the edge-detectable area — the edge runs through the middle of the parallelogram, and a jittered sample pair only detects the edge if its shared offset falls inside the hatched band](/assets/images/taa-toon-outline/edge-detectable-parallelogram.svg)
+
 ## Core Idea of Algorithm
 
 _(placeholder — fill in)_
