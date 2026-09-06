@@ -12,8 +12,12 @@
   <script>
     MathJax = {
       tex: {
-        inlineMath: [['\\(', '\\)']],
-        displayMath: [['$$', '$$']]
+        // kramdown parses $$...$$ itself and re-emits it as \[...\] / \(...\)
+        // for block math, but leaves single-$ inline math untouched — so
+        // MathJax needs to match kramdown's actual output, not the raw
+        // markdown source delimiters.
+        inlineMath: [['$', '$']],
+        displayMath: [['\\[', '\\]']]
       }
     };
   </script>
