@@ -142,9 +142,15 @@ against its *left* neighbor.
 
 ![Same three-pixel row, but now the hatched band is the right half of the parallelogram, bounded by the edge on its left. A green pair (center pixel sample, left pixel sample) and a yellow pair (right pixel sample, center pixel sample), each at a different local jitter offset than the previous figure, both land inside this band and are connected by an arrow from the right sample to the left sample, showing both are detected against their left neighbor](/assets/images/taa-toon-outline/edge-detectable-neighbor-pairs-left.svg)
 
-## Core Idea of Algorithm
+And, just as important, here's what it looks like when the edge *isn't*
+detected: when a pair's shared jitter offset falls outside the band, both
+samples land on the same surface, so the comparison finds no discontinuity
+at all.
 
-_(placeholder — fill in)_
+![Same three-pixel row and right-neighbor band as before, but now a teal pair (left pixel sample, center pixel sample) and an amber pair (center pixel sample, right pixel sample) both fall outside the hatched band — each pair's samples land on the same surface (both purple or both gray), so neither pair detects a contour against the right neighbor](/assets/images/taa-toon-outline/edge-not-detected-right.svg)
+
+![Same three-pixel row and left-neighbor band as before, but now a teal pair (center pixel sample, left pixel sample) and an amber pair (right pixel sample, center pixel sample) both fall outside the hatched band — each pair's samples land on the same surface, so neither pair detects a contour against the left neighbor](/assets/images/taa-toon-outline/edge-not-detected-left.svg)
+
 
 ## Results
 

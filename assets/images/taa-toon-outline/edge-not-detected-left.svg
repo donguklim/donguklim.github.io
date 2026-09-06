@@ -1,0 +1,54 @@
+<svg viewBox="0 0 440 340" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <pattern id="hatch5" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="8" stroke="#2e6fa3" stroke-width="2"/>
+    </pattern>
+    <marker id="arrowGray2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#888888"/>
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="440" height="340" fill="#ffffff" stroke="#e0e0e0" rx="8"/>
+
+  <text x="220" y="32" text-anchor="middle" font-size="14" font-weight="600" fill="#222">No Contour — Left-Neighbor Comparison</text>
+
+  <!-- three horizontally adjacent pixels -->
+  <rect x="40"  y="70" width="120" height="120" fill="#c9a0dc" stroke="#333" stroke-width="1.5"/> <!-- left: different surface -->
+  <rect x="160" y="70" width="120" height="120" fill="#f7f7f7" stroke="#333" stroke-width="1.5"/>
+  <rect x="280" y="70" width="120" height="120" fill="#f7f7f7" stroke="#333" stroke-width="1.5"/>
+
+  <!-- the part of the center pixel left of the edge belongs to the same surface as the left pixel -->
+  <polygon points="160,70 190,70 250,190 160,190" fill="#c9a0dc"/>
+
+  <!-- right-side half of the parallelogram: the edge-detectable band vs. the left neighbor -->
+  <polygon points="190,70 310,70 370,190 250,190" fill="#4e79a7" fill-opacity="0.15" stroke="#2e6fa3" stroke-width="1.5"/>
+  <polygon points="190,70 310,70 370,190 250,190" fill="url(#hatch5)"/>
+
+  <!-- the actual geometric edge -->
+  <line x1="190" y1="70" x2="250" y2="190" stroke="#1b1b1b" stroke-width="3"/>
+
+  <!-- teal pair: center pixel sample (anchor) and left pixel sample (left neighbor), both on the purple surface -->
+  <line x1="170" y1="110" x2="50" y2="110" stroke="#888888" stroke-width="2" marker-end="url(#arrowGray2)"/>
+  <circle cx="170" cy="110" r="5.5" fill="#3f8f8f" stroke="#1f4f4f" stroke-width="1"/>
+  <circle cx="50"  cy="110" r="5.5" fill="#3f8f8f" stroke="#1f4f4f" stroke-width="1"/>
+
+  <!-- amber pair: right pixel sample (anchor) and center pixel sample (left neighbor), both on the gray surface -->
+  <line x1="375" y1="155" x2="255" y2="155" stroke="#888888" stroke-width="2" marker-end="url(#arrowGray2)"/>
+  <circle cx="375" cy="155" r="5.5" fill="#c98a3c" stroke="#7a4f1f" stroke-width="1"/>
+  <circle cx="255" cy="155" r="5.5" fill="#c98a3c" stroke="#7a4f1f" stroke-width="1"/>
+
+  <!-- legend -->
+  <rect x="40" y="235" width="18" height="18" fill="#4e79a7" fill-opacity="0.15" stroke="#2e6fa3" stroke-width="1.5"/>
+  <rect x="40" y="235" width="18" height="18" fill="url(#hatch5)"/>
+  <text x="66" y="248" font-size="12" fill="#333">edge-detectable area vs. the left neighbor (one render pixel wide)</text>
+
+  <line x1="40" y1="265" x2="58" y2="265" stroke="#1b1b1b" stroke-width="3"/>
+  <text x="66" y="269" font-size="12" fill="#333">actual geometric edge</text>
+
+  <circle cx="49" cy="290" r="5.5" fill="#3f8f8f" stroke="#1f4f4f" stroke-width="1"/>
+  <circle cx="63" cy="290" r="5.5" fill="#c98a3c" stroke="#7a4f1f" stroke-width="1"/>
+  <text x="80" y="286" font-size="12" fill="#333">example pairs whose shared jitter offset falls outside the band —</text>
+  <text x="80" y="302" font-size="12" fill="#333">both samples land on the same surface, so no contour is detected</text>
+
+  <text x="220" y="328" text-anchor="middle" font-size="11" fill="#555">Both pairs sit outside the hatched band, so neither is detected against the left neighbor.</text>
+</svg>
