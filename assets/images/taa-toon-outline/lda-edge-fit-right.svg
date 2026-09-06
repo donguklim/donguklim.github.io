@@ -1,0 +1,119 @@
+<svg viewBox="0 0 440 390" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <pattern id="hatch7" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="8" stroke="#2e6fa3" stroke-width="2"/>
+    </pattern>
+  </defs>
+
+  <rect x="0" y="0" width="440" height="390" fill="#ffffff" stroke="#e0e0e0" rx="8"/>
+
+  <text x="220" y="32" text-anchor="middle" font-size="14" font-weight="600" fill="#222">Finding the Boundary with LDA (Right-Neighbor Comparison)</text>
+
+  <!-- three horizontally adjacent pixels -->
+  <rect x="40"  y="70" width="120" height="120" fill="#c9a0dc" stroke="#333" stroke-width="1.5"/> <!-- left: different surface -->
+  <rect x="160" y="70" width="120" height="120" fill="#f7f7f7" stroke="#333" stroke-width="1.5"/>
+  <rect x="280" y="70" width="120" height="120" fill="#f7f7f7" stroke="#333" stroke-width="1.5"/>
+
+  <!-- the part of the center pixel left of the edge belongs to the same surface as the left pixel -->
+  <polygon points="160,70 190,70 250,190 160,190" fill="#c9a0dc"/>
+
+  <!-- left-side half of the parallelogram: the edge-detectable band vs. the right neighbor -->
+  <polygon points="70,70 190,70 250,190 130,190" fill="#4e79a7" fill-opacity="0.15" stroke="#2e6fa3" stroke-width="1.5"/>
+  <polygon points="70,70 190,70 250,190 130,190" fill="url(#hatch7)"/>
+
+  <!-- the actual geometric edge -->
+  <line x1="190" y1="70" x2="250" y2="190" stroke="#1b1b1b" stroke-width="3"/>
+
+  <!-- black dots: detected samples, inside the parallelogram -->
+  <circle cx="132.5" cy="75"  r="3" fill="#111111"/>
+  <circle cx="112.5" cy="83"  r="3" fill="#111111"/>
+  <circle cx="158.5" cy="91"  r="3" fill="#111111"/>
+  <circle cx="132.5" cy="99"  r="3" fill="#111111"/>
+  <circle cx="178.5" cy="107" r="3" fill="#111111"/>
+  <circle cx="122.5" cy="115" r="3" fill="#111111"/>
+  <circle cx="162.5" cy="123" r="3" fill="#111111"/>
+  <circle cx="142.5" cy="131" r="3" fill="#111111"/>
+  <circle cx="188.5" cy="139" r="3" fill="#111111"/>
+  <circle cx="162.5" cy="147" r="3" fill="#111111"/>
+  <circle cx="184.5" cy="155" r="3" fill="#111111"/>
+  <circle cx="152.5" cy="163" r="3" fill="#111111"/>
+  <circle cx="180.5" cy="171" r="3" fill="#111111"/>
+  <circle cx="208.5" cy="179" r="3" fill="#111111"/>
+  <circle cx="176.5" cy="187" r="3" fill="#111111"/>
+
+  <!-- red dots: not-detected samples, outside the parallelogram on the near (purple) side -->
+  <circle cx="51"    cy="74"  r="3" fill="#d62728"/>
+  <circle cx="65.5"  cy="81"  r="3" fill="#d62728"/>
+  <circle cx="47.5"  cy="88"  r="3" fill="#d62728"/>
+  <circle cx="63.7"  cy="93"  r="3" fill="#d62728"/>
+  <circle cx="78.1"  cy="99"  r="3" fill="#d62728"/>
+  <circle cx="60.2"  cy="105" r="3" fill="#d62728"/>
+  <circle cx="71.4"  cy="112" r="3" fill="#d62728"/>
+  <circle cx="47.2"  cy="118" r="3" fill="#d62728"/>
+  <circle cx="82.9"  cy="123" r="3" fill="#d62728"/>
+  <circle cx="59.25" cy="129" r="3" fill="#d62728"/>
+  <circle cx="96.45" cy="135" r="3" fill="#d62728"/>
+  <circle cx="73.75" cy="141" r="3" fill="#d62728"/>
+  <circle cx="55.2"  cy="146" r="3" fill="#d62728"/>
+  <circle cx="86.85" cy="152" r="3" fill="#d62728"/>
+  <circle cx="67.2"  cy="158" r="3" fill="#d62728"/>
+  <circle cx="101.6" cy="163" r="3" fill="#d62728"/>
+  <circle cx="76.9"  cy="169" r="3" fill="#d62728"/>
+  <circle cx="54"    cy="174" r="3" fill="#d62728"/>
+  <circle cx="91.5"  cy="179" r="3" fill="#d62728"/>
+  <circle cx="63.1"  cy="183" r="3" fill="#d62728"/>
+  <circle cx="102.2" cy="186" r="3" fill="#d62728"/>
+  <circle cx="57.75" cy="77"  r="3" fill="#d62728"/>
+  <circle cx="84.9"  cy="115" r="3" fill="#d62728"/>
+  <circle cx="49.3"  cy="160" r="3" fill="#d62728"/>
+
+  <!-- red dots: not-detected samples, outside the parallelogram on the far (gray) side, staying inside the center pixel -->
+  <circle cx="226.5"  cy="73"  r="3" fill="#d62728"/>
+  <circle cx="256.1"  cy="79"  r="3" fill="#d62728"/>
+  <circle cx="214.8"  cy="85"  r="3" fill="#d62728"/>
+  <circle cx="246.4"  cy="90"  r="3" fill="#d62728"/>
+  <circle cx="229.85" cy="96"  r="3" fill="#d62728"/>
+  <circle cx="265.8"  cy="102" r="3" fill="#d62728"/>
+  <circle cx="243.5"  cy="108" r="3" fill="#d62728"/>
+  <circle cx="222.9"  cy="113" r="3" fill="#d62728"/>
+  <circle cx="258.15" cy="119" r="3" fill="#d62728"/>
+  <circle cx="236.45" cy="125" r="3" fill="#d62728"/>
+  <circle cx="270.6"  cy="130" r="3" fill="#d62728"/>
+  <circle cx="247.95" cy="136" r="3" fill="#d62728"/>
+  <circle cx="259.2"  cy="142" r="3" fill="#d62728"/>
+  <circle cx="235.05" cy="147" r="3" fill="#d62728"/>
+  <circle cx="267.5"  cy="153" r="3" fill="#d62728"/>
+  <circle cx="258.2"  cy="159" r="3" fill="#d62728"/>
+  <circle cx="248.25" cy="164" r="3" fill="#d62728"/>
+  <circle cx="265.8"  cy="170" r="3" fill="#d62728"/>
+  <circle cx="257.1"  cy="175" r="3" fill="#d62728"/>
+  <circle cx="273.15" cy="181" r="3" fill="#d62728"/>
+  <circle cx="265.6"  cy="186" r="3" fill="#d62728"/>
+  <circle cx="217.35" cy="100" r="3" fill="#d62728"/>
+  <circle cx="268.65" cy="140" r="3" fill="#d62728"/>
+  <circle cx="257.75" cy="165" r="3" fill="#d62728"/>
+
+  <!-- LDA-fitted boundaries: left edge of the band, and the right edge (which coincides with the true edge) -->
+  <line x1="70" y1="70" x2="130" y2="190" stroke="#2ca02c" stroke-width="3" stroke-dasharray="8,5"/>
+  <line x1="190" y1="70" x2="250" y2="190" stroke="#2ca02c" stroke-width="3" stroke-dasharray="8,5"/>
+
+  <!-- legend -->
+  <rect x="40" y="235" width="18" height="18" fill="#4e79a7" fill-opacity="0.15" stroke="#2e6fa3" stroke-width="1.5"/>
+  <rect x="40" y="235" width="18" height="18" fill="url(#hatch7)"/>
+  <text x="66" y="248" font-size="12" fill="#333">edge-detectable area vs. the right neighbor</text>
+
+  <circle cx="49" cy="266" r="3" fill="#111111"/>
+  <text x="66" y="270" font-size="12" fill="#333">sample inside the parallelogram (detected)</text>
+
+  <circle cx="49" cy="288" r="3" fill="#d62728"/>
+  <text x="66" y="292" font-size="12" fill="#333">sample outside the parallelogram (not detected)</text>
+
+  <line x1="40" y1="310" x2="58" y2="310" stroke="#1b1b1b" stroke-width="3"/>
+  <text x="66" y="314" font-size="12" fill="#333">actual geometric edge</text>
+
+  <line x1="40" y1="332" x2="58" y2="332" stroke="#2ca02c" stroke-width="3" stroke-dasharray="6,4"/>
+  <text x="66" y="336" font-size="12" fill="#333">LDA-fitted boundary between the two classes</text>
+
+  <text x="220" y="356" text-anchor="middle" font-size="11" fill="#555">LDA recovers both boundaries of the band — the one on the far side</text>
+  <text x="220" y="371" text-anchor="middle" font-size="11" fill="#555">lands exactly on the true edge.</text>
+</svg>

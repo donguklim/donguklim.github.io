@@ -165,8 +165,19 @@ Either way, you end up with an estimate of the edge's position and
 orientation that's noticeably more accurate than any single frame's
 one-pixel-wide detection.
 
-![Same three-pixel row and left-neighbor band as before, but the colored sample pairs are replaced with many small black dots scattered inside the hatched band, accumulated over many frames. A red trend line fitted through these dots via OLS regression runs close and roughly parallel to the true black edge line, recovering an estimate of the edge's position and slope](/assets/images/taa-toon-outline/ols-edge-fit-left.svg)
+![Same three-pixel row and left-neighbor band as before, but the colored sample pairs are replaced with many small black dots scattered across the hatched band, accumulated over many frames. A red trend line fitted through these dots via OLS regression runs through the middle of the parallelogram, parallel to the true black edge line](/assets/images/taa-toon-outline/ols-edge-fit-left.svg)
 
+LDA takes a different approach: instead of fitting through the middle of one
+class, it looks for the boundary that best separates two labeled classes of
+points. Label each accumulated jitter sample by whether that frame's
+comparison detected a contour or not, and LDA gives you back the line that
+best separates the "detected" cluster from the "not detected" one. Since the
+detectable band has two sides, running this twice — once against the
+samples just outside its near edge, once against the samples just outside
+its far edge — recovers both boundaries of the band. One of those boundaries
+is, by construction, the true geometric edge itself.
+
+![Same three-pixel row and right-neighbor band as before. Black dots fill the parallelogram (detected samples) while red dots sit outside it on both sides (not-detected samples, one cluster on the near/purple side and one on the far/gray side). Two green dashed lines, fitted via LDA, trace the band's two boundaries — the near one has no corresponding real edge, while the far one lands exactly on the true black edge line](/assets/images/taa-toon-outline/lda-edge-fit-right.svg)
 
 ## Results
 
