@@ -1,0 +1,41 @@
+<svg viewBox="0 0 530 400" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="530" height="400" fill="#ffffff" stroke="#e0e0e0" rx="8"/>
+
+  <text x="265" y="32" text-anchor="middle" font-size="14" font-weight="600" fill="#222">Two Parallelograms, Each Cut in Two by a Pixel Boundary</text>
+
+  <!-- three square pixels -->
+  <rect x="40" y="80" width="150" height="150" fill="#ffffff" stroke="#333" stroke-width="1.5"/>
+  <rect x="190" y="80" width="150" height="150" fill="#ffffff" stroke="#333" stroke-width="1.5"/>
+  <rect x="340" y="80" width="150" height="150" fill="#ffffff" stroke="#333" stroke-width="1.5"/>
+
+  <!-- green: A-B parallelogram (A's right trapezoid + B's left trapezoid) -->
+  <polygon points="85,80 235,80 265,230 115,230" fill="#2ca02c" fill-opacity="0.28" stroke="none"/>
+
+  <!-- purple: B-C parallelogram (B's right trapezoid + C's left trapezoid) -->
+  <polygon points="235,80 385,80 415,230 265,230" fill="#8e44ad" fill-opacity="0.28" stroke="none"/>
+
+  <!-- redraw pixel boundaries on top so they stay visible through the fills -->
+  <line x1="190" y1="80" x2="190" y2="230" stroke="#333" stroke-width="1.5"/>
+  <line x1="340" y1="80" x2="340" y2="230" stroke="#333" stroke-width="1.5"/>
+
+  <!-- the true edge, inside B -->
+  <line x1="235" y1="80" x2="265" y2="230" stroke="#1b1b1b" stroke-width="3"/>
+
+  <!-- pixel labels -->
+  <text x="115" y="110" text-anchor="middle" font-size="18" font-weight="700" fill="#555">A</text>
+  <text x="265" y="110" text-anchor="middle" font-size="18" font-weight="700" fill="#555">B</text>
+  <text x="415" y="110" text-anchor="middle" font-size="18" font-weight="700" fill="#555">C</text>
+
+  <!-- legend -->
+  <line x1="40" y1="270" x2="58" y2="270" stroke="#1b1b1b" stroke-width="3"/>
+  <text x="66" y="274" font-size="12" fill="#333">the true edge, inside B</text>
+
+  <rect x="40" y="288" width="18" height="18" fill="#2ca02c" fill-opacity="0.28"/>
+  <text x="66" y="301" font-size="12" fill="#333">the A&#8211;B parallelogram: A's right trapezoid + B's left trapezoid</text>
+
+  <rect x="40" y="310" width="18" height="18" fill="#8e44ad" fill-opacity="0.28"/>
+  <text x="66" y="323" font-size="12" fill="#333">the B&#8211;C parallelogram: B's right trapezoid + C's left trapezoid</text>
+
+  <text x="265" y="355" text-anchor="middle" font-size="11" fill="#555">Each parallelogram is cut in two by the pixel boundary it straddles —</text>
+  <text x="265" y="372" text-anchor="middle" font-size="11" fill="#555">four trapezoid pieces in total, so it looks like four separate datasets.</text>
+</svg>

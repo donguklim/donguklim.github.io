@@ -1,0 +1,48 @@
+<svg viewBox="0 0 530 410" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="530" height="410" fill="#ffffff" stroke="#e0e0e0" rx="8"/>
+
+  <text x="265" y="32" text-anchor="middle" font-size="14" font-weight="600" fill="#222">Four Trapezoids, Two Independent Datasets</text>
+
+  <!-- three square pixels -->
+  <rect x="40" y="80" width="150" height="150" fill="#ffffff" stroke="#333" stroke-width="1.5"/>
+  <rect x="190" y="80" width="150" height="150" fill="#ffffff" stroke="#333" stroke-width="1.5"/>
+  <rect x="340" y="80" width="150" height="150" fill="#ffffff" stroke="#333" stroke-width="1.5"/>
+
+  <!-- A's right trapezoid: A-B pairing (blue) -->
+  <polygon points="85,80 190,80 190,230 115,230" fill="#4e79a7" fill-opacity="0.30" stroke="none"/>
+  <!-- B's right trapezoid: A-B pairing (blue) -->
+  <polygon points="235,80 340,80 340,230 265,230" fill="#4e79a7" fill-opacity="0.30" stroke="none"/>
+
+  <!-- B's left trapezoid: B-C pairing (orange) -->
+  <polygon points="190,80 235,80 265,230 190,230" fill="#e0a030" fill-opacity="0.30" stroke="none"/>
+  <!-- C's left trapezoid: B-C pairing (orange) -->
+  <polygon points="340,80 385,80 415,230 340,230" fill="#e0a030" fill-opacity="0.30" stroke="none"/>
+
+  <!-- phantom (reused-threshold) lines in A and C -->
+  <line x1="85" y1="80" x2="115" y2="230" stroke="#888888" stroke-width="2" stroke-dasharray="6,5"/>
+  <line x1="385" y1="80" x2="415" y2="230" stroke="#888888" stroke-width="2" stroke-dasharray="6,5"/>
+
+  <!-- the real edge, in B -->
+  <line x1="235" y1="80" x2="265" y2="230" stroke="#1b1b1b" stroke-width="3"/>
+
+  <!-- pixel labels -->
+  <text x="115" y="110" text-anchor="middle" font-size="18" font-weight="700" fill="#555">A</text>
+  <text x="265" y="110" text-anchor="middle" font-size="18" font-weight="700" fill="#555">B</text>
+  <text x="415" y="110" text-anchor="middle" font-size="18" font-weight="700" fill="#555">C</text>
+
+  <!-- legend -->
+  <line x1="40" y1="270" x2="58" y2="270" stroke="#1b1b1b" stroke-width="3"/>
+  <text x="66" y="274" font-size="12" fill="#333">the true edge, inside B</text>
+
+  <line x1="40" y1="292" x2="58" y2="292" stroke="#888888" stroke-width="2" stroke-dasharray="6,5"/>
+  <text x="66" y="296" font-size="12" fill="#333">the same threshold, replotted in a neighbor's own local frame</text>
+
+  <rect x="40" y="310" width="18" height="18" fill="#4e79a7" fill-opacity="0.30"/>
+  <text x="66" y="323" font-size="12" fill="#333">A&#8211;B pairing: A's right-check &#8801; B's left-check (not spatially adjacent)</text>
+
+  <rect x="40" y="332" width="18" height="18" fill="#e0a030" fill-opacity="0.30"/>
+  <text x="66" y="345" font-size="12" fill="#333">B&#8211;C pairing: B's right-check &#8801; C's left-check (not spatially adjacent)</text>
+
+  <text x="265" y="375" text-anchor="middle" font-size="11" fill="#555">Same-dataset pairs sit on opposite sides of B, separated by the other</text>
+  <text x="265" y="392" text-anchor="middle" font-size="11" fill="#555">trapezoid — not the spatially adjacent pieces from the picture above.</text>
+</svg>

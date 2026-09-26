@@ -1,0 +1,55 @@
+<svg viewBox="0 0 550 470" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrHit" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#d62728"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="550" height="470" fill="#ffffff" stroke="#e0e0e0" rx="8"/>
+
+  <text x="275" y="30" text-anchor="middle" font-size="14" font-weight="600" fill="#222">Hit-Based Coloring: The Result Depends on Where the Jitter Lands</text>
+  <text x="275" y="50" text-anchor="middle" font-size="11" fill="#555">Screen percentage 50%: one render pixel covers 2 &#215; 2 display pixels</text>
+
+  <!-- ===== panel 1: top-left display pixel, hit ===== -->
+  <text x="105" y="74" text-anchor="middle" font-size="12" font-weight="600" fill="#333">Frame 1: hit</text>
+  <rect x="40" y="82" width="130" height="130" fill="#ffffff" stroke="#333" stroke-width="1.5"/>
+  <polygon points="40,82 69.25,82 127.75,212 95.25,212 40,89.2" fill="#444" fill-opacity="0.5"/>
+  <line x1="105" y1="82" x2="105" y2="212" stroke="#999" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="40" y1="147" x2="170" y2="147" stroke="#999" stroke-width="1" stroke-dasharray="4,3"/>
+  <circle cx="70.6" cy="121" r="5" fill="#d62728" stroke="#fff" stroke-width="1"/>
+  <line x1="72" y1="127" x2="102" y2="276" stroke="#d62728" stroke-width="2" marker-end="url(#arrHit)"/>
+  <rect x="80" y="282" width="50" height="50" fill="#000" fill-opacity="1" stroke="#333" stroke-width="1.5"/>
+  <text x="105" y="350" text-anchor="middle" font-size="11" fill="#333">painted: full outline</text>
+
+  <!-- ===== panel 2: top-left display pixel, miss ===== -->
+  <text x="275" y="74" text-anchor="middle" font-size="12" font-weight="600" fill="#333">Frame 2: miss</text>
+  <rect x="210" y="82" width="130" height="130" fill="#ffffff" stroke="#333" stroke-width="1.5"/>
+  <polygon points="210,82 239.25,82 297.75,212 265.25,212 210,89.2" fill="#444" fill-opacity="0.5"/>
+  <line x1="275" y1="82" x2="275" y2="212" stroke="#999" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="210" y1="147" x2="340" y2="147" stroke="#999" stroke-width="1" stroke-dasharray="4,3"/>
+  <circle cx="264.6" cy="108" r="5" fill="#d62728" stroke="#fff" stroke-width="1"/>
+  <line x1="265" y1="114" x2="274" y2="276" stroke="#d62728" stroke-width="2" marker-end="url(#arrHit)"/>
+  <rect x="250" y="282" width="50" height="50" fill="#ffffff" stroke="#333" stroke-width="1.5"/>
+  <text x="275" y="350" text-anchor="middle" font-size="11" fill="#333">painted: blank</text>
+
+  <!-- ===== panel 3: bottom-right display pixel, hit ===== -->
+  <text x="445" y="74" text-anchor="middle" font-size="12" font-weight="600" fill="#333">Frame 3: hit</text>
+  <rect x="380" y="82" width="130" height="130" fill="#ffffff" stroke="#333" stroke-width="1.5"/>
+  <polygon points="380,82 409.25,82 467.75,212 435.25,212 380,89.2" fill="#444" fill-opacity="0.5"/>
+  <line x1="445" y1="82" x2="445" y2="212" stroke="#999" stroke-width="1" stroke-dasharray="4,3"/>
+  <line x1="380" y1="147" x2="510" y2="147" stroke="#999" stroke-width="1" stroke-dasharray="4,3"/>
+  <circle cx="455.4" cy="199" r="5" fill="#d62728" stroke="#fff" stroke-width="1"/>
+  <line x1="453" y1="205" x2="447" y2="276" stroke="#d62728" stroke-width="2" marker-end="url(#arrHit)"/>
+  <rect x="420" y="282" width="50" height="50" fill="#000" fill-opacity="1" stroke="#333" stroke-width="1.5"/>
+  <text x="445" y="350" text-anchor="middle" font-size="11" fill="#333">painted: full outline</text>
+
+  <!-- legend -->
+  <rect x="40" y="376" width="18" height="12" fill="#444" fill-opacity="0.5"/>
+  <text x="66" y="386" font-size="12" fill="#333">outline band</text>
+  <line x1="170" y1="382" x2="188" y2="382" stroke="#999" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="196" y="386" font-size="12" fill="#333">display pixel boundary</text>
+  <circle cx="358" cy="382" r="5" fill="#d62728"/>
+  <text x="370" y="386" font-size="12" fill="#333">this frame's jittered sample</text>
+
+  <text x="275" y="420" text-anchor="middle" font-size="11" fill="#555">Frames 1 and 2 both sample the top-left display pixel, yet one paints full outline and the other</text>
+  <text x="275" y="437" text-anchor="middle" font-size="11" fill="#555">nothing. The bottom-right display pixel, which the outline barely touches, still gets full outline in frame 3.</text>
+</svg>

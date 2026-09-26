@@ -1,0 +1,37 @@
+<svg viewBox="0 0 460 400" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="460" height="400" fill="#ffffff" stroke="#e0e0e0" rx="8"/>
+
+  <text x="230" y="32" text-anchor="middle" font-size="14" font-weight="600" fill="#222">Left- and Right-Inducer Checks See the Same Split, Labeled Oppositely</text>
+
+  <!-- single pixel -->
+  <rect x="140" y="70" width="200" height="200" fill="#ffffff" stroke="#333" stroke-width="1.5"/>
+
+  <!-- region L: right-inducer detected / left-inducer not-detected -->
+  <polygon points="140,70 200,70 290,270 140,270" fill="#3aa6a6" fill-opacity="0.22" stroke="#2c7a7a" stroke-width="1.5"/>
+
+  <!-- region R: left-inducer detected / right-inducer not-detected -->
+  <polygon points="200,70 340,70 340,270 290,270" fill="#e0a030" fill-opacity="0.22" stroke="#b87c1a" stroke-width="1.5"/>
+
+  <!-- the actual geometric edge -->
+  <line x1="200" y1="70" x2="290" y2="270" stroke="#1b1b1b" stroke-width="3"/>
+
+  <!-- region labels, placed well clear of the edge line -->
+  <text x="168" y="196" text-anchor="middle" font-size="20" font-weight="700" fill="#1f5f5f">L</text>
+  <text x="315" y="120" text-anchor="middle" font-size="20" font-weight="700" fill="#8a5a10">R</text>
+
+  <!-- axis labels -->
+  <text x="140" y="290" font-size="12" fill="#555">x=0</text>
+  <text x="332" y="290" font-size="12" fill="#555">x=1</text>
+
+  <!-- legend -->
+  <rect x="40" y="310" width="18" height="18" fill="#3aa6a6" fill-opacity="0.22" stroke="#2c7a7a" stroke-width="1.5"/>
+  <text x="66" y="323" font-size="12" fill="#333">region L: right-inducer detected, left-inducer not detected</text>
+
+  <rect x="40" y="334" width="18" height="18" fill="#e0a030" fill-opacity="0.22" stroke="#b87c1a" stroke-width="1.5"/>
+  <text x="66" y="347" font-size="12" fill="#333">region R: left-inducer detected, right-inducer not detected</text>
+
+  <line x1="40" y1="367" x2="58" y2="367" stroke="#1b1b1b" stroke-width="3"/>
+  <text x="66" y="371" font-size="12" fill="#333">actual geometric edge, x = A + By</text>
+
+  <text x="230" y="392" text-anchor="middle" font-size="11" fill="#555">Regions L and R are the same two regions either check sees — only the labels swap between them.</text>
+</svg>

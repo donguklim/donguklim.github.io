@@ -1,0 +1,35 @@
+<svg viewBox="0 0 460 380" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="460" height="380" fill="#ffffff" stroke="#e0e0e0" rx="8"/>
+
+  <text x="230" y="32" text-anchor="middle" font-size="14" font-weight="600" fill="#222">A Real Edge Near the Pixel Boundary Can Flip Which Pixel "Contains" It</text>
+
+  <!-- pixel A -->
+  <rect x="80" y="80" width="150" height="150" fill="#f7f7f7" stroke="#333" stroke-width="1.5"/>
+  <!-- pixel B -->
+  <rect x="230" y="80" width="150" height="150" fill="#f7f7f7" stroke="#333" stroke-width="1.5"/>
+
+  <text x="155" y="161" text-anchor="middle" font-size="18" font-weight="700" fill="#555">A</text>
+  <text x="305" y="161" text-anchor="middle" font-size="18" font-weight="700" fill="#555">B</text>
+
+  <!-- true edge, close to the A-B boundary, inside A -->
+  <line x1="212" y1="80" x2="218" y2="230" stroke="#1b1b1b" stroke-width="3"/>
+
+  <!-- estimate 1: correctly reconstructed, still inside A -->
+  <line x1="200" y1="80" x2="206" y2="230" stroke="#2ca02c" stroke-width="2.5" stroke-dasharray="7,5"/>
+
+  <!-- estimate 2: noisy, crosses into B -->
+  <line x1="239" y1="80" x2="245" y2="230" stroke="#d62728" stroke-width="2.5" stroke-dasharray="7,5"/>
+
+  <!-- legend -->
+  <line x1="40" y1="290" x2="58" y2="290" stroke="#1b1b1b" stroke-width="3"/>
+  <text x="66" y="294" font-size="12" fill="#333">true edge, close to the A&#8211;B boundary</text>
+
+  <line x1="40" y1="312" x2="58" y2="312" stroke="#2ca02c" stroke-width="2.5" stroke-dasharray="7,5"/>
+  <text x="66" y="316" font-size="12" fill="#333">reconstructed estimate that correctly lands in A</text>
+
+  <line x1="40" y1="334" x2="58" y2="334" stroke="#d62728" stroke-width="2.5" stroke-dasharray="7,5"/>
+  <text x="66" y="338" font-size="12" fill="#333">reconstructed estimate that noisily lands in B instead</text>
+
+  <text x="230" y="362" text-anchor="middle" font-size="11" fill="#555">A small amount of statistical noise is enough to flip which pixel's intercept</text>
+  <text x="230" y="377" text-anchor="middle" font-size="11" fill="#555">test says it contains the edge, once the true edge sits this close to the boundary.</text>
+</svg>
