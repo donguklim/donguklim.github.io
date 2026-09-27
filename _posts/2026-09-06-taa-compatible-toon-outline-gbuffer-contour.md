@@ -1342,3 +1342,26 @@ Looking back, it went like this:
    maximum values along the inducer's axis.
 4. Fable finally came up with the fix for the critical problem in my
    idea.
+
+## How to Cite
+
+If you reference this post, please cite it as:
+
+> Donguk Lim. "TAA-Compatible Toon Outlines: The Pixel-Thickness Problem
+> with G-Buffer Contours." *Notes on Rendering* (blog), September 6, 2026.
+> <https://donguklim.github.io/rendering/npr/2026/09/06/taa-compatible-toon-outline-gbuffer-contour.html>
+
+Or in BibTeX:
+
+{% raw %}
+```bibtex
+@misc{lim2026taatoonoutlines,
+  author       = {Donguk Lim},
+  title        = {{TAA}-Compatible Toon Outlines: The Pixel-Thickness Problem with {G}-Buffer Contours},
+  howpublished = {Notes on Rendering (blog)},
+  year         = {2026},
+  month        = sep,
+  url          = {https://donguklim.github.io/rendering/npr/2026/09/06/taa-compatible-toon-outline-gbuffer-contour.html}
+}
+```
+{% endraw %}
