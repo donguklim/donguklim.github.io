@@ -1,0 +1,65 @@
+<svg viewBox="0 0 700 520" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <!-- containment: only the pixels whose center line the edge crosses -->
+    <clipPath id="containing">
+      <rect x="60" y="50" width="90" height="90"/>
+      <rect x="150" y="50" width="90" height="90"/>
+      <rect x="240" y="140" width="90" height="90"/>
+      <rect x="330" y="140" width="90" height="90"/>
+      <rect x="420" y="140" width="90" height="90"/>
+    </clipPath>
+    <!-- band test: the whole grid -->
+    <clipPath id="grid-lower">
+      <rect x="60" y="280" width="450" height="180"/>
+    </clipPath>
+  </defs>
+
+  <rect x="0" y="0" width="700" height="520" fill="#ffffff" stroke="#e0e0e0" rx="8"/>
+
+  <text x="350" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#222">Who Draws the Band: Containment Test vs. Band Test</text>
+
+  <!-- ============ upper panel: containment ============ -->
+  <!-- the whole band, dashed, to show what is missing -->
+  <polygon points="60,88 510,178 510,202 60,112" fill="none" stroke="#999" stroke-width="1" stroke-dasharray="4 3"/>
+  <!-- the drawn part of the band -->
+  <polygon points="60,88 510,178 510,202 60,112" fill="#555" clip-path="url(#containing)"/>
+  <!-- grid -->
+  <g stroke="#333" stroke-width="1.5" fill="none">
+    <rect x="60" y="50" width="90" height="90"/><rect x="150" y="50" width="90" height="90"/><rect x="240" y="50" width="90" height="90"/><rect x="330" y="50" width="90" height="90"/><rect x="420" y="50" width="90" height="90"/>
+    <rect x="60" y="140" width="90" height="90"/><rect x="150" y="140" width="90" height="90"/><rect x="240" y="140" width="90" height="90"/><rect x="330" y="140" width="90" height="90"/><rect x="420" y="140" width="90" height="90"/>
+  </g>
+  <!-- center lines of the pixels, where containment is decided -->
+  <g stroke="#2e6fa3" stroke-width="1" stroke-dasharray="2 3">
+    <line x1="105" y1="50" x2="105" y2="230"/><line x1="195" y1="50" x2="195" y2="230"/><line x1="285" y1="50" x2="285" y2="230"/><line x1="375" y1="50" x2="375" y2="230"/><line x1="465" y1="50" x2="465" y2="230"/>
+  </g>
+  <!-- the true edge -->
+  <line x1="60" y1="100" x2="510" y2="190" stroke="#1b1b1b" stroke-width="2.5"/>
+  <!-- notch markers -->
+  <circle cx="232" cy="143" r="9" fill="none" stroke="#c0392b" stroke-width="1.5"/>
+  <circle cx="248" cy="137" r="9" fill="none" stroke="#c0392b" stroke-width="1.5"/>
+  <text x="528" y="100" font-size="12" font-weight="600" fill="#333">containment test</text>
+  <text x="528" y="118" font-size="11" fill="#555">only the pixel whose</text>
+  <text x="528" y="132" font-size="11" fill="#555">centre line the edge</text>
+  <text x="528" y="146" font-size="11" fill="#555">crosses draws</text>
+  <text x="528" y="172" font-size="11" fill="#c0392b">red circles: parts of</text>
+  <text x="528" y="186" font-size="11" fill="#c0392b">the band nobody draws</text>
+
+  <!-- ============ lower panel: band test ============ -->
+  <polygon points="60,318 510,408 510,432 60,342" fill="#555" clip-path="url(#grid-lower)"/>
+  <g stroke="#333" stroke-width="1.5" fill="none">
+    <rect x="60" y="280" width="90" height="90"/><rect x="150" y="280" width="90" height="90"/><rect x="240" y="280" width="90" height="90"/><rect x="330" y="280" width="90" height="90"/><rect x="420" y="280" width="90" height="90"/>
+    <rect x="60" y="370" width="90" height="90"/><rect x="150" y="370" width="90" height="90"/><rect x="240" y="370" width="90" height="90"/><rect x="330" y="370" width="90" height="90"/><rect x="420" y="370" width="90" height="90"/>
+  </g>
+  <line x1="60" y1="330" x2="510" y2="420" stroke="#1b1b1b" stroke-width="2.5"/>
+  <text x="528" y="330" font-size="12" font-weight="600" fill="#333">band test</text>
+  <text x="528" y="348" font-size="11" fill="#555">every pixel paints the</text>
+  <text x="528" y="362" font-size="11" fill="#555">part of the band inside</text>
+  <text x="528" y="376" font-size="11" fill="#555">its own square</text>
+
+  <!-- legend -->
+  <line x1="60" y1="488" x2="80" y2="488" stroke="#1b1b1b" stroke-width="2.5"/>
+  <text x="88" y="492" font-size="11" fill="#333">reconstructed edge</text>
+  <rect x="220" y="481" width="20" height="14" fill="#555"/>
+  <text x="248" y="492" font-size="11" fill="#333">drawn part of the outline band</text>
+  <text x="350" y="510" text-anchor="middle" font-size="11" fill="#555">All pixels within a pixel of the edge decode the same line, so each can safely paint its own share of the band.</text>
+</svg>

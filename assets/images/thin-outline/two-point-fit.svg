@@ -1,0 +1,61 @@
+<svg viewBox="0 0 560 360" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="560" height="360" fill="#ffffff" stroke="#e0e0e0" rx="8"/>
+
+  <text x="280" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#222">Two Repeated Jitter Positions Fit a Line Exactly</text>
+
+  <!-- the pixel below the edge, local coordinates: x right, y down, 240 px = 1 pixel -->
+  <!-- the sliver where this pixel's top check fires: between the top edge and the true edge decoded from the pixel above -->
+  <polygon points="57,50 280,50 280,172" fill="#4e79a7" fill-opacity="0.18"/>
+  <rect x="40" y="50" width="240" height="240" fill="none" stroke="#333" stroke-width="1.5"/>
+  <!-- pixel above, hinted -->
+  <line x1="40" y1="50" x2="280" y2="50" stroke="#333" stroke-width="3"/>
+  <text x="160" y="44" text-anchor="middle" font-size="10" fill="#555">boundary to the pixel above (which contains the edge)</text>
+
+  <!-- the true edge, y = -0.039 + 0.548 x in this pixel's coordinates -->
+  <line x1="57" y1="50" x2="280" y2="172" stroke="#1b1b1b" stroke-width="2.5"/>
+
+  <!-- 11 jitter positions of TSR at 100%: (x, y) * 240 + (40, 50) -->
+  <g fill="#888">
+    <circle cx="160" cy="210" r="3.5"/>   <!-- 1: (0.5, 0.6667) -->
+    <circle cx="100" cy="263.3" r="3.5"/> <!-- 3: (0.25, 0.8889) -->
+    <circle cx="250" cy="183.3" r="3.5"/> <!-- 4: (0.875, 0.5556) -->
+    <circle cx="130" cy="103.3" r="3.5"/> <!-- 5: (0.375, 0.2222) -->
+    <circle cx="190" cy="236.7" r="3.5"/> <!-- 6: (0.625, 0.7778) -->
+    <circle cx="70" cy="156.7" r="3.5"/>  <!-- 7: (0.125, 0.4444) -->
+    <circle cx="145" cy="281.1" r="3.5"/> <!-- 9: (0.4375, 0.9630) -->
+    <circle cx="205" cy="201.1" r="3.5"/> <!-- 10: (0.6875, 0.6296) -->
+    <circle cx="85" cy="121.1" r="3.5"/>  <!-- 11: (0.1875, 0.2963) -->
+  </g>
+  <!-- the two positions inside the sliver -->
+  <circle cx="220" cy="130" r="5" fill="#c0392b"/>      <!-- 2: (0.75, 0.3333) -->
+  <circle cx="265" cy="76.7" r="5" fill="#c0392b"/>     <!-- 8: (0.9375, 0.1111) -->
+
+  <!-- the line through the two points, slope -1.19 in (x, y) -->
+  <line x1="166" y1="194" x2="280" y2="58.7" stroke="#c0392b" stroke-width="2" stroke-dasharray="6 4"/>
+
+  <!-- annotations -->
+  <text x="300" y="80" font-size="12" font-weight="600" fill="#333">What the record below the edge holds</text>
+  <text x="300" y="100" font-size="11" fill="#333">TSR at 100% screen percentage cycles through</text>
+  <text x="300" y="114" font-size="11" fill="#333">11 jitter positions. Only 2 of them land in the</text>
+  <text x="300" y="128" font-size="11" fill="#333">sliver where this pixel's top check fires.</text>
+  <text x="300" y="150" font-size="11" fill="#333">Every 11 frames the record adds the same</text>
+  <text x="300" y="164" font-size="11" fill="#333">2 points again: n climbs to about 5, but the</text>
+  <text x="300" y="178" font-size="11" fill="#333">information is that of 2 points.</text>
+  <text x="300" y="200" font-size="11" fill="#c0392b">Two points fit a line exactly: residual 0,</text>
+  <text x="300" y="214" font-size="11" fill="#c0392b">standard error 0, slope −1.19 along the</text>
+  <text x="300" y="228" font-size="11" fill="#c0392b">record's axis against a true 0.55.</text>
+  <text x="300" y="250" font-size="11" fill="#333">Fix: count distinct positions, n · min(1, dL)</text>
+  <text x="300" y="264" font-size="11" fill="#333">= 4.94 · 0.44 = 2.17, below the minimum of 3.</text>
+
+  <!-- legend -->
+  <rect x="40" y="306" width="14" height="14" fill="#4e79a7" fill-opacity="0.18" stroke="#333" stroke-width="0.8"/>
+  <text x="60" y="317" font-size="11" fill="#333">region where the top check fires</text>
+  <line x1="250" y1="313" x2="270" y2="313" stroke="#1b1b1b" stroke-width="2.5"/>
+  <text x="278" y="317" font-size="11" fill="#333">true edge</text>
+  <line x1="350" y1="313" x2="370" y2="313" stroke="#c0392b" stroke-width="2" stroke-dasharray="6 4"/>
+  <text x="378" y="317" font-size="11" fill="#333">fit through the 2 recorded positions</text>
+  <circle cx="47" cy="337" r="3.5" fill="#888"/>
+  <text x="60" y="341" font-size="11" fill="#333">jitter positions that record nothing here</text>
+  <circle cx="300" cy="337" r="5" fill="#c0392b"/>
+  <text x="313" y="341" font-size="11" fill="#333">the 2 positions this record is built from</text>
+</svg>

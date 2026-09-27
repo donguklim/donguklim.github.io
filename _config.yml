@@ -22,6 +22,11 @@ plugins:
 
 show_excerpts: true
 
+# GitHub Pages builds in UTC, so a post dated today with an afternoon +0900
+# time is "in the future" for a morning build and gets skipped, which breaks
+# every post_url pointing at it.
+future: true
+
 # Jekyll processes everything except these by default; list is here for clarity.
 exclude:
   - README.md

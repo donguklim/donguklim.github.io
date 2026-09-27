@@ -1,9 +1,25 @@
 ---
 layout: post
-title: "TAA-Compatible Toon Outlines: The Pixel-Thickness Problem with G-Buffer Contours"
+title: "[Obsolete] TAA-Compatible Toon Outlines: The Pixel-Thickness Problem with G-Buffer Contours"
 date: 2026-09-06
 categories: [rendering, npr]
 ---
+
+> **This post is obsolete.** It describes the first design of the algorithm,
+> as of September 2026. Since then I have implemented it as an Unreal Engine
+> plugin, [ThinOutline](https://github.com/donguklim/thin-outline-plugin), and
+> the algorithm changed on the way: one record per inducer axis, shared by
+> creases and silhouettes, instead of separate records; a pooled merge of each
+> pixel's record with its two neighbours' in place of the 3rd approach's
+> neighbour-only fit; silhouette records kept on the foreground pixels rather
+> than the background; a per-record presence that fades an edge out instead of
+> a hard miss limit; and the outline drawn after the temporal upscaler by
+> default, so the fading described near the end of this post no longer
+> applies. The current description of the algorithm is a series of posts
+> starting with [the ThinOutline plugin]({% post_url 2026-10-11-thin-outline-plugin %});
+> the [core idea]({% post_url 2026-10-11-thin-outline-core-idea %}) post
+> covers the ground this post covers, as the plugin does it. The text below
+> is left as written, for the record.
 
 
 ## Background
@@ -1088,7 +1104,7 @@ the records update, and the outline fades in and out there.
 
 The fix is a spatial filter that blends each pixel's line with the lines
 of its neighbors along the contour. It's inspired by SVGF
-(Spatiotemporal Variance-Guided Filtering, Schied et al. 2017), an
+(Spatiotemporal Variance-Guided Filtering, [Schied et al. 2017](#references)), an
 edge-avoiding denoiser for path tracing: like SVGF, it weights each
 neighbor by how uncertain its value is, and stops at geometric boundaries.
 
@@ -1342,3 +1358,39 @@ Looking back, it went like this:
    maximum values along the inducer's axis.
 4. Fable finally came up with the fix for the critical problem in my
    idea.
+
+## References
+
+Christoph Schied, Anton Kaplanyan, Chris Wyman, Anjul Patney, Chakravarty
+R. Alla Chaitanya, John Burgess, Shiqiu Liu, Carsten Dachsbacher, Aaron
+Lefohn, and Marco Salvi. 2017. "Spatiotemporal Variance-Guided Filtering:
+Real-Time Reconstruction for Path-Traced Global Illumination." In
+*Proceedings of High Performance Graphics (HPG '17)*. ACM.
+<https://doi.org/10.1145/3105762.3105770>
+
+## How to Cite
+
+For the current algorithm, please cite
+[the main post of the ThinOutline series]({% post_url 2026-10-11-thin-outline-plugin %})
+instead; the citation below is for this text as written in September 2026.
+
+If you reference this post, please cite it as:
+
+> Donguk Lim. "TAA-Compatible Toon Outlines: The Pixel-Thickness Problem
+> with G-Buffer Contours." *Notes on Rendering* (blog), September 6, 2026.
+> <https://donguklim.github.io/rendering/npr/2026/09/06/taa-compatible-toon-outline-gbuffer-contour.html>
+
+Or in BibTeX:
+
+{% raw %}
+```bibtex
+@misc{lim2026taatoonoutlines,
+  author       = {Donguk Lim},
+  title        = {{TAA}-Compatible Toon Outlines: The Pixel-Thickness Problem with {G}-Buffer Contours},
+  howpublished = {Notes on Rendering (blog)},
+  year         = {2026},
+  month        = sep,
+  url          = {https://donguklim.github.io/rendering/npr/2026/09/06/taa-compatible-toon-outline-gbuffer-contour.html}
+}
+```
+{% endraw %}
