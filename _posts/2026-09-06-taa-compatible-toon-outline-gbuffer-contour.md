@@ -1088,7 +1088,7 @@ the records update, and the outline fades in and out there.
 
 The fix is a spatial filter that blends each pixel's line with the lines
 of its neighbors along the contour. It's inspired by SVGF
-(Spatiotemporal Variance-Guided Filtering, Schied et al. 2017), an
+(Spatiotemporal Variance-Guided Filtering, [Schied et al. 2017](#references)), an
 edge-avoiding denoiser for path tracing: like SVGF, it weights each
 neighbor by how uncertain its value is, and stops at geometric boundaries.
 
@@ -1342,6 +1342,15 @@ Looking back, it went like this:
    maximum values along the inducer's axis.
 4. Fable finally came up with the fix for the critical problem in my
    idea.
+
+## References
+
+Christoph Schied, Anton Kaplanyan, Chris Wyman, Anjul Patney, Chakravarty
+R. Alla Chaitanya, John Burgess, Shiqiu Liu, Carsten Dachsbacher, Aaron
+Lefohn, and Marco Salvi. 2017. "Spatiotemporal Variance-Guided Filtering:
+Real-Time Reconstruction for Path-Traced Global Illumination." In
+*Proceedings of High Performance Graphics (HPG '17)*. ACM.
+<https://doi.org/10.1145/3105762.3105770>
 
 ## How to Cite
 
