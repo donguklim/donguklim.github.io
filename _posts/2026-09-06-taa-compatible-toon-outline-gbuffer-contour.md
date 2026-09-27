@@ -1207,6 +1207,8 @@ foreground surface as well.
 
 ## Limitation of the Algorithm
 
+### Sub-Pixel Details
+
 The algorithm can only sample as finely as the G-buffer's resolution.
 Every detection compares two samples one render pixel apart, and the
 reconstruction assumes each edge has a full pixel-wide band around it in
@@ -1215,6 +1217,29 @@ wire, a small hole, or a narrow gap, break that assumption. The
 comparison only fires on the few frames where the two samples happen to
 straddle the detail, if at all, so the edges such details induce are
 reconstructed only partially, or not at all.
+
+### Statistical Noise
+
+The reconstructed lines are statistical estimates, built from samples
+accumulated over time, so they always carry some variance.
+
+- **Estimates take time to converge.** When an edge first appears, or a
+  pixel's history is reset by reprojection rejection, its record starts
+  with only a handful of samples, and the reconstructed line wobbles until
+  enough frames have accumulated. The standard errors from
+  [Edge Selection](#edge-selection) measure exactly this.
+- **The noise never reaches zero.** The decay rate caps how many samples
+  a record effectively holds, so even a fully converged record keeps some
+  residual wobble. A slower decay gives a steadier line, but takes longer
+  to recover after a reset and follows moving edges more sluggishly. A
+  faster decay reacts quickly but stays noisier.
+- **Hard decisions amplify the noise.** Each pixel makes yes-or-no
+  decisions from these estimates, such as whether it contains the edge
+  and which inducer's edge to draw. Near a threshold, a little noise
+  becomes a visible flip rather than a small wobble. Much of this post,
+  from the 3rd approach to the reliability tests and the spatial filter,
+  is about keeping that noise from turning into dashed or fading
+  outlines.
 
 ## How I Came Up with the Algorithm
 
