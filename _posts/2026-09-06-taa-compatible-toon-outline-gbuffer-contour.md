@@ -1154,10 +1154,30 @@ Note that the spatial filter runs before
 describes suppression first. Suppression only keeps dense edges from
 being painted in the final image.
 
+### Just Paint After TAA
+
+The most thorough fix for the fading is to not hand the outline to the
+temporal upscaler at all: paint it at display resolution, after the TAA
+stage. Every problem in this section comes from painting a
+sub-render-pixel outline into render pixels and hoping the upscaler
+reconstructs it faithfully. The reconstructed lines don't need that. They
+are continuous line equations, so they can be evaluated directly at each
+display pixel, with exact coverage, and the result no longer depends on
+the screen percentage or on how well the upscaler converges on thin
+features.
+
+The catch is where TAA sits in the pipeline. In Unreal Engine, as in many
+renderers, TAA runs after translucency has been composited, so painting
+after TAA means painting on top of every translucent material and volume.
+An object standing inside fog, for example, would get a crisp outline
+drawn over the fog, as if the fog weren't there. Fixing that would need
+to know how much translucency lies in front of each outline pixel, which
+is no longer available once everything has been composited.
+
 ### Spatial Filter Improvement Ideas
 
-Two ideas I haven't tried yet that might get the filter closer to
-removing the fading entirely.
+If painting after TAA isn't an option, here are two ideas I haven't tried
+yet that might get the filter closer to removing the fading entirely.
 
 #### Checking Connections Between Neighbors
 
