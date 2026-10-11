@@ -256,32 +256,65 @@ itself, whose channel in the record now holds the presence of the
 [flicker suppression]({% post_url 2026-10-11-thin-outline-flicker-suppression %})
 post.
 
+### The Weights
+
+Four weights go into the fit: one per point, and one for the pixel's own
+slope, which is kept as a prior. Each point is weighted by the inverse
+variance of its centre crossing, the standard error of the core idea post
+computed from that row's pooled fit, and the two neighbours' weights are
+multiplied by the gate:
+
+$$
+w_A = \frac{g}{\mathrm{SE}(u_A)^2}, \qquad
+w_p = \frac{1}{\mathrm{SE}(u_p)^2}, \qquad
+w_B = \frac{g}{\mathrm{SE}(u_B)^2}, \qquad
+w_b = \frac{1}{\mathrm{SE}(b_p)^2} .
+$$
+
+Inverse-variance weights are the minimum-variance way to combine estimates
+of the same quantity, so a row whose crossing is well known, with many
+distinct samples and little scatter, pulls the line harder than a row
+whose record was just reset. The gate multiplies the neighbours only: the
+target's point is the one being filtered and is never in doubt, while the
+neighbours are judged as a pair by the second difference, so when $d$ is
+large both fall out together. $w_b$ is the inverse variance of the pixel's
+own slope, with the standard error of the decoded edge, twice the stored
+record line's. Every standard error is floored at 0.001 pixels before the
+division, so that a perfect fit of zero residual, which two distinct jitter
+positions produce, gets a large but finite weight instead of swamping the
+rest.
+
 ### The Fitted Slope
 
-The slope is then a weighted least-squares line through the three points,
-each weighted by the inverse variance of its crossing and the neighbours'
-additionally by the gate, with the pixel's own slope kept as a prior
-weighted by its own inverse variance:
+With these weights the slope minimizes
+
+$$
+\sum_{q \in \{A, p, B\}} w_q\,(u_q - a - b\,v_q)^2 + w_b\,(b - b_p)^2 ,
+$$
+
+a weighted least-squares line through the three points with a penalty for
+leaving the own slope. With the weighted means $\bar v = \sum_q w_q v_q /
+\sum_q w_q$ and $\bar u = \sum_q w_q u_q / \sum_q w_q$ the solution is
 
 $$
 \hat b = \frac{S_{vu} + w_b\,b_p}{S_{vv} + w_b}, \qquad
 S_{vv} = \sum_q w_q\,(v_q - \bar v)^2, \quad
-S_{vu} = \sum_q w_q\,(v_q - \bar v)(u_q - \bar u),
+S_{vu} = \sum_q w_q\,(v_q - \bar v)(u_q - \bar u) .
 $$
 
-over $q \in \{A, p, B\}$, with $w_A = g / \mathrm{SE}(u_A)^2$,
-$w_p = 1 / \mathrm{SE}(u_p)^2$, $w_B = g / \mathrm{SE}(u_B)^2$ and
-$w_b = 1 / \mathrm{SE}(b_p)^2$, the weighted means $\bar v$ and $\bar u$
-taken with the three $w_q$. The prior is there for a graceful fallback.
-Without it the target's own point sits at $\bar v$ and contributes nothing
-to the slope, so any nonzero gate, however small, would hand the slope
-entirely to the neighbours. With it, the slope is the inverse-variance blend
-of the crossings' slope and the own slope, and tends to the own slope as
-the gate closes. On a converged static edge the prior's share is about 4%
-(next section); on a record with few distinct samples, whose slope standard
-error is large, it is nothing; and on a perfect fit, whose standard error of
-0 is floored at 0.001 pixels, it is everything. In HLSL, once both
-neighbours have a valid fit:
+The prior is there for a graceful fallback. Without it the target's own
+point sits at $\bar v$ and contributes nothing to the slope, so any nonzero
+gate, however small, would hand the slope entirely to the neighbours. With
+it, the slope is the inverse-variance blend of the crossings' slope and the
+own slope, and tends to the own slope as the gate closes. On the static
+edge all three crossings have a standard error of 0.075 pixels and the gate
+is 1, so each point weighs $1/0.075^2 = 178$, $\bar v = \tfrac12$ and
+$S_{vv} = 178 \times (1 + 0 + 1) = 356$, while the own slope weighs
+$1/0.26^2 = 15$: the prior's share is $15 / (356 + 15)$, about 4%, the
+figure the next section arrives at from the other direction. On a record
+with few distinct samples, whose slope standard error is large, the prior
+is nothing; on a perfect fit, whose standard error of 0 is floored at 0.001
+pixels, it is everything. In HLSL, once both neighbours have a valid fit:
 
 ```hlsl
 // The neighbours' centre crossings are in this pixel's coordinates already (no offset along the axis); they sit at
