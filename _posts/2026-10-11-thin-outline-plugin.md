@@ -100,14 +100,13 @@ Per frame, the work falls into three steps:
   what still flickers after the upscaler and why, measured over jitter
   cycles, the dense and isolated edge suppression that were tried against
   it first, and the presence and spike filter that remove most of it.
-- [Drawing and performance]({% post_url 2026-10-11-thin-outline-drawing-and-performance %}):
-  coverage of the display pixel, drawing before the upscaler against after
-  it, and what the implementation costs and why, including how its passes
-  are organised.
 - [Tile classification]({% post_url 2026-10-11-thin-outline-tile-classification %}):
   running the drawing passes only on the tiles within reach of a record,
   and why the passes that remained were waiting on their loads rather than
   doing too much.
+- [Drawing and performance]({% post_url 2026-10-11-thin-outline-drawing-and-performance %}):
+  coverage of the display pixel, drawing before the upscaler against after
+  it, and what the implementation costs and why.
 
 ## The Implementation
 
