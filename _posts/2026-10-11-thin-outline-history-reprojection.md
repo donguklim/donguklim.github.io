@@ -634,10 +634,20 @@ the test to 541 with it, and the removed ones lie along the soles' contact
 line with the floor, on both feet, reproducible to one pixel between runs.
 At a slower spin, with the feet under one pixel per frame, no trail forms
 and nothing changes. Under a camera pan, the records on everything outside
-the character are the same with and without the test, within 0.1%. In Stack
-O Bot the trail behind the feet is gone.
+the character are the same with and without the test, within 0.1%.
 
-<!-- capture: Stack O Bot, the feet's crease ghost with the velocity test off and on -->
+In Stack O Bot the difference is plain to see. The character walks away from
+the camera, so every step uncovers floor right behind its feet. Without the
+velocity test, the floor pixels uncovered there take over the feet's crease
+records, and a trail of thin dashed lines runs down the floor from each foot:
+
+![A screenshot from Epic's Stack O Bot sample: the orange robot character walks away from the camera across a pale gray floor, seen from behind and slightly above, with its shadow falling to the left. Directly below its feet, from the soles down to the bottom of the frame, two thin dashed dark lines run straight down the empty floor along the path the feet just took, the crease outlines of the feet left behind on the floor](/assets/images/thin-outline/feet-crease-outline-ghosting-without-velocity-test.jpg)
+
+With the velocity test, those taps are left out, because their stored
+velocity is the feet's and the floor pixels fetching them have none. The
+outlines stay on the feet:
+
+![The same scene with the velocity test on: the orange robot walks away from the camera across the pale gray floor, its feet and legs outlined, and the floor behind its feet is clean, with no lines trailing from the soles](/assets/images/thin-outline/feet-crease-outline-no-ghosting-with-velocity-test.jpg)
 
 What the test does not cover: on the first frame a foot lifts from rest its
 stored velocity is still the floor's, so the floor it uncovers on that one
