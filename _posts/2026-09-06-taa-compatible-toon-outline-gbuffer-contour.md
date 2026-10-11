@@ -16,9 +16,9 @@ categories: [rendering, npr]
 > a hard miss limit; and the outline drawn after the temporal upscaler by
 > default, so the fading described near the end of this post no longer
 > applies. The current description of the algorithm is a series of posts
-> starting with [the ThinOutline plugin]({% post_url 2026-10-11-thin-outline-plugin %});
+> starting with [this one]({% post_url 2026-10-11-thin-outline-plugin %});
 > the [core idea]({% post_url 2026-10-11-thin-outline-core-idea %}) post
-> covers the ground this post covers, as the plugin does it. The text below
+> covers the ground this post covers, as the algorithm works now. The text below
 > is left as written, for the record.
 
 

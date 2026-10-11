@@ -1,24 +1,26 @@
 ---
 layout: post
-title: "ThinOutline: The Core Idea"
+title: "Thin Outlines From the G-Buffer Under TAA: The Core Idea"
 date: 2026-10-11 10:00:00 +0900
 categories: [rendering, npr]
 hidden: true
 ---
 
-The ThinOutline plugin draws toon outlines from the G-buffer that are thinner
-than a rendering pixel and stay crisp under a temporal upscaler. This post is
-the core of how it does that: a G-buffer edge check can only say whether an
-edge passes between two rendering pixels, but accumulated over the jittered
-frames of a temporal upscaler, those yes-or-no answers pin the edge down to a
-line equation accurate to a fraction of a pixel. It is the first part of a
-[series on the plugin]({% post_url 2026-10-11-thin-outline-plugin %}); the
-main post has the overview and the links to the other parts.
+This post is the core of an algorithm for drawing toon outlines from the
+G-buffer that are thinner than a rendering pixel and stay crisp under a
+temporal upscaler. A G-buffer edge check can only say whether an edge passes
+between two rendering pixels, but accumulated over the jittered frames of a
+temporal upscaler, those yes-or-no answers pin the edge down to a line
+equation accurate to a fraction of a pixel. It is the first part of a
+[series]({% post_url 2026-10-11-thin-outline-plugin %}) whose main post has
+the overview and the links to the other parts.
 
-Two words I use throughout, as the plugin's code does: a **rendering pixel**
-is a pixel of the renderer before the temporal upscaler, and a **display
-pixel** is a pixel after it. At 50% screen percentage one rendering pixel
-covers 2×2 display pixels.
+Two words I use throughout: a **rendering pixel** is a pixel of the renderer
+before the temporal upscaler, and a **display pixel** is a pixel after it. At
+50% screen percentage one rendering pixel covers 2×2 display pixels. Where a
+formula is clearer as code, I quote the HLSL of my implementation, an Unreal
+Engine plugin; the code is at
+<https://github.com/donguklim/thin-outline-plugin>.
 
 ## The Pixel-Thickness Problem
 
@@ -42,7 +44,7 @@ percentage, four at 25%.
 
 The usual compromises are to blur the rendering-resolution outline by an
 amount that scales with the screen percentage, or to supersample the depth
-and normal data. The plugin does neither.
+and normal data. This algorithm does neither.
 
 ### How Temporal Upscalers Reconstruct Sub-Pixel Detail
 
@@ -132,9 +134,9 @@ So for each check, the detected and not-detected jitter offsets accumulated
 over many frames carry the shape of that check's half of the parallelogram,
 and the parallelogram's middle line is the edge.
 
-### The Checks the Plugin Runs
+### The Checks I Use
 
-The plugin's checks are a little more careful than "does the normal differ",
+My checks are a little more careful than "does the normal differ",
 but they are still checks between a target pixel C and an axial neighbour N,
 helped by the opposite neighbour O. A **crease** check compares world-space
 normals. Its measure is
@@ -168,7 +170,7 @@ You can fit the accumulated jitter offsets with a statistical method such as
 or [linear discriminant analysis](https://en.wikipedia.org/wiki/Linear_discriminant_analysis)
 to find the boundary between the detected and not-detected ones. Either way,
 the estimate of the edge's position and orientation is far more accurate
-than any single frame's one-pixel-wide detection. The plugin uses OLS; the
+than any single frame's one-pixel-wide detection. I use OLS; the
 rest of this post is about making it work.
 
 ![Same three-pixel row and left-neighbor band as before, but the colored sample pairs are replaced with many small black dots scattered across the hatched band, accumulated over many frames. A red trend line fitted through these dots via OLS regression runs through the middle of the parallelogram, parallel to the true black edge line](/assets/images/taa-toon-outline/ols-edge-fit-left.svg)
@@ -228,8 +230,8 @@ A = 2a - 1, \qquad B = 2b .
 $$
 
 In my first design each pixel then decided from the decoded $A$ whether it
-*contained* the edge, and only the containing pixel drew. The plugin does
-something else, described under
+*contained* the edge, and only the containing pixel drew. The algorithm now
+does something else, described under
 [Drawing Where the Band Crosses](#drawing-where-the-band-crosses); the
 decoding above is used as it is.
 
@@ -252,8 +254,8 @@ check's midline, shifted by exactly half a pixel.
 
 ![A single pixel split by a slanted edge into a smaller detected trapezoid on the left and a larger not-detected trapezoid on the right, each with its own OLS midline drawn through its middle; a horizontal double-headed arrow between the two midlines, at the same height, is labeled as exactly a 0.5 pixel shift](/assets/images/taa-toon-outline/not-detected-trapezoid-shift.svg)
 
-So there is no need for two records per axis. The plugin keeps one record per
-axis and folds both checks into it: a sample that fired the left (or top)
+So there is no need for two records per axis. I keep one record per axis and
+fold both checks into it: a sample that fired the left (or top)
 check is recorded as it is, at $(u, v)$, and a sample that fired the right
 (or bottom) check is shifted half a pixel along the axis first and recorded
 at $(u + \tfrac12, v)$. Both land on the same midline, $u = \tfrac12 + E(v)/2$,
@@ -299,8 +301,8 @@ variances $\sigma_u^2, \sigma_v^2$, the covariance $\sigma_{uv}$, the mean
 edge strength, and a presence value that the
 [flicker suppression]({% post_url 2026-10-11-thin-outline-flicker-suppression %})
 post explains. That is two RGBA16F texels per axis; with the extra per-axis
-data silhouettes need, the plugin stores 44 bytes per rendering pixel, kept
-twice over for this frame and the history. Three storage decisions turned out
+data silhouettes need, my implementation stores 44 bytes per rendering pixel,
+kept twice over for this frame and the history. Three storage decisions turned out
 to matter.
 
 ### Central Moments
@@ -323,7 +325,7 @@ with a decay rate of 0.04:
 | width 0.05 around u = 1.4 | 0.000218 | −0.000748 (**negative**) | 0.000218 (0.1% off) |
 
 Narrow bands are exactly the slivers next to pixel boundaries, where the
-standard errors matter most. So the plugin stores **central moments**, the
+standard errors matter most. So the records hold **central moments**, the
 mean and the variances and covariance about it, which keep small numbers
 small. Central moments also make moving a record trivial: shifting all the
 samples by a constant changes only the mean, so the half-pixel shifts above
@@ -336,7 +338,7 @@ The classic decayed average, $\langle v\rangle \leftarrow (1-d)\langle v\rangle 
 starts biased toward zero: after one sample it holds $0.04\,v$, and only
 about $v/2$ after 17. Every freshly reset record would start wrong, and since
 the biases of the different moments differ, its variance would be wrong too.
-The plugin instead gives a new sample the weight $\alpha = 1/n$ after
+Instead, a new sample gets the weight $\alpha = 1/n$ after
 incrementing $n$: the first sample is taken at full value, and from then on
 the record is the exact weighted mean of what it has seen. With a sample
 every frame, $n$ settles at $1/d$ and $\alpha$ at $d$, the classic update.
@@ -410,7 +412,7 @@ out entirely: a dashed outline.
 The artifact has two causes. Neighbouring pixels fit **different data**, so
 they can disagree about where the edge is. And only the pixel that
 **contains** the edge drew, so a disagreement cost a whole segment rather
-than a little thickness. The plugin removes both causes: this section the
+than a little thickness. The algorithm removes both causes: this section the
 first, [Drawing Where the Band Crosses](#drawing-where-the-band-crosses) the
 second.
 
@@ -482,7 +484,7 @@ falling back to the pixel's own record when a neighbour failed. That guard is
 itself a yes-or-no decision, and a freshly reset pixel whose neighbour was
 reset too fell back to its own invalid record and drew nothing.
 
-The plugin now **pools each pixel's own record with both neighbours'**,
+So now each pixel **pools its own record with both neighbours'**,
 weighted by their sample counts, with no reliability switch:
 
 ![Three square pixels A, B and C in a row with a nearly vertical black edge inside B. A's right portion is shaded blue, B's left portion orange and right portion blue, and C's left portion orange, showing where each pixel's samples come from. Below the pixels, three record boxes labeled with the sample counts n_A, n_B and n_C are joined by arrows into one pool box under B. The arrow from A is labeled "shift −½ along the axis", the arrow from B "as is", and the arrow from C "shift +½". The pool box reads: weighted by n_A, n_B, n_C, then OLS fit, and an arrow from it points back up to the edge in B](/assets/images/thin-outline/pooled-merge.svg)
@@ -604,7 +606,7 @@ $$
 \mathrm{SE}(b) = \frac{s}{\sqrt{n\,\sigma_v^2}} .
 $$
 
-Instead of the intercept's standard error, the plugin computes the standard
+Instead of the intercept's standard error, I compute the standard
 error of the line's position at the pixel's centre, $v = \tfrac12$, which is
 the least uncertain point of the line and uncorrelated with its slope:
 
@@ -925,8 +927,8 @@ percentage. A candidate whose band covers less than a ten-thousandth of the
 pixel is dropped: a band merely touching the pixel's corner left a rounding
 residue that could win the selection with no coverage to show.
 
-This is the rule for drawing before the upscaler. The plugin now draws after
-it by default, at display resolution, where every display pixel sums the
+This is the rule for drawing before the upscaler. I now draw after it by
+default, at display resolution, where every display pixel sums the
 band areas of the rendering pixels it overlaps directly and the upscaler
 plays no part; the
 [drawing and performance]({% post_url 2026-10-11-thin-outline-drawing-and-performance %})

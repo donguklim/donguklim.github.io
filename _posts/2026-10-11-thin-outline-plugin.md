@@ -1,21 +1,18 @@
 ---
 layout: post
-title: "ThinOutline: TAA-Compatible Toon Outlines Thinner Than a Rendering Pixel"
+title: "TAA-Compatible Thin Toon Outlines From G-Buffer Contours"
 date: 2026-10-11 16:00:00 +0900
 categories: [rendering, npr]
 ---
 
-ThinOutline is an Unreal Engine plugin that draws toon outlines from G-buffer
-data alone, thinner than one rendering pixel, and keeps them crisp under a
-temporal upscaler such as TSR. This post introduces the plugin and links to
-the posts that explain each part of the algorithm. It replaces my
+This is an algorithm for drawing toon outlines from G-buffer data alone that
+are thinner than one rendering pixel and stay crisp under a temporal upscaler
+such as TSR. This post states the problem, gives the idea in short, and links
+to the posts that explain each part; the parts are separate pages only
+because one page would be uncomfortable to read. It replaces my
 [post from September]({% post_url 2026-09-06-taa-compatible-toon-outline-gbuffer-contour %}),
 which described the first design; the algorithm changed in several places
-while I implemented it, and this series describes what the plugin actually
-does.
-
-The plugin's code is at
-<https://github.com/donguklim/thin-outline-plugin>.
+while I implemented it, and this series describes what it does now.
 
 ## The Problem
 
@@ -40,57 +37,47 @@ detector's output is a yes-or-no per rendering pixel on a fixed grid, so the
 upscaler has nothing finer to accumulate. The outline gets thicker, in
 display pixels, exactly when the screen percentage drops.
 
-## What the Plugin Does
+## The Idea in Short
 
-ThinOutline turns the detector's yes-or-no answers into a line. Each frame,
+The algorithm turns the detector's yes-or-no answers into a line. Each frame,
 the G-buffer is sampled at that frame's jittered sub-pixel position, so each
 frame's detection says whether an edge passes between two jittered sample
 points. Over the frames of the upscaler's jitter sequence, those answers
 trace out the shape of the region where the edge is detectable, and from
-that region the plugin reconstructs the edge's line equation inside each
-rendering pixel by ordinary least squares, from a handful of running
-statistics kept per pixel. The line is then drawn with any thickness you
-like, measured in display pixels, with exact coverage per pixel. The outline
-no longer depends on the screen percentage.
+that region each rendering pixel reconstructs the edge's line equation by
+ordinary least squares, from a handful of running statistics it keeps from
+frame to frame. The line is then drawn with any thickness you like, measured
+in display pixels, with exact coverage per pixel. The outline no longer
+depends on the screen percentage.
 
-The plugin draws two kinds of edges: **creases**, where the normal changes
-abruptly on a continuous surface, and **silhouettes**, where the depth jumps
-between a foreground and a background. Both are reconstructed the same way,
-with one record per pixel and per inducer axis (horizontal: the left and
-right checks; vertical: the top and bottom checks), and each record is
-either a crease or a silhouette record.
+Two kinds of edges are drawn: **creases**, where the normal changes abruptly
+on a continuous surface, and **silhouettes**, where the depth jumps between a
+foreground and a background. Both are reconstructed the same way, with one
+record per pixel and per inducer axis (horizontal: the left and right checks;
+vertical: the top and bottom checks), and each record is either a crease or a
+silhouette record.
 
-## The Pipeline
+Per frame, the work falls into three steps:
 
-All of it runs on the GPU, in a few passes per frame:
-
-1. **The record pass** (compute, at rendering resolution, before the
-   upscaler). For every rendering pixel it fetches last frame's records at
-   the position the motion vectors point to, tests whether they still belong
-   to the same surface, decays them, runs this frame's crease and silhouette
-   checks on the jittered G-buffer, and adds the samples that fired to the
-   records. It writes one record per axis and a coarse mask of where records
-   exist.
-2. **Tile classification.** The screen is cut into 8×8 tiles, and the later
-   passes run only on the tiles that have records within reach, which is a
-   small fraction of the screen.
-3. **The edge pass** (per rendering pixel, on the listed tiles). It pools
-   each pixel's record with its neighbours', fits the edge, picks between the
-   horizontal and vertical candidate, runs the spatial filter and the dense
-   and isolated edge suppression, and scales the edge's strength by how
+1. **Recording**, at rendering resolution, before the upscaler. Every
+   rendering pixel fetches last frame's records at the position the motion
+   vectors point to, tests whether they still belong to the same surface,
+   decays them, runs this frame's crease and silhouette checks on the
+   jittered G-buffer, and adds the samples that fired to the records.
+2. **Reconstruction**, once per rendering pixel. Each pixel pools its record
+   with its neighbours', fits the edge, picks between the horizontal and
+   vertical candidate, filters the line against its neighbours', suppresses
+   edges that are crowded or too short, and scales the edge's strength by how
    consistently it has been found. The result is one line per rendering
    pixel.
-4. **The composite.** By default it runs after the upscaler, at display
-   resolution: each display pixel sums the coverage of the outline band of
-   every rendering pixel it overlaps, and blends the outline colour in by
-   that coverage. In the other mode it runs before the upscaler, at rendering
-   resolution, and also overwrites the depth and velocity of silhouette
-   pixels so the upscaler moves the outline with the foreground object.
+3. **Drawing.** Each display pixel is painted by the exact area of the
+   outline band around that line inside it. This can happen after the
+   upscaler, at display resolution, or before it, at rendering resolution,
+   where the upscaler then has to be told the foreground's depth and
+   velocity under silhouette pixels so that it moves the outline with the
+   object in front.
 
-## The Series
-
-Each part of the algorithm has its own post. They can be read independently,
-but the core idea is the one the others build on.
+## The Parts
 
 - [The core idea]({% post_url 2026-10-11-thin-outline-core-idea %}): why a
   G-buffer check detects an edge in a parallelogram of jitter offsets, how a
@@ -107,78 +94,30 @@ but the core idea is the one the others build on.
   and the depth, background and velocity tests that decide when a record is
   no longer about the surface under its pixel.
 - [Spatial filters]({% post_url 2026-10-11-thin-outline-spatial-filters %}):
-  why blending neighbouring lines fails on a static edge and what the plugin
-  blends instead, and the dense and isolated edge suppression.
+  why blending neighbouring lines fails on a static edge and what to blend
+  instead, and the dense and isolated edge suppression.
 - [Flicker suppression]({% post_url 2026-10-11-thin-outline-flicker-suppression %}):
   what still flickers after the upscaler and why, measured over jitter
   cycles, and the presence and spike filter that remove most of it.
 - [Drawing and performance]({% post_url 2026-10-11-thin-outline-drawing-and-performance %}):
-  coverage of the display pixel, the two drawing modes, tile classification,
-  what the record pass costs and why.
+  coverage of the display pixel, drawing before the upscaler against after
+  it, and what the implementation costs and why, including how its passes
+  are organised.
 
-## How to Use It
+## The Implementation
 
-### Enabling It
-
-The plugin was developed against a source build of Unreal Engine 5.8.3, as
-an engine plugin under `Engine/Plugins`, and it includes renderer-private
-headers; a source build is what I can vouch for. Enable it in the project's
-plugin list, and it draws with its defaults. Its settings live under Project
-Settings > Plugins > Thin Outline and are mirrored by console variables under
-`r.ThinOutline.`, so everything can be changed at runtime from the console.
-
-It needs a temporal upscaler whose jitter is uniform over the pixel: TSR's
-Halton sequence is. Without temporal anti-aliasing every sample sits at the
-pixel centre, the records degenerate, and nothing is drawn; legacy TAA's
-Gaussian jitter biases the reconstruction. I have tested the plugin with TSR
-in the engine's third-person template, in the City Sample and in Stack O Bot.
-
-### The Main Settings
-
-| Setting | Default | What it does |
-|---|---|---|
-| `r.ThinOutline.Enable` | 1 | Turns the plugin on and off. |
-| `r.ThinOutline.DrawAfterUpscaler` | 1 | Draws the outline at display resolution after the upscaler; 0 draws it before, into the rendering-resolution scene colour. |
-| `r.ThinOutline.Crease`, `r.ThinOutline.Silhouette` | 1, 1 | Draw creases, draw silhouettes. The records are kept either way. |
-| Crease Color, Silhouette Color | black | The outline colours, in the settings panel. |
-| `r.ThinOutline.Crease.Thickness`, `.Silhouette.Thickness` | 1, 1 | Outline thickness in display pixels. Values below 1 work. |
-| `r.ThinOutline.Crease.RidgeThreshold`, `.ValleyThreshold`, `.Scale` | 0.25, 0.25, 4 | How sharp a change of the normal counts as a crease, and how fast the strength rises above the threshold. |
-| `r.ThinOutline.Silhouette.Threshold`, `.Scale` | 0.01, 50 | The same for the depth-edge measure of silhouettes. |
-| `r.ThinOutline.Estimator.Decay` | 0.04 | The records' decay rate per frame, about a 25-frame memory. Slower is steadier, faster follows motion sooner. |
-| `r.ThinOutline.Presence`, `.Presence.*` | 1 | Fades out edges that stop being found instead of dropping them, and ramps new edges in. |
-| `r.ThinOutline.SpikeFilter` | 1 | Ignores one-pixel spikes of the normal and one-pixel-thin foregrounds at sampling time. |
-| `r.ThinOutline.SpatialFilter` | 1 | Pulls each pixel's slope toward the line through its neighbours. |
-| `r.ThinOutline.DenseEdgeSuppression`, `.IsolatedEdgeSuppression` | 1, 1 | Don't draw an edge crowded by others on both sides; don't draw an edge shorter than three pixels. |
-| `r.ThinOutline.HistoryVelocityTest` | 1 | Drops history that moved with a different object than the pixel's surface. |
-| `r.ThinOutline.TileClassification` | 1 | Runs the composite and the history fetch only where there are records. |
-| `r.ThinOutline.DebugView` | 0 | 1 = this frame's checks, 2 and 4 = the records, 3 = the outline alpha per axis, 6 = the listed tiles, 7 = the suppressions, 9 = the presence. |
-
-### The Two Drawing Modes
-
-| | Before the upscaler (0) | After the upscaler (1, default) |
-|---|---|---|
-| Upscaler history | the outline is accumulated, filtered and moved by TSR | not involved: each frame draws its own outline |
-| Depth and velocity overwrite | yes, so silhouettes move with the foreground | none |
-| Depth of field, motion blur, translucency | drawn over the outline | the outline is drawn over them, and stays sharp |
-| Thickness | in display pixels, through the upscaler's filter | exactly in display pixels |
-| Pixels the composite runs on | rendering pixels | display pixels: four times as many at 50% |
-
-Drawing after the upscaler is the default because it removed the fading and
-dashing that the upscaler's history caused on thin outlines; the
+I implemented the algorithm as an Unreal Engine plugin, ThinOutline, against
+a source build of 5.8:
+<https://github.com/donguklim/thin-outline-plugin>. The posts quote short
+pieces of its HLSL where a formula is clearer as code, and the numbers they
+give were measured with it, under TSR, in the engine's third-person
+template, the City Sample and Stack O Bot. Its settings, drawing modes and
+costs are described in the
 [drawing and performance]({% post_url 2026-10-11-thin-outline-drawing-and-performance %})
-post has the comparison. Its price is that the outline is painted over fog
-and translucency, since both have been composited by then. An object inside
-fog gets a crisp outline drawn over the fog. Neither mode is fogged; the
-before-upscaler mode sits under the "after DOF" translucency instead.
-
-### Cost
-
-In my test scene at 1280×720 on an RTX 5080, with every switch at its
-default, the plugin's passes together take about 0.10 ms at 73% screen
-percentage drawing after the upscaler, and about 0.16 ms at 100% drawing
-before it (measured on 2026-10-11). The records take 44 bytes per rendering
-pixel, 48 with the velocity test on, kept twice for the history: about 88 MB
-at 1280×720.
+post. The algorithm needs a temporal upscaler whose jitter is uniform over
+the pixel, as TSR's Halton sequence is; without temporal anti-aliasing every
+sample sits at the pixel centre and nothing can be reconstructed, and a
+Gaussian jitter such as legacy TAA's biases the reconstruction.
 
 ## Limitations
 
@@ -188,8 +127,8 @@ at 1280×720.
   which that comparison fires. A thin wire, a small hole or a narrow gap
   breaks that assumption: the checks fire only on the few frames where the
   two samples happen to straddle the detail, and its edges are reconstructed
-  partially or not at all. The spike filter deliberately drops geometry one
-  pixel thin.
+  partially or not at all. Geometry one pixel thin is deliberately dropped at
+  sampling time.
 - **Statistical noise.** The lines are estimates from samples accumulated
   over time, so they carry variance. A record that has just appeared or been
   reset wobbles until enough frames have accumulated; a converged record
@@ -199,8 +138,10 @@ at 1280×720.
   visible flip. Much of the series, from the pooling to the presence and the
   spatial filter, is about keeping that noise from turning into dashed or
   blinking outlines.
-- **Fog and translucency.** Neither drawing mode is fogged, and the default
-  mode draws over all translucency.
+- **Fog and translucency.** Drawing after the upscaler paints the outline
+  over everything composited before it, fog and translucency included;
+  drawing before it sits under some of the translucency but is not fogged
+  either.
 - **A small bias at 100% screen percentage.** TSR's jitter sequence has 11
   positions there, and the 11-point Halton set is not mirror-symmetric, so
   lines of one slope sign are drawn about 0.1 pixels off. Mirroring the
@@ -209,8 +150,6 @@ at 1280×720.
   gone from 50% screen percentage on, where the sequence has 37 positions.
 - **Silhouette thickness** is limited to about one rendering pixel beyond
   the edge, on the background side.
-- **Dynamic resolution** resets the history whenever the view size changes.
-  Split screen, scene captures and DLSS are untested.
 
 ## How I Came Up with the Algorithm
 
@@ -276,7 +215,7 @@ making everything else creak. Looking back, it went like this:
    maximum values along the inducer's axis.
 4. Fable finally came up with the fix for the critical problem in my idea.
 
-The plugin itself was then built the same way, over about two weeks: I
+The implementation was then built the same way, over about two weeks: I
 decided what to try and judged the results in the engine, and Fable wrote
 the code, the Python mirrors of the shaders that checked it, and the notes
 that these posts are drawn from.
@@ -294,17 +233,17 @@ Real-Time Reconstruction for Path-Traced Global Illumination." In
 
 If you reference this work, please cite this post as:
 
-> Donguk Lim. "ThinOutline: TAA-Compatible Toon Outlines Thinner Than a
-> Rendering Pixel." *Notes on Rendering* (blog), October 11, 2026.
+> Donguk Lim. "TAA-Compatible Thin Toon Outlines From G-Buffer Contours."
+> *Notes on Rendering* (blog), October 11, 2026.
 > <https://donguklim.github.io/rendering/npr/2026/10/11/thin-outline-plugin.html>
 
 Or in BibTeX:
 
 {% raw %}
 ```bibtex
-@misc{lim2026thinoutline,
+@misc{lim2026thinoutlines,
   author       = {Donguk Lim},
-  title        = {{ThinOutline}: {TAA}-Compatible Toon Outlines Thinner Than a Rendering Pixel},
+  title        = {{TAA}-Compatible Thin Toon Outlines From {G}-Buffer Contours},
   howpublished = {Notes on Rendering (blog)},
   year         = {2026},
   month        = oct,
