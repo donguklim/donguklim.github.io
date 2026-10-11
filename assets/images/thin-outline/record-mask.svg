@@ -1,0 +1,171 @@
+<svg viewBox="0 0 702 430" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="702" height="430" fill="#ffffff" stroke="#e0e0e0" rx="8"/>
+  <text x="351" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#222">The Record Mask of One Square</text>
+  <rect x="280" y="70" width="40" height="40" fill="#2e8b57" fill-opacity="0.35"/>
+  <rect x="280" y="110" width="40" height="40" fill="#2e8b57" fill-opacity="0.35"/>
+  <rect x="240" y="150" width="40" height="40" fill="#2e8b57" fill-opacity="0.35"/>
+  <rect x="240" y="190" width="40" height="40" fill="#2e8b57" fill-opacity="0.35"/>
+  <rect x="200" y="230" width="40" height="40" fill="#2e8b57" fill-opacity="0.35"/>
+  <rect x="200" y="270" width="40" height="40" fill="#2e8b57" fill-opacity="0.35"/>
+  <rect x="160" y="310" width="40" height="40" fill="#2e8b57" fill-opacity="0.35"/>
+  <rect x="160" y="350" width="40" height="40" fill="#2e8b57" fill-opacity="0.35"/>
+  <rect x="40" y="310" width="40" height="40" fill="#c0392b" fill-opacity="0.35"/>
+  <rect x="80" y="310" width="40" height="40" fill="#c0392b" fill-opacity="0.35"/>
+  <rect x="120" y="310" width="40" height="40" fill="#c0392b" fill-opacity="0.35"/>
+  <line x1="40" y1="70" x2="40" y2="390" stroke="#333" stroke-width="2"/>
+  <line x1="40" y1="70" x2="360" y2="70" stroke="#333" stroke-width="2"/>
+  <line x1="80" y1="70" x2="80" y2="390" stroke="#bbb" stroke-width="0.6"/>
+  <line x1="40" y1="110" x2="360" y2="110" stroke="#bbb" stroke-width="0.6"/>
+  <line x1="120" y1="70" x2="120" y2="390" stroke="#333" stroke-width="2"/>
+  <line x1="40" y1="150" x2="360" y2="150" stroke="#333" stroke-width="2"/>
+  <line x1="160" y1="70" x2="160" y2="390" stroke="#bbb" stroke-width="0.6"/>
+  <line x1="40" y1="190" x2="360" y2="190" stroke="#bbb" stroke-width="0.6"/>
+  <line x1="200" y1="70" x2="200" y2="390" stroke="#333" stroke-width="2"/>
+  <line x1="40" y1="230" x2="360" y2="230" stroke="#333" stroke-width="2"/>
+  <line x1="240" y1="70" x2="240" y2="390" stroke="#bbb" stroke-width="0.6"/>
+  <line x1="40" y1="270" x2="360" y2="270" stroke="#bbb" stroke-width="0.6"/>
+  <line x1="280" y1="70" x2="280" y2="390" stroke="#333" stroke-width="2"/>
+  <line x1="40" y1="310" x2="360" y2="310" stroke="#333" stroke-width="2"/>
+  <line x1="320" y1="70" x2="320" y2="390" stroke="#bbb" stroke-width="0.6"/>
+  <line x1="40" y1="350" x2="360" y2="350" stroke="#bbb" stroke-width="0.6"/>
+  <line x1="360" y1="70" x2="360" y2="390" stroke="#333" stroke-width="2"/>
+  <line x1="40" y1="390" x2="360" y2="390" stroke="#333" stroke-width="2"/>
+  <text x="44" y="82" font-size="10" fill="#666">b0</text>
+  <text x="124" y="82" font-size="10" fill="#666">b1</text>
+  <text x="204" y="82" font-size="10" fill="#666">b2</text>
+  <text x="284" y="82" font-size="10" fill="#666">b3</text>
+  <text x="44" y="162" font-size="10" fill="#666">b4</text>
+  <text x="124" y="162" font-size="10" fill="#666">b5</text>
+  <text x="204" y="162" font-size="10" fill="#666">b6</text>
+  <text x="284" y="162" font-size="10" fill="#666">b7</text>
+  <text x="44" y="242" font-size="10" fill="#666">b8</text>
+  <text x="124" y="242" font-size="10" fill="#666">b9</text>
+  <text x="204" y="242" font-size="10" fill="#666">b10</text>
+  <text x="284" y="242" font-size="10" fill="#666">b11</text>
+  <text x="44" y="322" font-size="10" fill="#666">b12</text>
+  <text x="124" y="322" font-size="10" fill="#666">b13</text>
+  <text x="204" y="322" font-size="10" fill="#666">b14</text>
+  <text x="284" y="322" font-size="10" fill="#666">b15</text>
+  <text x="60" y="64" font-size="9" fill="#777" text-anchor="middle">0</text>
+  <text x="35" y="93" font-size="9" fill="#777" text-anchor="end">0</text>
+  <text x="100" y="64" font-size="9" fill="#777" text-anchor="middle">1</text>
+  <text x="35" y="133" font-size="9" fill="#777" text-anchor="end">1</text>
+  <text x="140" y="64" font-size="9" fill="#777" text-anchor="middle">2</text>
+  <text x="35" y="173" font-size="9" fill="#777" text-anchor="end">2</text>
+  <text x="180" y="64" font-size="9" fill="#777" text-anchor="middle">3</text>
+  <text x="35" y="213" font-size="9" fill="#777" text-anchor="end">3</text>
+  <text x="220" y="64" font-size="9" fill="#777" text-anchor="middle">4</text>
+  <text x="35" y="253" font-size="9" fill="#777" text-anchor="end">4</text>
+  <text x="260" y="64" font-size="9" fill="#777" text-anchor="middle">5</text>
+  <text x="35" y="293" font-size="9" fill="#777" text-anchor="end">5</text>
+  <text x="300" y="64" font-size="9" fill="#777" text-anchor="middle">6</text>
+  <text x="35" y="333" font-size="9" fill="#777" text-anchor="end">6</text>
+  <text x="340" y="64" font-size="9" fill="#777" text-anchor="middle">7</text>
+  <text x="35" y="373" font-size="9" fill="#777" text-anchor="end">7</text>
+  <text x="200" y="412" font-size="11" fill="#333" text-anchor="middle">one square: 8×8 rendering pixels, 4×4 blocks of 2×2</text>
+  <rect x="400" y="78" width="14" height="14" fill="#2e8b57" fill-opacity="0.35"/><text x="420" y="90" font-size="11" fill="#333">pixel holding a crease record</text>
+  <rect x="400" y="100" width="14" height="14" fill="#c0392b" fill-opacity="0.35"/><text x="420" y="112" font-size="11" fill="#333">pixel holding a silhouette record</text>
+  <text x="400" y="146" font-size="11" fill="#333">block i = (row / 2) · 4 + column / 2</text>
+  <text x="400" y="164" font-size="11" fill="#333">bit i: block i holds a crease record</text>
+  <text x="400" y="182" font-size="11" fill="#333">bit 16 + i: block i holds a silhouette record</text>
+  <text x="400" y="222" font-size="11" font-weight="600" fill="#333">bits 0–15, crease</text>
+  <rect x="400" y="230" width="17" height="20" fill="#fff" fill-opacity="1" stroke="#555" stroke-width="0.7"/>
+  <text x="408.5" y="244" font-size="10" text-anchor="middle" fill="#222">0</text>
+  <text x="408.5" y="261" font-size="8" text-anchor="middle" fill="#888">0</text>
+  <rect x="417" y="230" width="17" height="20" fill="#fff" fill-opacity="1" stroke="#555" stroke-width="0.7"/>
+  <text x="425.5" y="244" font-size="10" text-anchor="middle" fill="#222">0</text>
+  <text x="425.5" y="261" font-size="8" text-anchor="middle" fill="#888">1</text>
+  <rect x="434" y="230" width="17" height="20" fill="#fff" fill-opacity="1" stroke="#555" stroke-width="0.7"/>
+  <text x="442.5" y="244" font-size="10" text-anchor="middle" fill="#222">0</text>
+  <text x="442.5" y="261" font-size="8" text-anchor="middle" fill="#888">2</text>
+  <rect x="451" y="230" width="17" height="20" fill="#2e8b57" fill-opacity="0.45" stroke="#555" stroke-width="0.7"/>
+  <text x="459.5" y="244" font-size="10" text-anchor="middle" fill="#222">1</text>
+  <text x="459.5" y="261" font-size="8" text-anchor="middle" fill="#888">3</text>
+  <rect x="468" y="230" width="17" height="20" fill="#fff" fill-opacity="1" stroke="#555" stroke-width="0.7"/>
+  <text x="476.5" y="244" font-size="10" text-anchor="middle" fill="#222">0</text>
+  <text x="476.5" y="261" font-size="8" text-anchor="middle" fill="#888">4</text>
+  <rect x="485" y="230" width="17" height="20" fill="#fff" fill-opacity="1" stroke="#555" stroke-width="0.7"/>
+  <text x="493.5" y="244" font-size="10" text-anchor="middle" fill="#222">0</text>
+  <text x="493.5" y="261" font-size="8" text-anchor="middle" fill="#888">5</text>
+  <rect x="502" y="230" width="17" height="20" fill="#2e8b57" fill-opacity="0.45" stroke="#555" stroke-width="0.7"/>
+  <text x="510.5" y="244" font-size="10" text-anchor="middle" fill="#222">1</text>
+  <text x="510.5" y="261" font-size="8" text-anchor="middle" fill="#888">6</text>
+  <rect x="519" y="230" width="17" height="20" fill="#fff" fill-opacity="1" stroke="#555" stroke-width="0.7"/>
+  <text x="527.5" y="244" font-size="10" text-anchor="middle" fill="#222">0</text>
+  <text x="527.5" y="261" font-size="8" text-anchor="middle" fill="#888">7</text>
+  <rect x="536" y="230" width="17" height="20" fill="#fff" fill-opacity="1" stroke="#555" stroke-width="0.7"/>
+  <text x="544.5" y="244" font-size="10" text-anchor="middle" fill="#222">0</text>
+  <text x="544.5" y="261" font-size="8" text-anchor="middle" fill="#888">8</text>
+  <rect x="553" y="230" width="17" height="20" fill="#fff" fill-opacity="1" stroke="#555" stroke-width="0.7"/>
+  <text x="561.5" y="244" font-size="10" text-anchor="middle" fill="#222">0</text>
+  <text x="561.5" y="261" font-size="8" text-anchor="middle" fill="#888">9</text>
+  <rect x="570" y="230" width="17" height="20" fill="#2e8b57" fill-opacity="0.45" stroke="#555" stroke-width="0.7"/>
+  <text x="578.5" y="244" font-size="10" text-anchor="middle" fill="#222">1</text>
+  <text x="578.5" y="261" font-size="8" text-anchor="middle" fill="#888">10</text>
+  <rect x="587" y="230" width="17" height="20" fill="#fff" fill-opacity="1" stroke="#555" stroke-width="0.7"/>
+  <text x="595.5" y="244" font-size="10" text-anchor="middle" fill="#222">0</text>
+  <text x="595.5" y="261" font-size="8" text-anchor="middle" fill="#888">11</text>
+  <rect x="604" y="230" width="17" height="20" fill="#fff" fill-opacity="1" stroke="#555" stroke-width="0.7"/>
+  <text x="612.5" y="244" font-size="10" text-anchor="middle" fill="#222">0</text>
+  <text x="612.5" y="261" font-size="8" text-anchor="middle" fill="#888">12</text>
+  <rect x="621" y="230" width="17" height="20" fill="#2e8b57" fill-opacity="0.45" stroke="#555" stroke-width="0.7"/>
+  <text x="629.5" y="244" font-size="10" text-anchor="middle" fill="#222">1</text>
+  <text x="629.5" y="261" font-size="8" text-anchor="middle" fill="#888">13</text>
+  <rect x="638" y="230" width="17" height="20" fill="#fff" fill-opacity="1" stroke="#555" stroke-width="0.7"/>
+  <text x="646.5" y="244" font-size="10" text-anchor="middle" fill="#222">0</text>
+  <text x="646.5" y="261" font-size="8" text-anchor="middle" fill="#888">14</text>
+  <rect x="655" y="230" width="17" height="20" fill="#fff" fill-opacity="1" stroke="#555" stroke-width="0.7"/>
+  <text x="663.5" y="244" font-size="10" text-anchor="middle" fill="#222">0</text>
+  <text x="663.5" y="261" font-size="8" text-anchor="middle" fill="#888">15</text>
+  <text x="400" y="292" font-size="11" font-weight="600" fill="#333">bits 16–31, silhouette</text>
+  <rect x="400" y="300" width="17" height="20" fill="#fff" fill-opacity="1" stroke="#555" stroke-width="0.7"/>
+  <text x="408.5" y="314" font-size="10" text-anchor="middle" fill="#222">0</text>
+  <text x="408.5" y="331" font-size="8" text-anchor="middle" fill="#888">16</text>
+  <rect x="417" y="300" width="17" height="20" fill="#fff" fill-opacity="1" stroke="#555" stroke-width="0.7"/>
+  <text x="425.5" y="314" font-size="10" text-anchor="middle" fill="#222">0</text>
+  <text x="425.5" y="331" font-size="8" text-anchor="middle" fill="#888">17</text>
+  <rect x="434" y="300" width="17" height="20" fill="#fff" fill-opacity="1" stroke="#555" stroke-width="0.7"/>
+  <text x="442.5" y="314" font-size="10" text-anchor="middle" fill="#222">0</text>
+  <text x="442.5" y="331" font-size="8" text-anchor="middle" fill="#888">18</text>
+  <rect x="451" y="300" width="17" height="20" fill="#fff" fill-opacity="1" stroke="#555" stroke-width="0.7"/>
+  <text x="459.5" y="314" font-size="10" text-anchor="middle" fill="#222">0</text>
+  <text x="459.5" y="331" font-size="8" text-anchor="middle" fill="#888">19</text>
+  <rect x="468" y="300" width="17" height="20" fill="#fff" fill-opacity="1" stroke="#555" stroke-width="0.7"/>
+  <text x="476.5" y="314" font-size="10" text-anchor="middle" fill="#222">0</text>
+  <text x="476.5" y="331" font-size="8" text-anchor="middle" fill="#888">20</text>
+  <rect x="485" y="300" width="17" height="20" fill="#fff" fill-opacity="1" stroke="#555" stroke-width="0.7"/>
+  <text x="493.5" y="314" font-size="10" text-anchor="middle" fill="#222">0</text>
+  <text x="493.5" y="331" font-size="8" text-anchor="middle" fill="#888">21</text>
+  <rect x="502" y="300" width="17" height="20" fill="#fff" fill-opacity="1" stroke="#555" stroke-width="0.7"/>
+  <text x="510.5" y="314" font-size="10" text-anchor="middle" fill="#222">0</text>
+  <text x="510.5" y="331" font-size="8" text-anchor="middle" fill="#888">22</text>
+  <rect x="519" y="300" width="17" height="20" fill="#fff" fill-opacity="1" stroke="#555" stroke-width="0.7"/>
+  <text x="527.5" y="314" font-size="10" text-anchor="middle" fill="#222">0</text>
+  <text x="527.5" y="331" font-size="8" text-anchor="middle" fill="#888">23</text>
+  <rect x="536" y="300" width="17" height="20" fill="#fff" fill-opacity="1" stroke="#555" stroke-width="0.7"/>
+  <text x="544.5" y="314" font-size="10" text-anchor="middle" fill="#222">0</text>
+  <text x="544.5" y="331" font-size="8" text-anchor="middle" fill="#888">24</text>
+  <rect x="553" y="300" width="17" height="20" fill="#fff" fill-opacity="1" stroke="#555" stroke-width="0.7"/>
+  <text x="561.5" y="314" font-size="10" text-anchor="middle" fill="#222">0</text>
+  <text x="561.5" y="331" font-size="8" text-anchor="middle" fill="#888">25</text>
+  <rect x="570" y="300" width="17" height="20" fill="#fff" fill-opacity="1" stroke="#555" stroke-width="0.7"/>
+  <text x="578.5" y="314" font-size="10" text-anchor="middle" fill="#222">0</text>
+  <text x="578.5" y="331" font-size="8" text-anchor="middle" fill="#888">26</text>
+  <rect x="587" y="300" width="17" height="20" fill="#fff" fill-opacity="1" stroke="#555" stroke-width="0.7"/>
+  <text x="595.5" y="314" font-size="10" text-anchor="middle" fill="#222">0</text>
+  <text x="595.5" y="331" font-size="8" text-anchor="middle" fill="#888">27</text>
+  <rect x="604" y="300" width="17" height="20" fill="#c0392b" fill-opacity="0.45" stroke="#555" stroke-width="0.7"/>
+  <text x="612.5" y="314" font-size="10" text-anchor="middle" fill="#222">1</text>
+  <text x="612.5" y="331" font-size="8" text-anchor="middle" fill="#888">28</text>
+  <rect x="621" y="300" width="17" height="20" fill="#c0392b" fill-opacity="0.45" stroke="#555" stroke-width="0.7"/>
+  <text x="629.5" y="314" font-size="10" text-anchor="middle" fill="#222">1</text>
+  <text x="629.5" y="331" font-size="8" text-anchor="middle" fill="#888">29</text>
+  <rect x="638" y="300" width="17" height="20" fill="#fff" fill-opacity="1" stroke="#555" stroke-width="0.7"/>
+  <text x="646.5" y="314" font-size="10" text-anchor="middle" fill="#222">0</text>
+  <text x="646.5" y="331" font-size="8" text-anchor="middle" fill="#888">30</text>
+  <rect x="655" y="300" width="17" height="20" fill="#fff" fill-opacity="1" stroke="#555" stroke-width="0.7"/>
+  <text x="663.5" y="314" font-size="10" text-anchor="middle" fill="#222">0</text>
+  <text x="663.5" y="331" font-size="8" text-anchor="middle" fill="#888">31</text>
+  <text x="400" y="380" font-size="11" fill="#333">the square's integer: 0x30002448</text>
+  <text x="400" y="400" font-size="11" fill="#333">crease blocks 3, 6, 10, 13; silhouette blocks 12, 13</text>
+</svg>

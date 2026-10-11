@@ -104,6 +104,10 @@ Per frame, the work falls into three steps:
   coverage of the display pixel, drawing before the upscaler against after
   it, and what the implementation costs and why, including how its passes
   are organised.
+- [Tile classification]({% post_url 2026-10-11-thin-outline-tile-classification %}):
+  running the drawing passes only on the tiles within reach of a record,
+  and why the passes that remained were waiting on their loads rather than
+  doing too much.
 
 ## The Implementation
 

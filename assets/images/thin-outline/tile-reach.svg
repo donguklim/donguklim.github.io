@@ -1,0 +1,102 @@
+<svg viewBox="0 0 1050 600" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="1050" height="600" fill="#ffffff" stroke="#e0e0e0" rx="8"/>
+  <text x="525" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#222">Which Squares a Display Tile Reads at 73%</text>
+  <rect x="146" y="108" width="192" height="192" fill="#f3e9c6"/>
+  <rect x="338" y="108" width="192" height="192" fill="#f3e9c6"/>
+  <rect x="530" y="108" width="192" height="192" fill="#f3e9c6"/>
+  <rect x="146" y="300" width="192" height="192" fill="#f3e9c6"/>
+  <rect x="338" y="300" width="192" height="192" fill="#f3e9c6"/>
+  <rect x="530" y="300" width="192" height="192" fill="#f3e9c6"/>
+  <rect x="290" y="156" width="288" height="288" fill="#1f5fa8" fill-opacity="0.12" stroke="#1f5fa8" stroke-width="1.2" stroke-dasharray="2 2"/>
+  <rect x="290" y="180" width="264" height="264" fill="none" stroke="#1f5fa8" stroke-width="1.6" stroke-dasharray="6 3"/>
+  <rect x="338" y="228" width="168" height="168" fill="#1f5fa8" fill-opacity="0.15" stroke="#1f5fa8" stroke-width="1.6"/>
+  <rect x="554" y="276" width="24" height="24" fill="#2e8b57" fill-opacity="0.55"/>
+  <line x1="50" y1="60" x2="50" y2="540" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="74" y1="60" x2="74" y2="540" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="98" y1="60" x2="98" y2="540" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="122" y1="60" x2="122" y2="540" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="146" y1="60" x2="146" y2="540" stroke="#333" stroke-width="2"/>
+  <line x1="170" y1="60" x2="170" y2="540" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="194" y1="60" x2="194" y2="540" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="218" y1="60" x2="218" y2="540" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="242" y1="60" x2="242" y2="540" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="266" y1="60" x2="266" y2="540" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="290" y1="60" x2="290" y2="540" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="314" y1="60" x2="314" y2="540" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="338" y1="60" x2="338" y2="540" stroke="#333" stroke-width="2"/>
+  <line x1="362" y1="60" x2="362" y2="540" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="386" y1="60" x2="386" y2="540" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="410" y1="60" x2="410" y2="540" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="434" y1="60" x2="434" y2="540" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="458" y1="60" x2="458" y2="540" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="482" y1="60" x2="482" y2="540" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="506" y1="60" x2="506" y2="540" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="530" y1="60" x2="530" y2="540" stroke="#333" stroke-width="2"/>
+  <line x1="554" y1="60" x2="554" y2="540" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="578" y1="60" x2="578" y2="540" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="602" y1="60" x2="602" y2="540" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="626" y1="60" x2="626" y2="540" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="650" y1="60" x2="650" y2="540" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="674" y1="60" x2="674" y2="540" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="698" y1="60" x2="698" y2="540" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="722" y1="60" x2="722" y2="540" stroke="#333" stroke-width="2"/>
+  <line x1="746" y1="60" x2="746" y2="540" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="770" y1="60" x2="770" y2="540" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="50" y1="60" x2="770" y2="60" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="50" y1="84" x2="770" y2="84" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="50" y1="108" x2="770" y2="108" stroke="#333" stroke-width="2"/>
+  <line x1="50" y1="132" x2="770" y2="132" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="50" y1="156" x2="770" y2="156" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="50" y1="180" x2="770" y2="180" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="50" y1="204" x2="770" y2="204" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="50" y1="228" x2="770" y2="228" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="50" y1="252" x2="770" y2="252" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="50" y1="276" x2="770" y2="276" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="50" y1="300" x2="770" y2="300" stroke="#333" stroke-width="2"/>
+  <line x1="50" y1="324" x2="770" y2="324" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="50" y1="348" x2="770" y2="348" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="50" y1="372" x2="770" y2="372" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="50" y1="396" x2="770" y2="396" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="50" y1="420" x2="770" y2="420" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="50" y1="444" x2="770" y2="444" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="50" y1="468" x2="770" y2="468" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="50" y1="492" x2="770" y2="492" stroke="#333" stroke-width="2"/>
+  <line x1="50" y1="516" x2="770" y2="516" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="50" y1="540" x2="770" y2="540" stroke="#ccc" stroke-width="0.6"/>
+  <line x1="359.75" y1="233.25" x2="359.75" y2="373.5" stroke="#7a4fa0" stroke-width="0.5"/>
+  <line x1="359.75" y1="233.25" x2="500" y2="233.25" stroke="#7a4fa0" stroke-width="0.5"/>
+  <line x1="377.281" y1="233.25" x2="377.281" y2="373.5" stroke="#7a4fa0" stroke-width="0.5"/>
+  <line x1="359.75" y1="250.781" x2="500" y2="250.781" stroke="#7a4fa0" stroke-width="0.5"/>
+  <line x1="394.812" y1="233.25" x2="394.812" y2="373.5" stroke="#7a4fa0" stroke-width="0.5"/>
+  <line x1="359.75" y1="268.312" x2="500" y2="268.312" stroke="#7a4fa0" stroke-width="0.5"/>
+  <line x1="412.344" y1="233.25" x2="412.344" y2="373.5" stroke="#7a4fa0" stroke-width="0.5"/>
+  <line x1="359.75" y1="285.844" x2="500" y2="285.844" stroke="#7a4fa0" stroke-width="0.5"/>
+  <line x1="429.875" y1="233.25" x2="429.875" y2="373.5" stroke="#7a4fa0" stroke-width="0.5"/>
+  <line x1="359.75" y1="303.375" x2="500" y2="303.375" stroke="#7a4fa0" stroke-width="0.5"/>
+  <line x1="447.406" y1="233.25" x2="447.406" y2="373.5" stroke="#7a4fa0" stroke-width="0.5"/>
+  <line x1="359.75" y1="320.906" x2="500" y2="320.906" stroke="#7a4fa0" stroke-width="0.5"/>
+  <line x1="464.938" y1="233.25" x2="464.938" y2="373.5" stroke="#7a4fa0" stroke-width="0.5"/>
+  <line x1="359.75" y1="338.438" x2="500" y2="338.438" stroke="#7a4fa0" stroke-width="0.5"/>
+  <line x1="482.469" y1="233.25" x2="482.469" y2="373.5" stroke="#7a4fa0" stroke-width="0.5"/>
+  <line x1="359.75" y1="355.969" x2="500" y2="355.969" stroke="#7a4fa0" stroke-width="0.5"/>
+  <line x1="500" y1="233.25" x2="500" y2="373.5" stroke="#7a4fa0" stroke-width="0.5"/>
+  <line x1="359.75" y1="373.5" x2="500" y2="373.5" stroke="#7a4fa0" stroke-width="0.5"/>
+  <rect x="359.75" y="233.25" width="140.25" height="140.25" fill="none" stroke="#7a4fa0" stroke-width="2.2"/>
+  <text x="146" y="54" font-size="10" fill="#333" text-anchor="middle">x = 32</text>
+  <text x="338" y="54" font-size="10" fill="#333" text-anchor="middle">x = 40</text>
+  <text x="530" y="54" font-size="10" fill="#333" text-anchor="middle">x = 48</text>
+  <text x="722" y="54" font-size="10" fill="#333" text-anchor="middle">x = 56</text>
+  <text x="46" y="112" font-size="10" fill="#333" text-anchor="end">y = 24</text>
+  <text x="46" y="304" font-size="10" fill="#333" text-anchor="end">y = 32</text>
+  <text x="46" y="496" font-size="10" fill="#333" text-anchor="end">y = 40</text>
+  <rect x="790" y="80" width="16" height="12" fill="none" stroke="#7a4fa0" stroke-width="2.2"/><text x="812" y="90" font-size="10.5" fill="#333">display tile (7, 5): 8×8 display pixels</text>
+  <rect x="790" y="106" width="16" height="12" fill="#1f5fa8" fill-opacity="0.15" stroke="#1f5fa8" stroke-width="1.6"/><text x="812" y="116" font-size="10.5" fill="#333">rendering pixels it overlaps (40–46, 29–35)</text>
+  <rect x="790" y="132" width="16" height="12" fill="none" stroke="#1f5fa8" stroke-width="1.6" stroke-dasharray="6 3"/><text x="812" y="142" font-size="10.5" fill="#333">grown by the 2-pixel margin</text>
+  <rect x="790" y="158" width="16" height="12" fill="#1f5fa8" fill-opacity="0.12" stroke="#1f5fa8" stroke-dasharray="2 2"/><text x="812" y="168" font-size="10.5" fill="#333">rounded out to whole 2×2 blocks</text>
+  <rect x="790" y="184" width="16" height="12" fill="#f3e9c6"/><text x="812" y="194" font-size="10.5" fill="#333">squares whose integers are read (3×2)</text>
+  <rect x="790" y="210" width="16" height="12" fill="#2e8b57" fill-opacity="0.55"/><text x="812" y="220" font-size="10.5" fill="#333">a crease record 3 pixels away: listed</text>
+  <text x="790" y="252" font-size="10.5" fill="#555">73%: 1280×720 display, 935×526</text>
+  <text x="790" y="267" font-size="10.5" fill="#555">rendering; a display pixel is 0.73</text>
+  <text x="790" y="282" font-size="10.5" fill="#555">rendering pixels wide. Thick lines:</text>
+  <text x="790" y="297" font-size="10.5" fill="#555">the squares of 8×8 rendering pixels.</text>
+</svg>

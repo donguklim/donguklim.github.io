@@ -1,0 +1,51 @@
+<svg viewBox="0 0 860 453" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="860" height="453" fill="#ffffff" stroke="#e0e0e0" rx="8"/>
+  <text x="430" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#222">The Passes of a Frame With Tile Classification</text>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#555"/></marker></defs>
+  <text x="30" y="62" font-size="11.5" font-weight="600" fill="#333">Before the upscaler, rendering resolution (both modes)</text>
+  <rect x="30" y="112" width="170" height="46" rx="5" fill="#fafafa" stroke="#333" stroke-width="1.4"/>
+  <text x="115" y="131" font-size="11.5" font-weight="600" fill="#222" text-anchor="middle">Record pass</text>
+  <text x="115" y="147" font-size="9.5" fill="#555" text-anchor="middle">every rendering pixel</text>
+  <rect x="240" y="112" width="170" height="46" rx="5" fill="#fafafa" stroke="#333" stroke-width="1.4"/>
+  <text x="325" y="131" font-size="11.5" font-weight="600" fill="#222" text-anchor="middle">Record mask</text>
+  <text x="325" y="147" font-size="9.5" fill="#555" text-anchor="middle">one integer per square</text>
+  <rect x="450" y="112" width="170" height="46" rx="5" fill="#fafafa" stroke="#333" stroke-width="1.4"/>
+  <text x="535" y="131" font-size="11.5" font-weight="600" fill="#222" text-anchor="middle">Classify + setup</text>
+  <text x="535" y="147" font-size="9.5" fill="#555" text-anchor="middle">rendering tiles → list, args</text>
+  <rect x="660" y="112" width="170" height="46" rx="5" fill="#eef3fa" stroke="#1f5fa8" stroke-width="1.4"/>
+  <text x="745" y="131" font-size="11.5" font-weight="600" fill="#222" text-anchor="middle">Edge pass</text>
+  <text x="745" y="147" font-size="9.5" fill="#555" text-anchor="middle">indirect: listed tiles</text>
+  <line x1="200" y1="135" x2="238" y2="135" stroke="#555" stroke-width="1.3" marker-end="url(#a)"/>
+  <line x1="410" y1="135" x2="448" y2="135" stroke="#555" stroke-width="1.3" marker-end="url(#a)"/>
+  <line x1="620" y1="135" x2="658" y2="135" stroke="#555" stroke-width="1.3" marker-end="url(#a)"/>
+  <path d="M325,112 L325,94 L145,94" fill="none" stroke="#555" stroke-width="1.3" stroke-dasharray="5 3" marker-end="url(#a)"/>
+  <line x1="145" y1="94" x2="145" y2="110" stroke="#555" stroke-width="1.3" stroke-dasharray="5 3" marker-end="url(#a)"/>
+  <text x="151" y="90" font-size="9.5" fill="#555">next frame: skip the history where its taps' blocks were empty</text>
+  <text x="30" y="210" font-size="11.5" font-weight="600" fill="#333">Mode 0: drawn before the upscaler</text>
+  <rect x="450" y="232" width="170" height="46" rx="5" fill="#eef3fa" stroke="#1f5fa8" stroke-width="1.4"/>
+  <text x="535" y="251" font-size="11.5" font-weight="600" fill="#222" text-anchor="middle">Composite</text>
+  <text x="535" y="267" font-size="9.5" fill="#555" text-anchor="middle">indirect: same list, in place</text>
+  <rect x="660" y="232" width="170" height="46" rx="5" fill="#eef3fa" stroke="#1f5fa8" stroke-width="1.4"/>
+  <text x="745" y="251" font-size="11.5" font-weight="600" fill="#222" text-anchor="middle">Depth/velocity overwrite</text>
+  <text x="745" y="267" font-size="9.5" fill="#555" text-anchor="middle">indirect draw: a quad per tile</text>
+  <line x1="705" y1="158" x2="555" y2="230" stroke="#555" stroke-width="1.3" marker-end="url(#a)"/>
+  <line x1="620" y1="255" x2="658" y2="255" stroke="#555" stroke-width="1.3" marker-end="url(#a)"/>
+  <text x="30" y="330" font-size="11.5" font-weight="600" fill="#333">Default: drawn after the upscaler, display resolution</text>
+  <rect x="30" y="352" width="170" height="46" rx="5" fill="#f4f4f4" stroke="#999" stroke-width="1.4"/>
+  <text x="115" y="371" font-size="11.5" font-weight="600" fill="#222" text-anchor="middle">Temporal upscaler</text>
+  <text x="115" y="387" font-size="9.5" fill="#555" text-anchor="middle">TSR</text>
+  <rect x="240" y="352" width="170" height="46" rx="5" fill="#fafafa" stroke="#333" stroke-width="1.4"/>
+  <text x="325" y="371" font-size="11.5" font-weight="600" fill="#222" text-anchor="middle">Classify + setup</text>
+  <text x="325" y="387" font-size="9.5" fill="#555" text-anchor="middle">display tiles → list, args</text>
+  <rect x="450" y="352" width="170" height="46" rx="5" fill="#eef3fa" stroke="#1f5fa8" stroke-width="1.4"/>
+  <text x="535" y="371" font-size="11.5" font-weight="600" fill="#222" text-anchor="middle">Composite</text>
+  <text x="535" y="387" font-size="9.5" fill="#555" text-anchor="middle">indirect: listed tiles, in place</text>
+  <line x1="200" y1="375" x2="238" y2="375" stroke="#555" stroke-width="1.3" marker-end="url(#a)"/>
+  <line x1="410" y1="375" x2="448" y2="375" stroke="#555" stroke-width="1.3" marker-end="url(#a)"/>
+  <path d="M270,158 L270,322 L270,350" fill="none" stroke="#555" stroke-width="1.3" stroke-dasharray="2 3" marker-end="url(#a)"/>
+  <text x="276" y="262" font-size="9.5" fill="#555">the mask</text>
+  <path d="M830,145 L844,145 L844,375 L622,375" fill="none" stroke="#555" stroke-width="1.3" stroke-dasharray="2 3" marker-end="url(#a)"/>
+  <text x="836" y="359" font-size="9.5" fill="#555" text-anchor="end">the edge pass's lines,</text>
+  <text x="836" y="371" font-size="9.5" fill="#555" text-anchor="end">one per rendering pixel</text>
+  <rect x="30" y="424" width="14" height="10" fill="#eef3fa" stroke="#1f5fa8"/><text x="50" y="433" font-size="10" fill="#555">runs only on the listed tiles, started indirectly from the count on the GPU</text>
+</svg>

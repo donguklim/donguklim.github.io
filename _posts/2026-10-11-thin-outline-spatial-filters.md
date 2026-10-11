@@ -479,7 +479,8 @@ The filter was my first attempt at the fading along the seams, which
 drawing after the upscaler then removed on its own, and it did nothing for
 the flicker that remained, which the flicker post is about. The
 [drawing and performance]({% post_url 2026-10-11-thin-outline-drawing-and-performance %})
-post has the pass the filter runs in and what it costs under the tile
-classification, and the
+post has the pass the filter runs in, the
+[tile classification]({% post_url 2026-10-11-thin-outline-tile-classification %})
+post how that pass runs only where the records are, and the
 [core idea]({% post_url 2026-10-11-thin-outline-core-idea %}) post has the
 standard errors it weighs by.

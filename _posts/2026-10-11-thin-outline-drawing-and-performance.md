@@ -8,6 +8,8 @@ hidden: true
 
 This post is not written yet. It will cover how the algorithm
 paints the outline: the coverage of the display pixel, drawing before the
-upscaler against after it, the edge pass, tile classification, and what the
-record pass costs and why. It is part of the series on
+upscaler against after it, the edge pass, and what the record pass costs
+and why; how the passes run only where the records are is in the
+[tile classification]({% post_url 2026-10-11-thin-outline-tile-classification %})
+post. It is part of the series on
 [the algorithm]({% post_url 2026-10-11-thin-outline-plugin %}).
