@@ -1,0 +1,62 @@
+<svg viewBox="0 0 620 400" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="620" height="400" fill="#ffffff" stroke="#e0e0e0" rx="8"/>
+
+  <text x="310" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#222">A Depth Step Inside the Pixel Fails the Depth Test on Some Frames</text>
+
+  <!-- one rendering pixel, 150 px, at (60, 70); a depth step at u = 0.8 (x = 180): near surface left, far surface right -->
+  <rect x="60" y="70" width="120" height="150" fill="#c9a0dc" fill-opacity="0.45"/>
+  <rect x="180" y="70" width="30" height="150" fill="#bbbbbb" fill-opacity="0.5"/>
+  <rect x="60" y="70" width="150" height="150" fill="none" stroke="#333" stroke-width="1.5"/>
+  <line x1="180" y1="70" x2="180" y2="220" stroke="#1b1b1b" stroke-width="3"/>
+  <!-- the 11 jitter positions of one cycle (Halton 2, 3); the two at u > 0.8 land on the far surface -->
+  <g fill="#333">
+    <circle cx="135" cy="120" r="3.5"/><circle cx="97.5" cy="170" r="3.5"/><circle cx="172.5" cy="86.7" r="3.5"/>
+    <circle cx="78.75" cy="136.7" r="3.5"/><circle cx="153.75" cy="186.7" r="3.5"/><circle cx="116.25" cy="103.3" r="3.5"/>
+    <circle cx="69.4" cy="203.3" r="3.5"/><circle cx="144.4" cy="75.6" r="3.5"/><circle cx="106.9" cy="125.6" r="3.5"/>
+  </g>
+  <g fill="#c0392b">
+    <circle cx="191.25" cy="153.3" r="3.5"/><circle cx="181.9" cy="175.6" r="3.5"/>
+  </g>
+  <g font-size="8.5" fill="#555">
+    <text x="139" y="117">1</text><text x="101.5" y="167">2</text><text x="176.5" y="84">3</text><text x="82.75" y="134">4</text>
+    <text x="157.75" y="184">5</text><text x="120.25" y="100">6</text><text x="73.4" y="200">8</text><text x="148.4" y="73">9</text><text x="110.9" y="123">10</text>
+  </g>
+  <g font-size="8.5" fill="#c0392b" font-weight="600">
+    <text x="195.25" y="150">7</text><text x="185.9" y="186">11</text>
+  </g>
+  <text x="120" y="238" text-anchor="middle" font-size="10.5" fill="#5a3d6b">near surface</text>
+  <text x="195" y="238" text-anchor="middle" font-size="10.5" fill="#555">far</text>
+  <text x="135" y="256" text-anchor="middle" font-size="10" fill="#333">eleven jitter positions of one cycle;</text>
+  <text x="135" y="270" text-anchor="middle" font-size="10" fill="#333">frames 7 and 11 sample the far surface</text>
+
+  <!-- timeline: 11 columns of 25 px from x = 310 -->
+  <g font-size="10" fill="#333" text-anchor="end">
+    <text x="300" y="84" font-weight="600">frame</text>
+    <text x="300" y="104">sample on</text>
+    <text x="300" y="124">depth test</text>
+    <text x="300" y="158" font-weight="600" fill="#c0392b">dropped at once:</text>
+    <text x="300" y="174">sample count n</text>
+    <text x="300" y="192">outline drawn</text>
+    <text x="300" y="226" font-weight="600" fill="#2e8b57">kept and faded:</text>
+    <text x="300" y="242">presence</text>
+    <text x="300" y="260">outline drawn</text>
+  </g>
+  <line x1="310" y1="90" x2="585" y2="90" stroke="#999" stroke-width="0.8"/>
+  <g font-size="10" fill="#333" text-anchor="middle">
+    <text x="322" y="84">1</text><text x="347" y="84">2</text><text x="372" y="84">3</text><text x="397" y="84">4</text><text x="422" y="84">5</text><text x="447" y="84">6</text><text x="472" y="84" fill="#c0392b" font-weight="600">7</text><text x="497" y="84">8</text><text x="522" y="84">9</text><text x="547" y="84">10</text><text x="572" y="84" fill="#c0392b" font-weight="600">11</text>
+    <text x="322" y="104">N</text><text x="347" y="104">N</text><text x="372" y="104">N</text><text x="397" y="104">N</text><text x="422" y="104">N</text><text x="447" y="104">N</text><text x="472" y="104" fill="#c0392b">F</text><text x="497" y="104">N</text><text x="522" y="104">N</text><text x="547" y="104">N</text><text x="572" y="104" fill="#c0392b">F</text>
+    <text x="322" y="124" fill="#2e8b57">✓</text><text x="347" y="124" fill="#2e8b57">✓</text><text x="372" y="124" fill="#2e8b57">✓</text><text x="397" y="124" fill="#2e8b57">✓</text><text x="422" y="124" fill="#2e8b57">✓</text><text x="447" y="124" fill="#2e8b57">✓</text><text x="472" y="124" fill="#c0392b">✗</text><text x="497" y="124" fill="#c0392b">✗</text><text x="522" y="124" fill="#2e8b57">✓</text><text x="547" y="124" fill="#2e8b57">✓</text><text x="572" y="124" fill="#c0392b">✗</text>
+    <text x="322" y="174">25</text><text x="347" y="174">25</text><text x="372" y="174">25</text><text x="397" y="174">25</text><text x="422" y="174">25</text><text x="447" y="174">25</text><text x="472" y="174" fill="#c0392b">1</text><text x="497" y="174" fill="#c0392b">1</text><text x="522" y="174">2</text><text x="547" y="174">3</text><text x="572" y="174" fill="#c0392b">1</text>
+    <text x="322" y="192" fill="#2e8b57">✓</text><text x="347" y="192" fill="#2e8b57">✓</text><text x="372" y="192" fill="#2e8b57">✓</text><text x="397" y="192" fill="#2e8b57">✓</text><text x="422" y="192" fill="#2e8b57">✓</text><text x="447" y="192" fill="#2e8b57">✓</text><text x="472" y="192" fill="#c0392b">–</text><text x="497" y="192" fill="#c0392b">–</text><text x="522" y="192" fill="#c0392b">–</text><text x="547" y="192" fill="#2e8b57">✓</text><text x="572" y="192" fill="#c0392b">–</text>
+    <text x="322" y="242">1</text><text x="347" y="242">1</text><text x="372" y="242">1</text><text x="397" y="242">1</text><text x="422" y="242">1</text><text x="447" y="242">1</text><text x="472" y="242" fill="#c0392b">.75</text><text x="497" y="242" fill="#c0392b">.56</text><text x="522" y="242">.67</text><text x="547" y="242">.75</text><text x="572" y="242" fill="#c0392b">.56</text>
+    <text x="322" y="260" fill="#2e8b57">✓</text><text x="347" y="260" fill="#2e8b57">✓</text><text x="372" y="260" fill="#2e8b57">✓</text><text x="397" y="260" fill="#2e8b57">✓</text><text x="422" y="260" fill="#2e8b57">✓</text><text x="447" y="260" fill="#2e8b57">✓</text><text x="472" y="260" fill="#2e8b57">✓</text><text x="497" y="260" fill="#2e8b57">✓</text><text x="522" y="260" fill="#2e8b57">✓</text><text x="547" y="260" fill="#2e8b57">✓</text><text x="572" y="260" fill="#2e8b57">✓</text>
+  </g>
+
+  <g font-size="10.5" fill="#555">
+    <text x="60" y="306">The test fails on frame 7, when the sample lands on the far surface, and again on frame 8, when the stored depth</text>
+    <text x="60" y="321">is the far surface's and the sample is back on the near one. Dropping the record on a failed frame restarts it from</text>
+    <text x="60" y="336">one sample: with three needed for a fit, the outline is missing on frames 7 to 9 and again from frame 11, every cycle.</text>
+    <text x="60" y="351">Keeping the record and sinking its presence by a quarter per failed frame (and raising it toward 1 on found frames)</text>
+    <text x="60" y="366">keeps the outline drawn, a little dimmer for two or three frames. Only a dozen failed frames in a row drop the record.</text>
+  </g>
+</svg>

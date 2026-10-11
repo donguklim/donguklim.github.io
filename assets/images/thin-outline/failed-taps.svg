@@ -1,0 +1,56 @@
+<svg viewBox="0 0 620 280" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="620" height="280" fill="#ffffff" stroke="#e0e0e0" rx="8"/>
+
+  <text x="310" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#222">A Failed Tap Weighs Almost Nothing; a Record of Failed Taps Is Kept</text>
+
+  <!-- panel 1: one of the four taps fails -->
+  <text x="60" y="58" font-size="12" font-weight="600" fill="#333">one tap fails its depth test</text>
+  <g fill="#f7f7f7" stroke="#333" stroke-width="1.5">
+    <rect x="60" y="70" width="60" height="60"/><rect x="120" y="70" width="60" height="60"/>
+    <rect x="60" y="130" width="60" height="60"/><rect x="120" y="130" width="60" height="60"/>
+  </g>
+  <g font-size="11" fill="#2e6fa3" font-weight="600" text-anchor="middle">
+    <text x="90" y="104">0.08</text><text x="150" y="104">0.02</text>
+    <text x="90" y="164">0.72</text><text x="150" y="164">0.18</text>
+  </g>
+  <g font-size="9.5" fill="#2e8b57" text-anchor="middle">
+    <text x="90" y="118">✓</text><text x="150" y="118">✓</text><text x="150" y="178">✓</text>
+  </g>
+  <text x="90" y="178" text-anchor="middle" font-size="9.5" fill="#c0392b" font-weight="600">✗</text>
+  <g font-size="10.5" fill="#333">
+    <text x="196" y="90">the failed tap is merged at</text>
+    <text x="196" y="104">a thousandth of its weight:</text>
+    <text x="196" y="118">0.72 × 0.001 = 0.0007</text>
+    <text x="196" y="140">merged n ≈ 0.28 n</text>
+    <text x="196" y="154">the three passing taps decide;</text>
+    <text x="196" y="168">the record counts as passed</text>
+  </g>
+
+  <!-- panel 2: all four taps fail -->
+  <text x="340" y="58" font-size="12" font-weight="600" fill="#333">all four taps fail</text>
+  <g fill="#f7f7f7" stroke="#333" stroke-width="1.5">
+    <rect x="340" y="70" width="60" height="60"/><rect x="400" y="70" width="60" height="60"/>
+    <rect x="340" y="130" width="60" height="60"/><rect x="400" y="130" width="60" height="60"/>
+  </g>
+  <g font-size="11" fill="#2e6fa3" font-weight="600" text-anchor="middle">
+    <text x="370" y="104">0.08</text><text x="430" y="104">0.02</text>
+    <text x="370" y="164">0.72</text><text x="430" y="164">0.18</text>
+  </g>
+  <g font-size="9.5" fill="#c0392b" font-weight="600" text-anchor="middle">
+    <text x="370" y="118">✗</text><text x="430" y="118">✗</text><text x="370" y="178">✗</text><text x="430" y="178">✗</text>
+  </g>
+  <g font-size="10.5" fill="#333">
+    <text x="476" y="90">no tap passed: the weights</text>
+    <text x="476" y="104">are restored, merged n = n</text>
+    <text x="476" y="126">the record is kept and</text>
+    <text x="476" y="140">marked as failed: this frame</text>
+    <text x="476" y="154">counts as "edge not found"</text>
+    <text x="476" y="168">and its presence sinks</text>
+  </g>
+
+  <g font-size="10.5" fill="#555">
+    <text x="60" y="222">The four history taps of one pixel with their bilinear weights (the same taps as in the bilinear figure). A tap that</text>
+    <text x="60" y="237">fails its history test is not left out: next to a passing tap it changes nothing, and when every tap fails the record</text>
+    <text x="60" y="252">survives the frame. Whether it survives the next ones is up to its presence.</text>
+  </g>
+</svg>

@@ -427,41 +427,75 @@ two and a half times the silhouette the view-direction test left.
 
 ## Failed Taps: Kept, Faded or Dropped
 
-A tap that fails its depth test is not thrown away at once, and the reason
-is the jitter. At a depth step, or where a sliver of another surface is less
-than a pixel tall, the pixel's jittered sample lands on the other surface on
-some phases of the jitter cycle. The test fails on that frame, and on the
-next one too, because the stored depth is now the other surface's. If the
-record were dropped, it would restart with almost no samples and the outline
-would blink: when I measured what flickered in a static view of my test
-level, a third of the large frame-to-frame changes of the outline were a
-record joining or leaving a pixel's pool, and switching the depth test off
-as an experiment, which only a static view allows, halved the flicker.
+What happens to a tap that fails its history test? The obvious answer,
+leave it out, makes the outline blink, and the reason is the jitter.
 
-So a tap that fails its test is merged with a negligible weight, a
-thousandth of its own. Next to a tap that passes it changes nothing. If no
-tap passes, the weights are restored and the record is kept, marked as
-failed. A failed frame counts as a frame on which the edge was not found at
-the pixel, and that is what the record's presence tracks: the outline fades
-over a few failed frames and the record is dropped after about a dozen of
-them in a row, while a single bad phase of the cycle only dents it. The
-flicker suppression post defines the presence; what matters here is that a
+### Why a Good Record Fails the Depth Test
+
+Picture a pixel with a depth step inside it: most of the pixel shows a near
+surface, a sliver at one side the far surface behind it. The pixel's crease
+record describes the near surface. The jitter cycles through eleven sample
+positions, and on the frames when the sample lands in the sliver, the
+pixel's depth is the far surface's. The depth test compares the record's
+stored depth with that, and fails. It fails on the next frame too, because
+the depth stored with the record is now the far surface's and the sample is
+back on the near one. The same happens wherever a sliver of another surface
+is less than a pixel tall.
+
+![One square rendering pixel, mostly a purple near surface with a gray sliver of a far surface at its right edge behind a thick black depth step, and eleven numbered jitter positions spread over it, two of which, frames 7 and 11, fall in the sliver and are drawn red. To the right, a timeline of eleven frames with rows: the surface the sample lands on, N for all frames except 7 and 11 which read F; the depth test, passing on all frames except 7, 8 and 11; then two alternatives. "Dropped at once" shows the sample count staying at 25 for frames 1 to 6, falling to 1 on frames 7 and 8, climbing to 2 and 3 on frames 9 and 10, and falling to 1 again on frame 11, with the outline drawn only on frames 1 to 6 and 10. "Kept and faded" shows the presence at 1 for frames 1 to 6, then 0.75, 0.56, 0.67, 0.75 and 0.56, with the outline drawn on every frame. A caption explains that dropping restarts the record from one sample, so with three needed for a fit the outline is missing on frames 7 to 9 and again from frame 11, every cycle, while keeping the record and sinking its presence by a quarter per failed frame keeps the outline drawn, a little dimmer for two or three frames, and only a dozen failed frames in a row drop the record](/assets/images/thin-outline/jitter-depth-failure.svg)
+
+If the record were dropped on a failed frame, it would restart with one
+sample, need three for a fit, and the outline would be missing for a few
+frames every jitter cycle. That is not a small effect: when I measured what
+flickered in a static view of my test level, a third of the large
+frame-to-frame changes of the outline were a record joining or leaving a
+pixel's pool, and switching the depth test off as an experiment, which only
+a static view allows, halved the flicker.
+
+### The Rule
+
+A failed tap is therefore kept, in three steps:
+
+1. **A failed tap is merged at a thousandth of its weight.** Next to a tap
+   that passes, it changes nothing, and the record counts as passed.
+2. **If no tap passes, the weights are restored** and the record is kept
+   whole, marked as failed.
+3. **A failed frame counts as a frame on which the edge was not found** at
+   the pixel. That is what the record's presence tracks: it sinks by a
+   quarter on a failed frame and rises toward one on a found frame, the
+   outline is drawn a little dimmer while it is low, and the record is
+   dropped only when the presence has sunk below a drop level, about a dozen
+   failed frames in a row. One bad phase of the jitter cycle only dents it.
+
+![Two panels, each a two-by-two block of history taps with the bilinear weights 0.08, 0.02, 0.72 and 0.18. In the left panel, labelled one tap fails its depth test, three taps carry green check marks and the 0.72 tap a red cross; the text beside it says the failed tap is merged at a thousandth of its weight, 0.72 times 0.001 equals 0.0007, so the merged sample count is about 0.08 plus 0.02 plus 0.18 times n, the three passing taps decide, and the record counts as passed. In the right panel, labelled all four taps fail, all four carry red crosses; the text says no tap passed, the weights are restored so the merged count is n, and the record is kept and marked as failed, which counts this frame as edge not found and sinks its presence. A caption says a tap that fails its history test is not left out, next to a passing tap it changes nothing, and when every tap fails the record survives the frame, while whether it survives the next ones is up to its presence](/assets/images/thin-outline/failed-taps.svg)
+
+The [flicker suppression]({% post_url 2026-10-11-thin-outline-flicker-suppression %})
+post defines the presence and its draw ramp; what matters here is that a
 failed test sinks it instead of emptying the record.
 
-A crease record kept this way keeps the depth of the surface it was recorded
-on, not the pixel's current depth. Otherwise the next frame's test would
-compare it against the surface the pixel shows now, pass, and the record
-would be adopted by the wrong surface; in a first version that doubled the
-crease pixels under a fast camera orbit, from 9,692 to 17,513. The pixel
-stores one depth, so the old depth is only kept while no record of the
-pixel's other axis belongs to its current surface.
+### The Depth Stored With a Failed Record
 
-Keeping failed records has a limit, the **moving gate**: on a pixel moving at
-0.05 pixels per frame or faster, a failed record is dropped at once, and a
-silhouette sample takes a crease record over at once, where on a still pixel
-it has to wait for the crease's presence to sink. Without the gate, kept
-silhouette records trailed moving contours: 6% of the drawn silhouette pixels
-were detached under a pan, 11% under a camera orbit at 0.5° per frame and
+Each pixel stores one depth with its records, which next frame's depth test
+reads. For a crease record kept through a failed test, the depth stored is
+the one the record was recorded at, not the pixel's current depth. Otherwise
+the next frame's test would compare the record with the surface the pixel
+shows now, pass, and the record would be adopted by the wrong surface. In a
+first version that did exactly this, the crease pixels under a fast camera
+orbit doubled, from 9,692 to 17,513. Since there is one depth per pixel,
+the old depth is only kept while no record of the pixel's other axis
+belongs to its current surface.
+
+### The Moving Gate
+
+Keeping failed records has a limit: on a pixel moving at 0.05 pixels per
+frame or faster, a failed record is dropped at once, and a silhouette sample
+takes a crease record over at once, where on a still pixel it has to wait
+for the crease's presence to sink. The jitter's false failures are a problem
+of still pixels, whose record is tested against the same step every cycle;
+on a moving pixel a failed test usually means the surface really changed,
+and a record kept there trails behind. Without the gate, kept silhouette
+records trailed moving contours: 6% of the drawn silhouette pixels were
+detached under a camera pan, 11% under a camera orbit at 0.5° per frame and
 19% at 1.5°. The gate is a heuristic. Parts of a spinning character near its
 axis move slower than the gate, keep their failed records, and trail a
 little: 0.4% to 1.2% detached pixels on the spinning character.
