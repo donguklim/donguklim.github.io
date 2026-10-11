@@ -142,9 +142,7 @@ The first cause was the largest, and keeping failed records, together with
 the takeover rules between the two types that the
 [silhouettes]({% post_url 2026-10-11-thin-outline-silhouettes %}) post
 describes, brought the count from 256 and 107 to 103 and 34 over the
-following days. Blending the two axes at corners lowered the count further,
-but I could not see the difference on screen, and I took it out. What was
-left showed most in Epic's City Sample, on window frames, facade tiles and
+following days. What was left showed most in Epic's City Sample, on window frames, facade tiles and
 grooved surfaces at a distance. I tried two suppressions on the drawn edges
 against it first, and then went back to the records.
 
@@ -362,10 +360,7 @@ With every step of this post on, the isolated edge suppression included:
 filter, the dense and the isolated edge suppression.
 [Watch on YouTube](https://youtu.be/b3blImFzETA).*
 
-## The Miss Limit and Its Ghosts
-
-The presence, which did help, replaced a rule I had made for another
-problem, and that rule is where its form comes from.
+## What the Presence Is For
 
 ### Records That Pass Every Test
 
@@ -378,83 +373,37 @@ wall, and the copies a face gets from the crease beside it while it turns
 toward the camera and widens on screen, since the history only shifts
 records. The
 [history reprojection]({% post_url 2026-10-11-thin-outline-history-reprojection %})
-post describes all three.
+post describes all three. Such a record has to go because no crease is
+found where it is any more.
 
-The fix I made then was to reject a crease record when no crease is found
-where it is. The first version looked, every frame, for a crease within two
-pixels, using the pixel's own checks and its neighbour's check toward the
-pixel beyond it. It removed the footprints and also 14% of the drawn
-creases of a static view: two long lines at the base of a wall, where a
-ledge narrower than a pixel joins two parallel walls. That crease exists
-only on the frames when a jittered sample lands on the ledge; on the others,
-every normal around it is the same, and no test at any threshold can see
-it. All pixels of a row miss on the same frames, since they share the
-jitter, so the records were reset every few frames and never grew enough to
-fit.
+"Found" has to be judged at the record's **own pixel**, along its axis, and
+not on every frame. A ledge narrower than a pixel, where two parallel walls
+meet, is a crease only on the frames when a jittered sample lands on it; on
+the others, every normal around it is the same, and no test at any
+threshold can see it. And the pixel beside a crease gets samples only on
+the frames when its own pair of pixels straddles the crease, which are
+exactly the frames on which its own check finds it. A record of either kind
+is found on some frames of every jitter cycle and missed on the others, so
+a rule that drops a record after a few misses in a row blinks it, and a
+fade that follows the length of the current run of misses pulses with the
+cycle. What tells a real edge from a ghost is the fraction of recent frames
+on which it is found, not the latest run.
 
-So the final version counted the frames since a crease was last found **at
-the record's own pixel** along its axis, with the crease measure above half
-the detection threshold, and dropped the record when the count reached a
-**miss limit**. A sub-pixel ledge is found on some frames of every cycle and
-keeps its records. The pixel beside a crease needs no look two pixels away:
-it only gets samples on the frames when its own pair of pixels straddles the
-crease, and on exactly those frames its own check finds it. The limit was
-one jitter cycle at first, then 3 frames, because of the widening face: after
-a fast turn of the camera, at 5° per frame, that face held 2,253 crease
-records with no crease within two pixels under the cycle-long limit and 80
-under a limit of 3.
+### Pops on Distant Grooves
 
-### Too Hard Either Way
-
-The limit of 3 did its job against ghosts and was the wrong rule for the
-flicker. A crease found only on some phases of the jitter, at a junction or
-at the end of a wall, missed three frames in a row now and then and lost its
-record: a blinking line. Turning the limit off made the line at the end of
-the curved wall in my measured region solid (its mean alpha 0.07 before, 0.86
-after; its largest swing 0.88 before, 0.14 after) and the ghosts came back,
-about 900 extra crease pixels on a character spinning in place:
-
-![The test character, a dark grey female mannequin with light grey outline bands, standing in front of a purple wall, with crease outlines compared between two settings in three colours. Red marks creases drawn only without the miss limit: blotches across the chest, the waist and the hips, and two red arcs on the green floor around the feet, the trails the spinning feet leave. Cyan marks creases drawn only with it, a few small specks. White marks creases drawn in both](/assets/images/thin-outline/ghost-creases-without-miss-limit.png)
-
-*The character spinning in place at 1.5° per frame, frame 120, 100% screen
-percentage, drawn before the upscaler. Red: creases drawn only without the
-miss limit, ghosts on the torso and arcs on the floor around the feet. Cyan:
-only with a limit of 3. White: both.*
-
-In the City Sample, with the limit off, the flicker that was left sat on
-grooved surfaces seen from far away, and it was not a blink but dots. The
-normal of such a surface is smooth except for a few pixels per frame that
-**pop**, at the grooves, in different places each frame: a groove wall
-thinner than a pixel, hit by the jittered sample on some frames. A pop is a
-crease to the checks, at the strength of a sharp edge, since the groove
-wall's angle is steep whatever the distance. After two or three pops at one
-pixel the record had a valid fit and drew at full strength, because a
-record's strength is the mean strength of its samples and knows nothing of
-the frames in between; with the miss limit off, the dot then stayed for
-seconds, and the pops added up to a sprinkling of dots across the surface.
-
-So the miss limit was reacting to the right signal, no crease found at the
-pixel on most frames, with the wrong response, a hard reset. What was
-needed was a measure of how often the edge is found, and a drawing that
-follows it.
-
-### A Count of Bad Frames, First
-
-Before that, I had tried a softer version of the hard reset for the history
-tests: each record counted its **bad frames in a row**, frames on which a
-history test failed or, for a crease record, a silhouette sample arrived,
-and was kept until three of them and dropped then. This is what keeping a
-failed record, in the history reprojection post, first was. Two of its
-measurements decided the form of what replaced it. A kept record drawn at
-full strength did better than one dimmed by half on each bad frame (58
-against 82 pixels swinging by more than 0.3 in the measured region). And a
-fade by the miss count itself, simulated on the dumped records, made the
-static flicker worse in every form I tried (44 rendering pixels swinging by
-more than 0.3 with no fade, 132 to 138 with a fade by half per counted
-frame): the pixel beside a crease sees it only on the phases when its own
-pair straddles it, so its count climbs and resets within every jitter
-cycle, and a fade that follows the count pulses. A run of misses is the
-wrong quantity. The fraction of recent frames is the right one.
+The other thing that passes every test is a pop. In the City Sample the
+flicker that was left sat on grooved surfaces seen from far away, and it
+looked like dots. The normal of such a surface is smooth except for a few
+pixels per frame that **pop**, at the grooves, in different places each
+frame: a groove wall thinner than a pixel, hit by the jittered sample on
+some frames. A pop is a crease to the checks, at the strength of a sharp
+edge, since the groove wall's angle is steep whatever the distance. After
+two or three pops at one pixel the record has a valid fit and draws at full
+strength, because a record's strength is the mean strength of its samples
+and knows nothing of the frames in between, and as long as nothing removes
+it, the dot stays for seconds and the pops add up to a sprinkling of dots
+across the surface. A pop is found on few frames, which is again what the
+fraction of recent frames measures.
 
 ## The Presence
 
@@ -476,8 +425,7 @@ below 0.05 is emptied.
 
 **Found** means two things. The edge is there: a crease record's pixel has
 a crease measure, toward either neighbour along the record's axis, above
-half the detection threshold, the miss limit's test, which is also run on
-frames when the pixel has a silhouette and records no crease; a silhouette
+half the detection threshold, a test also run on frames when the pixel has a silhouette and records no crease; a silhouette
 record's pixel has a depth edge measure toward either neighbour along the
 axis above half the silhouette threshold, whichever side is nearer, so the
 contour pixel finds its silhouette both on the frames when its sample is on
@@ -505,11 +453,8 @@ void UpdatePresence(inout FThinOutlineRecord Record, bool bFound)
 }
 ```
 
-The presence takes the fourth channel of a record's first texel, which held
-the co-trigger ratio of the
-[core idea]({% post_url 2026-10-11-thin-outline-core-idea %}) post until I
-removed it, and then the bad-frame count. It is merged like the record's
-other values: across the history taps, and when a pixel pools its record
+The presence is stored in the fourth channel of a record's first texel. It
+is merged like the record's other values: across the history taps, and when a pixel pools its record
 with its neighbours', as a mean weighted by sample count.
 
 ### The Draw Ramp
@@ -548,13 +493,12 @@ draws at about 0.3, and a new edge fades in over about nine frames. The
 junction crease shows the cost: it still alternates, but between two faint
 strengths, 0.18 and 0.39, rather than between drawn and missing.
 
-### What It Replaced, and What It Costs
+### Ghosts, Failed Records, and the Cost
 
-The presence is the miss limit without the hard edge, and the bad-frame
-count without the run. A ghost is drawn for three or four frames, fading,
-and emptied after eleven; a failed record is dropped after about a dozen
-failed frames in a row instead of three, and recovers from a single bad
-phase per cycle. Records on moving pixels are still dropped at once when a
+A ghost is drawn for three or four frames, fading, and emptied on the
+eleventh frame without its edge. A record that fails its history tests is
+treated the same way: it is dropped after about a dozen failed frames in a
+row, and recovers from a single bad phase per cycle. Records on moving pixels are still dropped at once when a
 test fails, by the moving gate of the history reprojection post. The
 footprints of a walking character were the one ghost for which three or
 four faint frames were still too many, and the velocity test of that post
