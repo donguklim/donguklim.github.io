@@ -1,0 +1,70 @@
+<svg viewBox="0 0 620 400" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="620" height="400" fill="#ffffff" stroke="#e0e0e0" rx="8"/>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2c6fb7"/></marker></defs>
+  <text x="310" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#222">What the Spike Filter Skips, Seen From the Side</text>
+  <text x="310" y="48" text-anchor="middle" font-size="10.5" fill="#555">The camera is on the left; each dashed line is the ray of one pixel of a column (rows v−1, v, v+1).</text>
+  <polygon points="128.0,86.0 128.0,126.0 156.0,152.0 128.0,178.0 128.0,214.0 184.0,214.0 184.0,86.0" fill="#c9a0dc" fill-opacity="0.35"/>
+  <polyline points="128.0,86.0 128.0,126.0 156.0,152.0 128.0,178.0 128.0,214.0" fill="none" stroke="#1b1b1b" stroke-width="2.2"/>
+  <line x1="38.0" y1="106.0" x2="128.0" y2="106.0" stroke="#999" stroke-width="0.9" stroke-dasharray="4 3"/>
+  <circle cx="128.0" cy="106.0" r="3.2" fill="#333"/>
+  <line x1="128.0" y1="106.0" x2="106.0" y2="106.0" stroke="#2c6fb7" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="38.0" y1="146.0" x2="149.5" y2="146.0" stroke="#999" stroke-width="0.9" stroke-dasharray="4 3"/>
+  <circle cx="149.5" cy="146.0" r="3.2" fill="#c0392b"/>
+  <line x1="149.5" y1="146.0" x2="134.6" y2="162.1" stroke="#2c6fb7" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="38.0" y1="186.0" x2="128.0" y2="186.0" stroke="#999" stroke-width="0.9" stroke-dasharray="4 3"/>
+  <circle cx="128.0" cy="186.0" r="3.2" fill="#333"/>
+  <line x1="128.0" y1="186.0" x2="106.0" y2="186.0" stroke="#2c6fb7" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="34.0" y="109.5" font-size="10" fill="#333" text-anchor="end">v−1</text>
+  <text x="34.0" y="149.5" font-size="10" fill="#333" text-anchor="end">v</text>
+  <text x="34.0" y="189.5" font-size="10" fill="#333" text-anchor="end">v+1</text>
+  <text x="106.0" y="76" text-anchor="middle" font-size="11.5" font-weight="600" fill="#333">a groove wall</text>
+  <text x="106.0" y="262" text-anchor="middle" font-size="11" font-weight="600" fill="#c0392b">v is a spike: skipped</text>
+  <text x="106.0" y="280.0" text-anchor="middle" font-size="10" fill="#555">v turns away from both neighbours,</text>
+  <text x="106.0" y="294.0" text-anchor="middle" font-size="10" fill="#555">and v−1 and v+1 agree and lie on</text>
+  <text x="106.0" y="308.0" text-anchor="middle" font-size="10" fill="#555">one plane: v's two checks and the</text>
+  <text x="106.0" y="322.0" text-anchor="middle" font-size="10" fill="#555">checks toward v are skipped</text>
+  <polygon points="360.0,86 400.0,86 400.0,214 314.0,214 314.0,166.0 360.0,120.0" fill="#c9a0dc" fill-opacity="0.35"/>
+  <polyline points="360.0,86.0 360.0,120.0 314.0,166.0 314.0,214.0" fill="none" stroke="#1b1b1b" stroke-width="2.2"/>
+  <line x1="240.0" y1="106.0" x2="360.0" y2="106.0" stroke="#999" stroke-width="0.9" stroke-dasharray="4 3"/>
+  <circle cx="360.0" cy="106.0" r="3.2" fill="#333"/>
+  <line x1="360.0" y1="106.0" x2="338.0" y2="106.0" stroke="#2c6fb7" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="240.0" y1="146.0" x2="334.0" y2="146.0" stroke="#999" stroke-width="0.9" stroke-dasharray="4 3"/>
+  <circle cx="334.0" cy="146.0" r="3.2" fill="#333"/>
+  <line x1="334.0" y1="146.0" x2="318.4" y2="130.4" stroke="#2c6fb7" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="240.0" y1="186.0" x2="314.0" y2="186.0" stroke="#999" stroke-width="0.9" stroke-dasharray="4 3"/>
+  <circle cx="314.0" cy="186.0" r="3.2" fill="#333"/>
+  <line x1="314.0" y1="186.0" x2="292.0" y2="186.0" stroke="#2c6fb7" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="236.0" y="109.5" font-size="10" fill="#333" text-anchor="end">v−1</text>
+  <text x="236.0" y="149.5" font-size="10" fill="#333" text-anchor="end">v</text>
+  <text x="236.0" y="189.5" font-size="10" fill="#333" text-anchor="end">v+1</text>
+  <text x="308.0" y="76" text-anchor="middle" font-size="11.5" font-weight="600" fill="#333">a step</text>
+  <text x="308.0" y="262" text-anchor="middle" font-size="11" font-weight="600" fill="#2e8b57">not a spike: kept</text>
+  <text x="308.0" y="280.0" text-anchor="middle" font-size="10" fill="#555">v−1 and v+1 face the same way,</text>
+  <text x="308.0" y="294.0" text-anchor="middle" font-size="10" fill="#555">but their planes are a tread apart:</text>
+  <text x="308.0" y="308.0" text-anchor="middle" font-size="10" fill="#555">the crease of the step top stays</text>
+  <text x="337.0" y="232.0" font-size="9" fill="#777" text-anchor="middle">tread</text>
+  <line x1="314.0" y1="222" x2="360.0" y2="222" stroke="#777" stroke-width="0.8" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+  <rect x="572.0" y="86" width="26" height="128" fill="#bbbbbb" fill-opacity="0.5"/>
+  <circle cx="504.0" cy="146.0" r="7.0" fill="#c9a0dc" fill-opacity="0.6" stroke="#1b1b1b" stroke-width="2.2"/>
+  <polyline points="572.0,86.0 572.0,214.0" fill="none" stroke="#1b1b1b" stroke-width="2.2"/>
+  <line x1="442.0" y1="106.0" x2="572.0" y2="106.0" stroke="#999" stroke-width="0.9" stroke-dasharray="4 3"/>
+  <circle cx="572.0" cy="106.0" r="3.2" fill="#333"/>
+  <line x1="572.0" y1="106.0" x2="550.0" y2="106.0" stroke="#2c6fb7" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="442.0" y1="146.0" x2="497.0" y2="146.0" stroke="#999" stroke-width="0.9" stroke-dasharray="4 3"/>
+  <circle cx="497.0" cy="146.0" r="3.2" fill="#c0392b"/>
+  <line x1="497.0" y1="146.0" x2="475.0" y2="146.0" stroke="#2c6fb7" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="442.0" y1="186.0" x2="572.0" y2="186.0" stroke="#999" stroke-width="0.9" stroke-dasharray="4 3"/>
+  <circle cx="572.0" cy="186.0" r="3.2" fill="#333"/>
+  <line x1="572.0" y1="186.0" x2="550.0" y2="186.0" stroke="#2c6fb7" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="438.0" y="109.5" font-size="10" fill="#333" text-anchor="end">v−1</text>
+  <text x="438.0" y="149.5" font-size="10" fill="#333" text-anchor="end">v</text>
+  <text x="438.0" y="189.5" font-size="10" fill="#333" text-anchor="end">v+1</text>
+  <text x="510.0" y="76" text-anchor="middle" font-size="11.5" font-weight="600" fill="#333">a wire in front of a wall</text>
+  <text x="510.0" y="262" text-anchor="middle" font-size="11" font-weight="600" fill="#c0392b">v is a thin foreground: skipped</text>
+  <text x="510.0" y="280.0" text-anchor="middle" font-size="10" fill="#555">v is nearer than both neighbours,</text>
+  <text x="510.0" y="294.0" text-anchor="middle" font-size="10" fill="#555">which are one surface: both of v's</text>
+  <text x="510.0" y="308.0" text-anchor="middle" font-size="10" fill="#555">silhouette checks are skipped</text>
+  <text x="20" y="346" font-size="10.5" fill="#555">A normal spike is a pixel whose normal differs from both of its neighbours along an axis while those two are one surface:</text>
+  <text x="20" y="361" font-size="10.5" fill="#555">their normals agree within about 7° and the far one lies on the near one's plane within 0.3% of the depth. A groove wall</text>
+  <text x="20" y="376" font-size="10.5" fill="#555">thinner than a pixel is one when the jittered ray hits it. A step is not, which keeps its crease. A wire is the same test on depth.</text>
+</svg>

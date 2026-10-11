@@ -18,9 +18,125 @@ assumes the [core idea]({% post_url 2026-10-11-thin-outline-core-idea %}),
 and [spatial filters]({% post_url 2026-10-11-thin-outline-spatial-filters %})
 posts.
 
-*The sections on what flickers, the measurements, the presence, the spike
-filter, the thin-foreground filter and the stabilization that was built and
-removed are not written yet. The two suppressions below are complete.*
+## What Flickers
+
+### The Symptom
+
+Drawn after the upscaler, parts of the outline blink: a line, or a piece of
+one, is drawn on some frames and missing on others, and the pattern repeats
+with the **jitter cycle**. TSR moves the sample position inside the pixel
+through a fixed sequence of $L$ positions and starts over: $L = 11$ at 100%
+screen percentage, 17 at 73%, 37 at 50%. At 60 frames per second a 17-frame
+cycle is about three and a half blinks per second, which is what makes it
+look like flicker rather than noise.
+
+Drawn before the upscaler, the same blinking happens, but the upscaler
+blends every pixel with its own history, and a line that is missing on 5 of
+17 frames becomes a steady line at about 70% of its strength. Drawing after
+the upscaler takes that blending away, along with the fading it caused, and
+the records are then the only memory the outline has. Every frame's
+decision shows as it is.
+
+### How I Measured It
+
+The flicker repeats with the jitter cycle, so it can be measured in a static
+view. I picked a spot in my test level where it was easy to see, a few
+ramps, walls and a pillar seen through a purple fog volume (the fog only
+makes the black lines stand out; the flicker is the same without it), and
+rendered it offscreen at 1280×720 with 73% screen percentage, the
+percentage the editor picks on my display, so $L = 17$. I dumped the outline
+alpha of 36 consecutive frames, about two jitter cycles, and counted the
+display pixels whose alpha swings by more than 0.3, and by more than 0.5,
+over those frames, inside a fixed region without the animated character.
+Two runs of the same build gave identical counts, so any difference between
+two settings was real. And a Python copy of the drawing code reproduced the
+GPU's alpha exactly, so every jump could be traced back to the records
+behind it, pixel by pixel.
+
+![A flicker map of the test region at twice its size: the outline of walls, ramps and a tall pillar drawn as thin white and grey lines on black, with a dark grey box in the lower middle where the animated character is left out. Most lines are steady white; short stretches are coloured yellow to red where the alpha swings by more than 0.1 over 36 frames, most of them on the slanted ramp edges in the lower right, at the junctions where ramps meet walls, at a vertical line beside the pillar, at the pillar's top corner and along a line at the far right](/assets/images/thin-outline/flicker-map.png)
+
+*The measured region at the start, twice its size. White and grey: a steady
+outline. Yellow to red: display pixels whose alpha swings by more than 0.1
+over 36 frames, red up to 1. The dark box is the character, left out.*
+
+At the start the count was **256** pixels swinging by more than 0.3 and
+**107** by more than 0.5.
+
+### What It Is Not
+
+- **Not the edge strength.** 94% of the drawn pixels had a mean strength of
+  exactly 1: the strength saturates on almost every check that fires, and
+  none of the large jumps I classified came from a change of strength.
+- **Not the small shimmer.** Every line's alpha also wobbles by 0.05 to 0.1
+  from frame to frame, because each new sample moves the fitted line a
+  little. Halving the decay rate removes most of that wobble (pixels
+  wobbling by more than 0.05: 4,464 against 598), but it is a different
+  thing from the blinking and it does not look like flicker.
+
+### Decisions That Flip
+
+For each rendering pixel, the drawing makes several all-or-nothing
+decisions every frame: is there an edge with a valid fit, which axis is
+drawn, crease or silhouette. A decision is stable when the records behind
+it are strong, with many samples that agree. The blinking is where they stay
+weak, because the samples of one edge are split up or the records keep
+being reset, and the decision then flips with the jitter phase. I sorted the
+515 large jumps of the first measurement, alpha changes of more than 0.25
+between two frames, by what changed in the records behind them:
+
+| Cause | Share |
+|---|---:|
+| A record joined or left the pixel's pool: reset by a history test, taken over by the other type, or new | 30% |
+| The drawn type switched between crease and silhouette | 22% |
+| The drawn axis switched | 17% |
+| The band missed the pixel, or the pixel's own record was of the other type | 13% |
+| The fit appeared or vanished at the three-sample minimum | 12% |
+| The line moved: new samples, the spatial filter | 5% |
+| The strength changed | 0% |
+
+Behind those shares are a handful of causes.
+
+1. **Records reset every jitter cycle.** At a depth step, or where a sliver
+   of another surface is less than a pixel tall, the jittered sample lands
+   on the other surface on some phases, the history depth test fails, and
+   the record restarts with almost no samples. Switching the crease depth
+   test off as an experiment, which only a static view allows, halved the
+   count. The
+   [history reprojection]({% post_url 2026-10-11-thin-outline-history-reprojection %})
+   post shows this case and the answer: a failed record is kept rather than
+   dropped.
+2. **One edge sampled as two types.** A depth step next to a surface seen at
+   a grazing angle is close to the silhouette threshold, so the checks call
+   it a silhouette on some phases and a crease on others. Each axis keeps
+   one record, so each type kept replacing the other, and the records of
+   one such line held 1 to 5 samples instead of about 25.
+3. **Geometry smaller than a pixel.** Slivers of a third surface between
+   two others, and tips where the foreground covers the pixel on some
+   phases only.
+4. **The three-sample minimum.** At 73% a fit needs a pooled sample count of
+   about 4.4 to hold three distinct samples, and a pool that hovers around
+   it switches the fit on and off. Fading the outline in over the
+   distinct-sample count instead, which I simulated, was worse (47 against
+   98 flickering pixels): these records get their samples on some phases
+   only, so their count rises and falls within every cycle, and the fade
+   turns that into a pulsing line, while the hard minimum only flips when
+   the count crosses it.
+5. **Two edges in one pixel.** At a corner both axes have a converged edge
+   with nearly the same slope error, the rule then prefers the smaller
+   slope, and both slopes are noise around zero: a coin toss every frame.
+   And a single stray silhouette sample on the other axis gives a valid
+   silhouette candidate whose band barely touches the pixel; silhouettes
+   are chosen first, so it hides a converged crease for that frame.
+
+The first cause was the largest, and keeping failed records, together with
+the takeover rules between the two types that the
+[silhouettes]({% post_url 2026-10-11-thin-outline-silhouettes %}) post
+describes, brought the count from 256 and 107 to 103 and 34 over the
+following days. Blending the two axes at corners lowered the count further,
+but I could not see the difference on screen, and I took it out. What was
+left showed most in Epic's City Sample, on window frames, facade tiles and
+grooved surfaces at a distance. I tried two suppressions on the drawn edges
+against it first, and then went back to the records.
 
 ## Dense Edge Suppression
 
@@ -219,14 +335,385 @@ for them without making other creases at the same distance dashed, and the
 specks were the handle that was left. Sharing its loads with the filter
 made it nearly free, which is the other reason it stayed.
 
-## What the Two Suppressions Are Not
+## The Miss Limit and Its Ghosts
 
-Both run once per rendering pixel after the spatial filter, on the edge the
-axis selection chose and before the band's coverage is computed: the dense
-test first, since it is cheaper and decides more pixels. Neither fixed the
-flicker, and that was what each was tried against first.
+The presence, which did help, replaced a rule I had made for another
+problem, and that rule is where its form comes from.
 
-| Step | What it fixes | What it does not |
+### Records That Pass Every Test
+
+A crease joins two surfaces without a depth step, by definition, so the
+depth test of the history only notices a crease record that lands on a
+different surface. A record that slides along one connected surface passes:
+the crease records of a foot left on the floor it stood on, a junction's
+crease carried onto the curved wall beside it as the camera uncovers the
+wall, and the copies a face gets from the crease beside it while it turns
+toward the camera and widens on screen, since the history only shifts
+records. The
+[history reprojection]({% post_url 2026-10-11-thin-outline-history-reprojection %})
+post describes all three.
+
+The fix I made then was to reject a crease record when no crease is found
+where it is. The first version looked, every frame, for a crease within two
+pixels, using the pixel's own checks and its neighbour's check toward the
+pixel beyond it. It removed the footprints and also 14% of the drawn
+creases of a static view: two long lines at the base of a wall, where a
+ledge narrower than a pixel joins two parallel walls. That crease exists
+only on the frames when a jittered sample lands on the ledge; on the others,
+every normal around it is the same, and no test at any threshold can see
+it. All pixels of a row miss on the same frames, since they share the
+jitter, so the records were reset every few frames and never grew enough to
+fit.
+
+So the final version counted the frames since a crease was last found **at
+the record's own pixel** along its axis, with the crease measure above half
+the detection threshold, and dropped the record when the count reached a
+**miss limit**. A sub-pixel ledge is found on some frames of every cycle and
+keeps its records. The pixel beside a crease needs no look two pixels away:
+it only gets samples on the frames when its own pair of pixels straddles the
+crease, and on exactly those frames its own check finds it. The limit was
+one jitter cycle at first, then 3 frames, because of the widening face: after
+a fast turn of the camera, at 5° per frame, that face held 2,253 crease
+records with no crease within two pixels under the cycle-long limit and 80
+under a limit of 3.
+
+### Too Hard Either Way
+
+The limit of 3 did its job against ghosts and was the wrong rule for the
+flicker. A crease found only on some phases of the jitter, at a junction or
+at the end of a wall, missed three frames in a row now and then and lost its
+record: a blinking line. Turning the limit off made the line at the end of
+the curved wall in my measured region solid (its mean alpha 0.07 before, 0.86
+after; its largest swing 0.88 before, 0.14 after) and the ghosts came back,
+about 900 extra crease pixels on a character spinning in place:
+
+![The test character, a dark grey female mannequin with light grey outline bands, standing in front of a purple wall, with crease outlines compared between two settings in three colours. Red marks creases drawn only without the miss limit: blotches across the chest, the waist and the hips, and two red arcs on the green floor around the feet, the trails the spinning feet leave. Cyan marks creases drawn only with it, a few small specks. White marks creases drawn in both](/assets/images/thin-outline/ghost-creases-without-miss-limit.png)
+
+*The character spinning in place at 1.5° per frame, frame 120, 100% screen
+percentage, drawn before the upscaler. Red: creases drawn only without the
+miss limit, ghosts on the torso and arcs on the floor around the feet. Cyan:
+only with a limit of 3. White: both.*
+
+In the City Sample, with the limit off, the flicker that was left sat on
+grooved surfaces seen from far away, and it was not a blink but dots. The
+normal of such a surface is smooth except for a few pixels per frame that
+**pop**, at the grooves, in different places each frame: a groove wall
+thinner than a pixel, hit by the jittered sample on some frames. A pop is a
+crease to the checks, at the strength of a sharp edge, since the groove
+wall's angle is steep whatever the distance. After two or three pops at one
+pixel the record had a valid fit and drew at full strength, because a
+record's strength is the mean strength of its samples and knows nothing of
+the frames in between; with the miss limit off, the dot then stayed for
+seconds, and the pops added up to a sprinkling of dots across the surface.
+
+So the miss limit was reacting to the right signal, no crease found at the
+pixel on most frames, with the wrong response, a hard reset. What was
+needed was a measure of how often the edge is found, and a drawing that
+follows it.
+
+### A Count of Bad Frames, First
+
+Before that, I had tried a softer version of the hard reset for the history
+tests: each record counted its **bad frames in a row**, frames on which a
+history test failed or, for a crease record, a silhouette sample arrived,
+and was kept until three of them and dropped then. This is what keeping a
+failed record, in the history reprojection post, first was. Two of its
+measurements decided the form of what replaced it. A kept record drawn at
+full strength did better than one dimmed by half on each bad frame (58
+against 82 pixels swinging by more than 0.3 in the measured region). And a
+fade by the miss count itself, simulated on the dumped records, made the
+static flicker worse in every form I tried (44 rendering pixels swinging by
+more than 0.3 with no fade, 132 to 138 with a fade by half per counted
+frame): the pixel beside a crease sees it only on the phases when its own
+pair straddles it, so its count climbs and resets within every jitter
+cycle, and a fade that follows the count pulses. A run of misses is the
+wrong quantity. The fraction of recent frames is the right one.
+
+## The Presence
+
+### Definition
+
+Each record, crease or silhouette, keeps a **presence** $p \in [0, 1]$, the
+fraction of recent frames on which its edge was found at its pixel. After
+the history is reprojected and before this frame's samples are added, it is
+updated with $f = 1$ on a frame on which the edge is found and $f = 0$
+otherwise:
+
+$$
+p \leftarrow p + \frac{f - p}{N}, \qquad N = 4 ,
+$$
+
+an exponential average over the last four frames or so. A record created
+this frame starts at $p = 1/N$, found once. A record whose presence falls
+below 0.05 is emptied.
+
+**Found** means two things. The edge is there: a crease record's pixel has
+a crease measure, toward either neighbour along the record's axis, above
+half the detection threshold, the miss limit's test, which is also run on
+frames when the pixel has a silhouette and records no crease; a silhouette
+record's pixel has a depth edge measure toward either neighbour along the
+axis above half the silhouette threshold, whichever side is nearer, so the
+contour pixel finds its silhouette both on the frames when its sample is on
+the foreground and on those when it is on the background. And no history
+test failed this frame: a failed depth, foreground or background test
+counts as not found, which is how the failed records of the history post
+fade. A crease record also loses the frame to a silhouette sample, which is
+how a silhouette takes a crease's axis over on a still pixel: a stray
+silhouette sample once per jitter cycle dents the crease, while a contour
+that moves in samples a silhouette on every frame and takes over as the
+crease's presence sinks.
+
+```hlsl
+void UpdatePresence(inout FThinOutlineRecord Record, bool bFound)
+{
+	if (Record.SampleCount <= 0.0)
+	{
+		return;
+	}
+	Record.Presence += ((bFound ? 1.0 : 0.0) - Record.Presence) * PresenceRate;
+	if (Record.Presence < PresenceDropLevel)
+	{
+		Record = GetEmptyRecord();
+	}
+}
+```
+
+The presence takes the fourth channel of a record's first texel, which held
+the co-trigger ratio of the
+[core idea]({% post_url 2026-10-11-thin-outline-core-idea %}) post until I
+removed it, and then the bad-frame count. It is merged like the record's
+other values: across the history taps, and when a pixel pools its record
+with its neighbours', as a mean weighted by sample count.
+
+### The Draw Ramp
+
+The record's strength stays the mean strength of its samples. What changes
+is the drawing: the candidate's strength is multiplied by a ramp on the
+pooled record's presence, 0 up to $p = 0.3$ and rising linearly to 1 at
+$p = 1$:
+
+```hlsl
+Candidate.Strength *= saturate((Record.Presence - PresenceDrawMin) / max(PresenceDrawMax - PresenceDrawMin, 1.0e-4));
+```
+
+Keeping the two apart keeps the strength meaningful and the ramp tunable.
+Adding a zero strength to the record's mean on every frame without the edge
+would merge them into one number, which the decay then averages over tens of
+frames rather than four. What the ramp gives, for four kinds of edge:
+
+![Four small charts over frames 0 to 15, each with the presence p as a purple line with dots, green bars for the drawn strength, and a dashed line at p = 0.3 where the ramp starts. A new edge found on every frame: p rises from 0.25 through 0.44, 0.58 and 0.68 toward 1, and the bars grow from 0 through 0.2, 0.4 and 0.55 to 0.89 at frame 8. A junction crease found on every other frame: p alternates between 0.57 and 0.43 and the bars between 0.39 and 0.18. A groove pop found on one frame in four: p jumps up on each pop to 0.33, 0.35 and 0.36 and sinks in between to about 0.15, and the bars are 0.04, 0.08 and 0.09 on the pop frames and 0 otherwise. A ghost found until frame 3 and then never: p is 1 until frame 3, then 0.75, 0.56, 0.42, 0.32 and on down to 0.06 at frame 13, the bars 1 until frame 3, then 0.64, 0.38, 0.17, 0.02 and 0, and the record is gone from frame 14. A caption repeats the update rule, the start value, the drop level and the ramp](/assets/images/thin-outline/presence-cases.svg)
+
+| Edge | Presence | Drawn strength |
 |---|---|---|
-| Dense edge suppression | Tangles of lines where three or more edges crowd within two pixels | The flicker of dense edges; isolated pairs, including one-pixel geometry |
-| Isolated edge suppression | Specks of one or two pixels | The flicker of lines; it removes 0.6% of the outline |
+| A new edge, found on every frame | 0.25, 0.44, 0.58, 0.68, … → 1 | 0, 0.20, 0.40, 0.55, …: 0.9 after about nine frames |
+| A junction crease, found on every other frame | 0.57 and 0.43 in turn | 0.39 and 0.18 in turn, instead of drawn and missing |
+| A groove pop, on one frame in four | up to 0.36 right after a pop | at most 0.09, on the pop frames |
+| A groove pop, on one frame in six | up to 0.30 | 0.01 at most |
+| A ghost, found on every frame, then never | 1, 0.75, 0.56, 0.42, 0.32, … | 1, 0.64, 0.38, 0.17, 0.02: faint after three frames, emptied on the eleventh |
+
+A pop's record also needs three distinct samples before it can be drawn at
+all, so a groove popping on one frame in four draws at most a trace. I
+first had the ramp end at $p = 0.6$, so that a crease found on most frames
+drew at full strength and a new one faded in over three frames. After
+trying it in the City Sample I moved the end to 1: now only an edge found on
+every recent frame draws at full strength, an edge found on half of them
+draws at about 0.3, and a new edge fades in over about nine frames. The
+junction crease shows the cost: it still alternates, but between two faint
+strengths, 0.18 and 0.39, rather than between drawn and missing.
+
+### What It Replaced, and What It Costs
+
+The presence is the miss limit without the hard edge, and the bad-frame
+count without the run. A ghost is drawn for three or four frames, fading,
+and emptied after eleven; a failed record is dropped after about a dozen
+failed frames in a row instead of three, and recovers from a single bad
+phase per cycle. Records on moving pixels are still dropped at once when a
+test fails, by the moving gate of the history reprojection post. The
+footprints of a walking character were the one ghost for which three or
+four faint frames were still too many, and the velocity test of that post
+removes them before the presence is asked.
+
+The presence costs about 0.002 ms at 1280×720 and 73%, or less than I could
+measure: the update is a multiply-add and a compare per record, the ramp one
+multiply in the drawing. Its effect on my static test level is mostly
+dimming: 2,315 display pixels differ from the outline drawn with the
+presence ignored by more than a tenth of full strength, 2,300 of them
+fainter. That is the ramp to 1 doing what it
+says to every edge found on fewer than all recent frames. Of the crease
+records, 36% are found on nine frames in ten or more and 2.9% on fewer than
+one in ten: the sides of creases that straddle them on some phases only,
+and records on their way out. Its effect on the flicker I judged on screen
+in the City Sample, where the grooves are; my test level has none, and the
+count of the measured region says nothing about dots on a distant facade.
+
+<!-- capture (City Sample, distant grooved facade): presence and spike filter off against on -->
+
+## The Normal-Spike Filter
+
+The presence keeps a pop from drawing, but the pop still feeds the records
+three samples at a sharp edge's strength, and a groove that pops on one
+frame in three draws faintly. The cleaner fix is not to sample a pop at
+all, which is the idea of filtering thin geometry at sampling time from my
+[first post]({% post_url 2026-09-06-taa-compatible-toon-outline-gbuffer-contour %}),
+applied to the normal.
+
+A pop is a **spike** in the normal field: a pixel whose normal differs from
+both of its neighbours along an axis while those two agree. At a spike $S$
+between flat pixels $L$ and $R$, both of $S$'s checks fire, since the
+normal turns and turns back, and so do $L$'s check toward $S$ and $R$'s
+toward $S$, since there is no turn on their other side to carry on. So a
+check is skipped when:
+
+- **the pixel is the spike:** it has a crease toward both of its neighbours
+  along the axis, and those two are one surface; then both of its checks are
+  skipped;
+- **the neighbour is the spike:** the pixel has a crease toward that
+  neighbour, and the pixel and the one beyond the neighbour are one surface;
+  then the check toward the neighbour is skipped.
+
+A skipped check records nothing, and its crease measure is cleared too, so
+the presence does not count it as found. The second case needs the normal
+of the pixel two steps away, which the sampling otherwise does not load;
+it is loaded only where the pixel has a crease toward that neighbour and is
+not a spike itself, a few percent of the pixels.
+
+![Three side views with the camera on the left and three dashed horizontal rays, one per pixel row v minus 1, v and v plus 1, ending in a dot on the first surface they hit, with a blue arrow for the surface normal there. In the first, a groove wall: a vertical wall facing the camera with a V-shaped notch; the rays of rows v minus 1 and v plus 1 hit the flat wall with normals pointing straight at the camera, and the ray of row v hits the notch's upper face, its dot red, its normal pointing down and to the left; the verdict in red reads v is a spike, skipped, because v turns away from both neighbours while those two agree and lie on one plane, so v's two checks and the checks toward v are skipped. In the second, a step: a lower riser in front, a slanted top face, and a higher riser further back, both risers facing the camera; rows v plus 1 and v minus 1 hit the two risers with the same normal and row v hits the slanted top with a normal pointing up and left; a double arrow marks the tread between the risers; the verdict in green reads not a spike, kept, because the two risers face the same way but their planes are a tread apart. In the third, a wire in front of a wall: rows v minus 1 and v plus 1 hit the wall, row v hits a small round wire well in front of it; the verdict in red reads v is a thin foreground, skipped, because v is nearer than both neighbours, which are one surface, so both of v's silhouette checks are skipped. A caption defines one surface as normals within about 7 degrees and the far sample on the near one's plane within 0.3% of the depth](/assets/images/thin-outline/normal-spike.svg)
+
+### One Surface
+
+Two pixels are **one surface** for the filter when their normals agree, the
+length of their cross product below 0.125, about 7°, **and** the second
+pixel's sample lies on the first one's plane, its offset along the first
+normal within 0.3% of the first pixel's depth:
+
+```hlsl
+bool IsSameSurfaceForSpike(FThinOutlineSample A, FThinOutlineSample B)
+{
+	return A.bHasNormal && B.bHasNormal
+		&& length(cross(A.WorldNormal, B.WorldNormal)) < SpikeThreshold
+		&& abs(dot(B.TranslatedWorldPosition - A.TranslatedWorldPosition, A.WorldNormal)) <= SpikePlaneTolerance * A.Depth;
+}
+```
+
+The plane test came from the first trial. With the normals alone, the
+filter removed the long crease along the top of the low walls in my test
+level. Each wall top there is a thin step between the wall's front and the
+next wall behind it, both facing the camera, 220 and 230 units away. On the
+frames when the jitter put the whole top into one pixel row, that row had a
+crease toward both neighbours, and the neighbours' normals agreed: a spike,
+by normals. A groove's two sides lie on one plane; a step's two risers are
+a tread apart, here 4.5% of the depth, and the plane test tells them apart.
+With it, the wall tops' records came back exactly as they were without the
+filter.
+
+What the filter costs in pictures is a real ridge one pixel wide on a flat
+surface, a thin wall seen edge-on at a distance, which is dropped with the
+spikes. That was my first post's intent for thin geometry too. In my test
+level, on one frame, it skips about 400 checks, all on the character's fine
+features, the fingers, the face, the folds of the torso; nothing on the
+level. Static, against the filter off, it changes 48 display pixels by more
+than a tenth of full strength, 25 removed and 23 added, all on the
+character. It costs about 0.002 ms at 1280×720 and 73%: loading the far
+normal for every pixel cost 0.007 ms, and loading it only where a crease
+fired cut that to a third.
+
+## The Thin Foreground
+
+My first post argued for filtering thin geometry when it is sampled rather
+than after the fit: by the time the dense edge suppression runs, the thin
+geometry's samples have been mixed into the records around it and skewed
+their fits, and a suppression can only hide an edge pixel, not clean up its
+neighbours' records. A foreground one pixel thin, a wire, a pole or a
+railing at a distance, is the depth version of the normal spike: hit by the
+jittered sample on some frames, it pops, and its two silhouettes are one
+pixel apart, an isolated pair the dense suppression keeps by design.
+
+The rule is the spike rule on depth: a pixel nearer than both of its
+neighbours along an axis, while those two are one surface by the same test,
+records no silhouette toward either side, and its depth edge measures are
+cleared so that the presence does not find it either. Since silhouette
+records are kept by the foreground pixels, as the
+[silhouettes]({% post_url 2026-10-11-thin-outline-silhouettes %}) post
+explains, the samples of a one-pixel foreground are only ever its own: the
+pixels beside it are the background toward it and record nothing. So the
+near neighbours suffice, and no sample two pixels away is needed. The pixels
+beside it keep their background checks, which the history uses: the fetch
+velocity of a background pixel and the background-within-reach test still
+see the wire.
+
+The opposite case, a background gap one pixel wide between two foreground
+parts, is left open: the dense suppression's both-sides trigger leaves it
+alone, as its section says, and this filter only looks at foregrounds. My
+test level has no thin foreground, so I have no number for this filter
+beyond its cost: it needs no extra loads, since the near neighbours'
+normals are loaded anyway, and measured together with the spike filter the
+two cost 0.004 ms at 1280×720 and 73%.
+
+<!-- capture (City Sample, wires or railings at a distance): thin-foreground filter off against on -->
+
+## A Stabilization I Built and Removed
+
+Before the presence, and after the two suppressions had failed against the
+flicker, I copied the upscaler's own answer. TSR knows that some pixels
+flicker with the jitter, and keeps for each pixel how its value swung over
+recent frames: it counts the frames on which the value turned around, up
+then down or down then up, and accumulates the size of those swings. Where a
+pixel swings regularly, TSR lets its history stay within the measured
+amplitude of the new value instead of throwing it away, so the history
+settles on the middle of the swing.
+
+I applied the same analysis to the outline's alpha, once per rendering pixel
+after the edge was chosen, with the history moved by the pixel's velocity,
+or by the foreground's for a silhouette. Where nothing flickered it changed
+nothing, and where the alpha swung regularly it held it near the middle: an
+alpha alternating 1, 0, 1, 0 settled near 0.5. It worked as designed. In my
+static test level it changed 1,140 display pixels by more than 2% of full
+strength, the damped part of the jitter's flicker; it cost about 0.009 ms
+at 73% and kept three textures of history, about 12 MB at that resolution.
+
+It could not stop the dots. A pop drawn at full strength for three frames
+and then gone is not a regular swing; by the time the analysis has seen it,
+it is over. The presence and the spike filter came out of that, and once
+they were in, the stabilization added nothing I could see, at the same cost
+and without needing a history. I removed it. The difference between the
+two is where they act: the stabilization smooths the drawn alpha after the
+decisions have flipped, the presence makes the decisions follow how often
+the edge is really there.
+
+## What Is Left
+
+The outline still flickers in places. Some grooved surfaces flicker at
+certain distances; moving the ramp's ends removed that, but made other
+creases at the same distance dashed, and the ramp cannot be tuned by
+distance. The isolated edge suppression above is what I use there.
+A junction crease found on every other frame alternates between two faint
+strengths. And the choice between the types still puts silhouettes first,
+so a stray silhouette record whose fit is valid can hide a converged crease
+for a frame; the presence dims that silhouette, but its fit still counts as
+an edge.
+
+## Summary
+
+The suppressions run once per rendering pixel, after the spatial filter, on
+the edge the axis selection chose, and before the band's coverage is
+computed: the dense test first, since it is cheaper and decides more
+pixels. The presence and the two spike filters act where the records are
+sampled and updated, so the records themselves are cleaner. In the order of
+this post:
+
+| Step | Where | What it fixes | What it does not |
+|---|---|---|---|
+| Keeping failed records (history reprojection post) | history | Records reset once per jitter cycle at depth steps and slivers | Records that pass every test |
+| Dense edge suppression | drawing | Tangles of lines where three or more edges crowd within two pixels | The flicker of dense edges; isolated pairs, including one-pixel geometry |
+| Isolated edge suppression | drawing | Specks of one or two pixels, among them what is left of the grooves | The flicker of lines; it removes 0.6% of the outline |
+| Presence | records and drawing | Edges found on few recent frames: pops, junctions, ghosts | The footprints of a walking character, which fade too slowly (the velocity test) |
+| Normal-spike filter | sampling | Groove walls thinner than a pixel, before they reach a record | Real one-pixel ridges, which it drops with them |
+| Thin-foreground filter | sampling | Wires and poles one pixel thin | A one-pixel background gap |
+| Stabilization | drawing | Regular swings of the alpha | Pops; removed as redundant |
+
+Of these, the presence and the spike filter are the ones that removed most
+of the flicker I saw in the City Sample, at a cost of a few thousandths of a
+millisecond. What the whole outline costs, and how the drawing after the
+upscaler reads the records, is in the
+[drawing and performance]({% post_url 2026-10-11-thin-outline-drawing-and-performance %})
+post.
