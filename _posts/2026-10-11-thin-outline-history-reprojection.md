@@ -359,8 +359,9 @@ when any of these holds:
 - the pixel beyond that neighbour is the background: it is farther than the
   neighbour and off the line through the pixel and the neighbour, the
   silhouette measure seen from the neighbour without its symmetric term,
-  which would need a third pixel. A plain depth step of 5% in its place gives
-  nearly the same picture.
+  which would need a third pixel. A plain depth step of 5% in its place gave
+  nearly the same picture when I compared the two, and the measure is the
+  one kept.
 
 Two pixels, because the foreground pixel one inside the contour has no
 background neighbour on the frames when the contour pixel samples the
