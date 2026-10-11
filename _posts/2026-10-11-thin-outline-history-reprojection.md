@@ -454,18 +454,26 @@ a static view allows, halved the flicker.
 
 ### The Rule
 
-A failed tap is therefore kept, in three steps:
+A failed tap is therefore kept, in four steps:
 
 1. **A failed tap is merged at a thousandth of its weight.** Next to a tap
    that passes, it changes nothing, and the record counts as passed.
 2. **If no tap passes, the weights are restored** and the record is kept
    whole, marked as failed.
 3. **A failed frame counts as a frame on which the edge was not found** at
-   the pixel. That is what the record's presence tracks: it sinks by a
-   quarter on a failed frame and rises toward one on a found frame, the
-   outline is drawn a little dimmer while it is low, and the record is
-   dropped only when the presence has sunk below a drop level, about a dozen
-   failed frames in a row. One bad phase of the jitter cycle only dents it.
+   the pixel. That is what the record's presence $p$ tracks, a running
+   average of "found this frame" that is 1 for a record found on every
+   recent frame: each frame it is updated as
+   $p \leftarrow p + \tfrac14 (f - p)$, with $f = 1$ on a found frame and
+   $f = 0$ on a failed one, so it moves a quarter of the way toward 1 or
+   toward 0 each frame. The outline is drawn a little dimmer while $p$ is
+   low.
+4. **The record drops or recovers depending on what follows.** While the
+   failed frames keep coming, the presence keeps sinking, and once it falls
+   below a drop level, after about a dozen failed frames in a row, the
+   record is emptied. If a found frame breaks the run, the presence starts
+   rising again and the record recovers: one bad phase of the jitter cycle
+   only dents it, as the timeline above shows.
 
 ![Two panels, each a two-by-two block of history taps with the bilinear weights 0.08, 0.02, 0.72 and 0.18. In the left panel, labelled one tap fails its depth test, three taps carry green check marks and the 0.72 tap a red cross; the text beside it says the failed tap is merged at a thousandth of its weight, 0.72 times 0.001 equals 0.0007, so the merged sample count is about 0.08 plus 0.02 plus 0.18 times n, the three passing taps decide, and the record counts as passed. In the right panel, labelled all four taps fail, all four carry red crosses; the text says no tap passed, the weights are restored so the merged count is n, and the record is kept and marked as failed, which counts this frame as edge not found and sinks its presence. A caption says a tap that fails its history test is not left out, next to a passing tap it changes nothing, and when every tap fails the record survives the frame, while whether it survives the next ones is up to its presence](/assets/images/thin-outline/failed-taps.svg)
 
