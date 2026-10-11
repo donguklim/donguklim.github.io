@@ -37,6 +37,16 @@ the upscaler takes that blending away, along with the fading it caused, and
 the records are then the only memory the outline has. Every frame's
 decision shows as it is.
 
+This is Epic's City Sample with the outline drawn after the upscaler and
+every step of this post turned off: the dense and isolated edge
+suppression, the presence and the spike filter. It is the reference for the
+videos further down, which turn the steps on one at a time.
+
+<iframe style="width: 100%; aspect-ratio: 16 / 9; border: 0;" src="https://www.youtube-nocookie.com/embed/YHStMWZe82s" title="City Sample, every flicker suppression off" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+*The City Sample, outline drawn after the upscaler, every flicker
+suppression off. [Watch on YouTube](https://youtu.be/YHStMWZe82s).*
+
 ### How I Measured It
 
 The flicker repeats with the jitter cycle, so it can be measured in a static
@@ -298,6 +308,15 @@ flicker and not the main one. I kept it anyway: where edges are dense it
 stops the spot from being darkened by a tangle of lines, which a user may
 or may not want, and it is a switch.
 
+The video below has the dense edge suppression on together with the
+presence and the spike filter, which come later in this post; the same view
+with those two alone is the spike filter's video further down.
+
+<iframe style="width: 100%; aspect-ratio: 16 / 9; border: 0;" src="https://www.youtube-nocookie.com/embed/nFosv3O95fo" title="City Sample, presence, spike filter and dense edge suppression on" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+*The City Sample with the presence, the spike filter and the dense edge
+suppression on. [Watch on YouTube](https://youtu.be/nFosv3O95fo).*
+
 ## Isolated Edge Suppression
 
 The opposite case is an edge that is too *small*. An edge of one or two
@@ -334,6 +353,14 @@ still flickered at certain distances, the presence ramp could not be tuned
 for them without making other creases at the same distance dashed, and the
 specks were the handle that was left. Sharing its loads with the filter
 made it nearly free, which is the other reason it stayed.
+
+With every step of this post on, the isolated edge suppression included:
+
+<iframe style="width: 100%; aspect-ratio: 16 / 9; border: 0;" src="https://www.youtube-nocookie.com/embed/b3blImFzETA" title="City Sample, every flicker suppression on" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+*The City Sample with every flicker suppression on: the presence, the spike
+filter, the dense and the isolated edge suppression.
+[Watch on YouTube](https://youtu.be/b3blImFzETA).*
 
 ## The Miss Limit and Its Ghosts
 
@@ -546,7 +573,36 @@ and records on their way out. Its effect on the flicker I judged on screen
 in the City Sample, where the grooves are; my test level has none, and the
 count of the measured region says nothing about dots on a distant facade.
 
-<!-- capture (City Sample, distant grooved facade): presence and spike filter off against on -->
+### Why a Rarely Found Edge Is Not Drawn
+
+Turning a rarely found edge down to nothing, rather than drawing it at a
+lower strength or holding it for a few frames, is a choice about what the
+outline should show, and the City Sample's normal buffer is my reason for
+it. The video below shows the normal buffer as colours while the camera
+moves over the city:
+
+<iframe style="width: 100%; aspect-ratio: 16 / 9; border: 0;" src="https://www.youtube-nocookie.com/embed/c78VzmgZvB0" title="City Sample, normal buffer visualization" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+*The City Sample's normal buffer. [Watch on YouTube](https://youtu.be/c78VzmgZvB0).*
+
+The spots where the outline's creases flicker are the spots where the
+normal buffer has flickering dots, and apart from those dots the normals
+there are nearly constant. The ground with grooves is an example. Seen from
+near, its grooves are visible as creases in the shaded image even with the
+plugin off, and its normals have no flickering dots: each groove is wider
+than a pixel and every frame samples it. As the camera moves away, the
+grooves shrink below a pixel and fade out of the shaded image, and all
+that is left of them in the normal buffer is the dots. An outline drawn
+from those dots would draw a crease that the image itself no longer shows.
+So an edge found only on a few recent frames should not be drawn at all,
+and that is what the ramp's zero below a presence of 0.3 does.
+
+The presence alone, against the reference with everything off at the top
+of this post:
+
+<iframe style="width: 100%; aspect-ratio: 16 / 9; border: 0;" src="https://www.youtube-nocookie.com/embed/gyRO8wb87-k" title="City Sample, presence on" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+*The City Sample with only the presence on. [Watch on YouTube](https://youtu.be/gyRO8wb87-k).*
 
 ## The Normal-Spike Filter
 
@@ -617,6 +673,13 @@ character. It costs about 0.002 ms at 1280×720 and 73%: loading the far
 normal for every pixel cost 0.007 ms, and loading it only where a crease
 fired cut that to a third.
 
+With the spike filter added to the presence:
+
+<iframe style="width: 100%; aspect-ratio: 16 / 9; border: 0;" src="https://www.youtube-nocookie.com/embed/XQub3vIpPHk" title="City Sample, presence and spike filter on" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+*The City Sample with the presence and the spike filter on.
+[Watch on YouTube](https://youtu.be/XQub3vIpPHk).*
+
 ## The Thin Foreground
 
 My first post argued for filtering thin geometry when it is sampled rather
@@ -651,35 +714,6 @@ two cost 0.004 ms at 1280×720 and 73%.
 
 <!-- capture (City Sample, wires or railings at a distance): thin-foreground filter off against on -->
 
-## A Stabilization I Built and Removed
-
-Before the presence, and after the two suppressions had failed against the
-flicker, I copied the upscaler's own answer. TSR knows that some pixels
-flicker with the jitter, and keeps for each pixel how its value swung over
-recent frames: it counts the frames on which the value turned around, up
-then down or down then up, and accumulates the size of those swings. Where a
-pixel swings regularly, TSR lets its history stay within the measured
-amplitude of the new value instead of throwing it away, so the history
-settles on the middle of the swing.
-
-I applied the same analysis to the outline's alpha, once per rendering pixel
-after the edge was chosen, with the history moved by the pixel's velocity,
-or by the foreground's for a silhouette. Where nothing flickered it changed
-nothing, and where the alpha swung regularly it held it near the middle: an
-alpha alternating 1, 0, 1, 0 settled near 0.5. It worked as designed. In my
-static test level it changed 1,140 display pixels by more than 2% of full
-strength, the damped part of the jitter's flicker; it cost about 0.009 ms
-at 73% and kept three textures of history, about 12 MB at that resolution.
-
-It could not stop the dots. A pop drawn at full strength for three frames
-and then gone is not a regular swing; by the time the analysis has seen it,
-it is over. The presence and the spike filter came out of that, and once
-they were in, the stabilization added nothing I could see, at the same cost
-and without needing a history. I removed it. The difference between the
-two is where they act: the stabilization smooths the drawn alpha after the
-decisions have flipped, the presence makes the decisions follow how often
-the edge is really there.
-
 ## What Is Left
 
 The outline still flickers in places. Some grooved surfaces flicker at
@@ -709,7 +743,6 @@ this post:
 | Presence | records and drawing | Edges found on few recent frames: pops, junctions, ghosts | The footprints of a walking character, which fade too slowly (the velocity test) |
 | Normal-spike filter | sampling | Groove walls thinner than a pixel, before they reach a record | Real one-pixel ridges, which it drops with them |
 | Thin-foreground filter | sampling | Wires and poles one pixel thin | A one-pixel background gap |
-| Stabilization | drawing | Regular swings of the alpha | Pops; removed as redundant |
 
 Of these, the presence and the spike filter are the ones that removed most
 of the flicker I saw in the City Sample, at a cost of a few thousandths of a
