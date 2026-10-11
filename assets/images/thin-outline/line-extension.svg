@@ -1,0 +1,55 @@
+<svg viewBox="0 0 680 430" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="dim" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#333"/>
+    </marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#c0392b"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="680" height="430" fill="#ffffff" stroke="#e0e0e0" rx="8"/>
+  <text x="340" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#222">Blending Lines: A's Line Extended Through the Target</text>
+  <g fill="none" stroke="#333" stroke-width="1.5">
+    <rect x="90.0" y="60.0" width="100" height="100"/>
+    <rect x="190.0" y="60.0" width="100" height="100"/>
+    <rect x="90.0" y="160.0" width="100" height="100"/>
+    <rect x="190.0" y="160.0" width="100" height="100"/>
+    <rect x="90.0" y="260.0" width="100" height="100"/>
+    <rect x="190.0" y="260.0" width="100" height="100"/>
+  </g>
+  <text x="82.0" y="114.0" text-anchor="end" font-size="10.5" fill="#777">A (above)</text>
+  <text x="82.0" y="214.0" text-anchor="end" font-size="10.5" fill="#777">p (target)</text>
+  <text x="82.0" y="314.0" text-anchor="end" font-size="10.5" fill="#777">B (below)</text>
+  <g stroke="#e8a39c" stroke-width="2">
+    <line x1="164.4" y1="160.0" x2="201.4" y2="260.0"/>
+    <line x1="164.4" y1="260.0" x2="201.4" y2="360.0"/>
+  </g>
+  <line x1="164.4" y1="60.0" x2="201.4" y2="160.0" stroke="#c0392b" stroke-width="2.5"/>
+  <line x1="201.4" y1="160.0" x2="275.4" y2="360.0" stroke="#c0392b" stroke-width="2" stroke-dasharray="6 4"/>
+  <g fill="#1f5fbf">
+    <circle cx="182.9" cy="110.0" r="4.5"/>
+    <circle cx="182.9" cy="210.0" r="4.5"/>
+    <circle cx="182.9" cy="310.0" r="4.5"/>
+  </g>
+  <g fill="#c0392b">
+    <circle cx="219.9" cy="210.0" r="3.5"/>
+    <circle cx="256.9" cy="310.0" r="3.5"/>
+  </g>
+  <line x1="182.9" y1="210.0" x2="219.9" y2="210.0" stroke="#333" stroke-width="1.2" marker-start="url(#dim)" marker-end="url(#dim)"/>
+  <text x="227.9" y="214.0" text-anchor="start" font-size="10.5" fill="#333">b = 0.37</text>
+  <line x1="182.9" y1="310.0" x2="256.9" y2="310.0" stroke="#333" stroke-width="1.2" marker-start="url(#dim)" marker-end="url(#dim)"/>
+  <text x="264.9" y="314.0" text-anchor="start" font-size="10.5" fill="#333">2b = 0.74</text>
+  <text x="320.0" y="70.0" text-anchor="start" font-size="10.5" fill="#c0392b">red: A's fitted line (solid), extended</text>
+  <text x="320.0" y="84.0" text-anchor="start" font-size="10.5" fill="#c0392b">through the target and B (dashed)</text>
+  <text x="320.0" y="114.0" text-anchor="start" font-size="10.5" fill="#1f5fbf">blue: the centre crossings of A, p and B,</text>
+  <text x="320.0" y="128.0" text-anchor="start" font-size="10.5" fill="#1f5fbf">all at u = 0.93</text>
+  <text x="320.0" y="158.0" text-anchor="start" font-size="10.5" fill="#333">line against line: at the target's centre row</text>
+  <text x="320.0" y="172.0" text-anchor="start" font-size="10.5" fill="#333">A's line misses the target's crossing by</text>
+  <text x="320.0" y="186.0" text-anchor="start" font-size="10.5" fill="#333">b = 0.37 px: continuity weight 0.11</text>
+  <text x="320.0" y="216.0" text-anchor="start" font-size="10.5" fill="#333">line through the target: at B's centre row</text>
+  <text x="320.0" y="230.0" text-anchor="start" font-size="10.5" fill="#333">A's line misses B's crossing by 2b = 0.74 px:</text>
+  <text x="320.0" y="244.0" text-anchor="start" font-size="10.5" fill="#333">weight 0.0002, A is discarded</text>
+  <text x="320.0" y="274.0" text-anchor="start" font-size="10.5" fill="#d9826f">faint red: the own fitted lines of p and B,</text>
+  <text x="320.0" y="288.0" text-anchor="start" font-size="10.5" fill="#d9826f">identical to A's, one row lower each</text>
+  <text x="340.0" y="416.0" text-anchor="middle" font-size="10.5" fill="#777">The same static edge: a = 0.744, b = 0.37 in every row; the gate scale is 0.25 px</text>
+</svg>

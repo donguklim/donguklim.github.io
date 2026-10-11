@@ -1,0 +1,77 @@
+<svg viewBox="0 0 900 440" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="dim" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#333"/>
+    </marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#c0392b"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="900" height="440" fill="#ffffff" stroke="#e0e0e0" rx="8"/>
+  <text x="450" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#222">The Collinearity Test on the Centre Crossings</text>
+  <text x="110.0" y="50.0" text-anchor="middle" font-size="10.5" fill="#333" font-weight="600">static vertical edge</text>
+  <g fill="none" stroke="#333" stroke-width="1.5">
+    <rect x="20.0" y="60.0" width="90" height="90"/>
+    <rect x="110.0" y="60.0" width="90" height="90"/>
+    <rect x="20.0" y="150.0" width="90" height="90"/>
+    <rect x="110.0" y="150.0" width="90" height="90"/>
+    <rect x="20.0" y="240.0" width="90" height="90"/>
+    <rect x="110.0" y="240.0" width="90" height="90"/>
+  </g>
+  <g stroke="#e8a39c" stroke-width="2">
+    <line x1="87.0" y1="60.0" x2="120.3" y2="150.0"/>
+    <line x1="87.0" y1="150.0" x2="120.3" y2="240.0"/>
+    <line x1="87.0" y1="240.0" x2="120.3" y2="330.0"/>
+  </g>
+  <line x1="103.6" y1="60.0" x2="103.6" y2="330.0" stroke="#1f5fbf" stroke-width="2.5"/>
+  <g fill="#1f5fbf">
+    <circle cx="103.6" cy="105.0" r="4.5"/>
+    <circle cx="103.6" cy="195.0" r="4.5"/>
+    <circle cx="103.6" cy="285.0" r="4.5"/>
+  </g>
+  <text x="112.6" y="101.0" text-anchor="start" font-size="10.5" fill="#1f5fbf" font-style="italic">u_A</text>
+  <text x="112.6" y="191.0" text-anchor="start" font-size="10.5" fill="#1f5fbf" font-style="italic">u_p</text>
+  <text x="112.6" y="281.0" text-anchor="start" font-size="10.5" fill="#1f5fbf" font-style="italic">u_B</text>
+  <text x="110.0" y="354.0" text-anchor="middle" font-size="10.5" fill="#333">d = (u_A + u_B)/2 − u_p = 0</text>
+  <text x="110.0" y="372.0" text-anchor="middle" font-size="10.5" fill="#1f5fbf">fitted slope 0: the sawtooth is gone</text>
+  <text x="110.0" y="390.0" text-anchor="middle" font-size="10.5" fill="#d9826f">faint red: the old leaning lines</text>
+  <text x="410.0" y="50.0" text-anchor="middle" font-size="10.5" fill="#333" font-weight="600">slanted edge, slope 0.5</text>
+  <g fill="none" stroke="#333" stroke-width="1.5">
+    <rect x="320.0" y="60.0" width="90" height="90"/>
+    <rect x="410.0" y="60.0" width="90" height="90"/>
+    <rect x="320.0" y="150.0" width="90" height="90"/>
+    <rect x="410.0" y="150.0" width="90" height="90"/>
+    <rect x="320.0" y="240.0" width="90" height="90"/>
+    <rect x="410.0" y="240.0" width="90" height="90"/>
+  </g>
+  <line x1="336.1" y1="60.0" x2="471.1" y2="330.0" stroke="#1f5fbf" stroke-width="2.5"/>
+  <g fill="#1f5fbf">
+    <circle cx="358.6" cy="105.0" r="4.5"/>
+    <circle cx="403.6" cy="195.0" r="4.5"/>
+    <circle cx="448.6" cy="285.0" r="4.5"/>
+  </g>
+  <text x="410.0" y="354.0" text-anchor="middle" font-size="10.5" fill="#333">d = (0.43 + 1.43)/2 − 0.93 = 0</text>
+  <text x="410.0" y="372.0" text-anchor="middle" font-size="10.5" fill="#1f5fbf">fitted slope (1.43 − 0.43)/2 = 0.5</text>
+  <text x="410.0" y="390.0" text-anchor="middle" font-size="10.5" fill="#777">no slope enters d: any straight edge passes</text>
+  <text x="710.0" y="50.0" text-anchor="middle" font-size="10.5" fill="#333" font-weight="600">a parallel edge in B's row</text>
+  <g fill="none" stroke="#333" stroke-width="1.5">
+    <rect x="620.0" y="60.0" width="90" height="90"/>
+    <rect x="710.0" y="60.0" width="90" height="90"/>
+    <rect x="620.0" y="150.0" width="90" height="90"/>
+    <rect x="710.0" y="150.0" width="90" height="90"/>
+    <rect x="620.0" y="240.0" width="90" height="90"/>
+    <rect x="710.0" y="240.0" width="90" height="90"/>
+  </g>
+  <line x1="703.6" y1="60.0" x2="703.6" y2="240.0" stroke="#2e8b57" stroke-width="2" stroke-dasharray="7 5"/>
+  <line x1="793.6" y1="240.0" x2="793.6" y2="330.0" stroke="#2e8b57" stroke-width="2" stroke-dasharray="7 5"/>
+  <g fill="#1f5fbf">
+    <circle cx="703.6" cy="105.0" r="4.5"/>
+    <circle cx="703.6" cy="195.0" r="4.5"/>
+  </g>
+  <circle cx="793.6" cy="285.0" r="4.5" fill="#c0392b"/>
+  <text x="710.0" y="354.0" text-anchor="middle" font-size="10.5" fill="#333">d = (0.93 + 1.93)/2 − 0.93 = 0.5</text>
+  <text x="710.0" y="372.0" text-anchor="middle" font-size="10.5" fill="#c0392b">gate exp(−(0.5/0.25)²) ≈ 0.02: B left out</text>
+  <text x="710.0" y="390.0" text-anchor="middle" font-size="10.5" fill="#777">the own slope is kept</text>
+  <text x="450.0" y="410.0" text-anchor="middle" font-size="10.5" fill="#777">dots: the centre crossings u_q of the three rows' pooled fits, at their row centres v = −0.5, 0.5, 1.5 in the target's frame;</text>
+  <text x="450.0" y="426.0" text-anchor="middle" font-size="10.5" fill="#777">blue line: the line fitted through them; green: the true edges</text>
+</svg>
