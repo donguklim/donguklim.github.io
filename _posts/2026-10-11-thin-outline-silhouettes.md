@@ -3,6 +3,7 @@ layout: post
 title: "ThinOutline: Silhouettes"
 date: 2026-10-11 11:00:00 +0900
 categories: [rendering, npr]
+hidden: true
 ---
 
 This post is not written yet. It will cover how the ThinOutline plugin

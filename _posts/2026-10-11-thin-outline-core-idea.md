@@ -3,6 +3,7 @@ layout: post
 title: "ThinOutline: The Core Idea"
 date: 2026-10-11 10:00:00 +0900
 categories: [rendering, npr]
+hidden: true
 ---
 
 The ThinOutline plugin draws toon outlines from the G-buffer that are thinner

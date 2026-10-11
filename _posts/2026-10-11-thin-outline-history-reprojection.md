@@ -3,6 +3,7 @@ layout: post
 title: "ThinOutline: History Reprojection"
 date: 2026-10-11 12:00:00 +0900
 categories: [rendering, npr]
+hidden: true
 ---
 
 This post is not written yet. It will cover how a ThinOutline record follows

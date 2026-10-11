@@ -1,0 +1,41 @@
+---
+layout: default
+---
+{%- comment -%}
+minima 2.5.1's home layout, with one change: posts whose front matter has
+`hidden: true` are left out of the list. The sub-posts of a series set it, so
+only the series' main post appears on the home page; the sub-posts are still
+built and reachable through post_url links.
+{%- endcomment -%}
+
+<div class="home">
+  {%- if page.title -%}
+    <h1 class="page-heading">{{ page.title }}</h1>
+  {%- endif -%}
+
+  {{ content }}
+
+  {%- assign visible_posts = site.posts | where_exp: "post", "post.hidden != true" -%}
+  {%- if visible_posts.size > 0 -%}
+    <h2 class="post-list-heading">{{ page.list_title | default: "Posts" }}</h2>
+    <ul class="post-list">
+      {%- for post in visible_posts -%}
+      <li>
+        {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
+        <span class="post-meta">{{ post.date | date: date_format }}</span>
+        <h3>
+          <a class="post-link" href="{{ post.url | relative_url }}">
+            {{ post.title | escape }}
+          </a>
+        </h3>
+        {%- if site.show_excerpts -%}
+          {{ post.excerpt }}
+        {%- endif -%}
+      </li>
+      {%- endfor -%}
+    </ul>
+
+    <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | relative_url }}">via RSS</a></p>
+  {%- endif -%}
+
+</div>
