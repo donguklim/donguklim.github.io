@@ -16,7 +16,7 @@ covers what the work showed about the passes that remained, which ended up
 waiting on their own loads rather than doing too much of them. It is part of
 a [series]({% post_url 2026-10-11-thin-outline %}); the passes it
 schedules are described in the
-[drawing and performance]({% post_url 2026-10-11-thin-outline-drawing-and-performance %})
+[drawing after the upscaler]({% post_url 2026-10-11-thin-outline-drawing-after-upscaler %})
 post.
 
 ## Most of the Screen Has No Record
@@ -149,8 +149,8 @@ tile's x and y in 14 bits each and the record types found in the top bits.
 At 73% the list held 2,087 of the 14,400 display tiles (14.5%).
 
 Since the edge pass was added (the
-[drawing and performance]({% post_url 2026-10-11-thin-outline-drawing-and-performance %})
-post), the drawing after the upscaler no longer reads records but one line
+[drawing after the upscaler]({% post_url 2026-10-11-thin-outline-drawing-after-upscaler %})
+post), the display pass no longer reads records but one line
 per rendering pixel, which the edge pass reconstructs from the records. The
 margin is still the right one: a pixel's line comes from records at most
 two pixels away, so a display tile with no record within reach has no line
@@ -214,7 +214,7 @@ was no longer the lever; the length of the chain was. That is what the edge
 pass took apart: it selects and filters each rendering pixel's edge once, on
 the rendering tiles, and leaves the display pass one load and the band's
 area. The
-[drawing and performance]({% post_url 2026-10-11-thin-outline-drawing-and-performance %})
+[drawing after the upscaler]({% post_url 2026-10-11-thin-outline-drawing-after-upscaler %})
 post has it and what it saved.
 
 ## Drawing in Place
@@ -321,7 +321,7 @@ its edge checks anyway. The edge checks, which read the G-buffer at every
 pixel every frame, are the record pass, and no tile list can skip them. The
 skip compiled in without raising the pass's register count, so it cost
 nothing in resident warps (about 14 per multiprocessor either way; the
-[drawing and performance]({% post_url 2026-10-11-thin-outline-drawing-and-performance %})
+[drawing after the upscaler]({% post_url 2026-10-11-thin-outline-drawing-after-upscaler %})
 post explains why that number matters for the record pass).
 
 ## Where It Stands
@@ -344,7 +344,7 @@ At base clocks, drawing after the upscaler at 73%, that was the record pass
 0.062 ms, the mask 0.009 ms, the list passes 0.011 ms, and the drawing pass
 0.069 ms. The edge pass then cut the plugin by another 32% at 73% after the
 upscaler; the
-[drawing and performance]({% post_url 2026-10-11-thin-outline-drawing-and-performance %})
+[drawing after the upscaler]({% post_url 2026-10-11-thin-outline-drawing-after-upscaler %})
 post has the current costs with every part of the algorithm switched on.
 
 What the tiles cannot save, and what is still open:

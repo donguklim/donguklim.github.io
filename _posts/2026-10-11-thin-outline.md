@@ -104,7 +104,7 @@ Per frame, the work falls into three steps:
   running the drawing passes only on the tiles within reach of a record,
   and why the passes that remained were waiting on their loads rather than
   doing too much.
-- [Drawing and performance]({% post_url 2026-10-11-thin-outline-drawing-and-performance %}):
+- [Drawing after the upscaler]({% post_url 2026-10-11-thin-outline-drawing-after-upscaler %}):
   coverage of the display pixel, drawing before the upscaler against after
   it, and what the implementation costs and why.
 
@@ -117,7 +117,7 @@ pieces of its HLSL where a formula is clearer as code, and the numbers they
 give were measured with it, under TSR, in the engine's third-person
 template, the City Sample and Stack O Bot. Its settings, drawing modes and
 costs are described in the
-[drawing and performance]({% post_url 2026-10-11-thin-outline-drawing-and-performance %})
+[drawing after the upscaler]({% post_url 2026-10-11-thin-outline-drawing-after-upscaler %})
 post. The algorithm needs a temporal upscaler whose jitter is uniform over
 the pixel, as TSR's Halton sequence is; without temporal anti-aliasing every
 sample sits at the pixel centre and nothing can be reconstructed, and a

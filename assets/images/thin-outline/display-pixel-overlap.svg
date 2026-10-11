@@ -1,0 +1,38 @@
+<svg viewBox="0 0 780 480" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="780" height="480" fill="#ffffff" stroke="#e0e0e0" rx="8"/>
+  <text x="390" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#222">One Display Pixel Over Four Rendering Pixels</text>
+  <rect x="60" y="70" width="190" height="190" fill="#fafafa" stroke="#333" stroke-width="1.8"/>
+  <text x="66" y="86" font-size="11" fill="#666">R(0, 0)</text>
+  <rect x="250" y="70" width="190" height="190" fill="#fafafa" stroke="#333" stroke-width="1.8"/>
+  <text x="256" y="86" font-size="11" fill="#666">R(1, 0)</text>
+  <rect x="60" y="260" width="190" height="190" fill="#fafafa" stroke="#333" stroke-width="1.8"/>
+  <text x="66" y="276" font-size="11" fill="#666">R(0, 1)</text>
+  <rect x="250" y="260" width="190" height="190" fill="#fafafa" stroke="#333" stroke-width="1.8"/>
+  <text x="256" y="276" font-size="11" fill="#666">R(1, 1)</text>
+  <polygon points="230.37,70 382.37,450 307.63,450 155.63,70" fill="#888" fill-opacity="0.18"/>
+  <line x1="193" y1="70" x2="345" y2="450" stroke="#222" stroke-width="1.4"/>
+  <polygon points="250,174.5 250,260 231.63,260 197.43,174.5" fill="#2e8b57" fill-opacity="0.55"/>
+  <rect x="177.8" y="174.5" width="72.2" height="85.5" fill="none" stroke="#2e8b57" stroke-width="1" stroke-dasharray="3 2"/>
+  <polygon points="272.17,174.5 306.37,260 250,260 250,174.5" fill="#c07a1a" fill-opacity="0.55"/>
+  <rect x="250" y="174.5" width="66.5891" height="85.5" fill="none" stroke="#c07a1a" stroke-width="1" stroke-dasharray="3 2"/>
+  <polygon points="250,260 250,305.925 231.63,260" fill="#1f5fa8" fill-opacity="0.55"/>
+  <rect x="177.8" y="260" width="72.2" height="53.2891" fill="none" stroke="#1f5fa8" stroke-width="1" stroke-dasharray="3 2"/>
+  <polygon points="306.37,260 316.589,285.547 316.589,313.289 252.946,313.289 250,305.925 250,260" fill="#b03a6a" fill-opacity="0.55"/>
+  <rect x="250" y="260" width="66.5891" height="53.2891" fill="none" stroke="#b03a6a" stroke-width="1" stroke-dasharray="3 2"/>
+  <rect x="177.8" y="174.5" width="138.789" height="138.789" fill="none" stroke="#7a4fa0" stroke-width="2.6"/>
+  <text x="173.8" y="169.5" font-size="11" fill="#7a4fa0" text-anchor="end">display pixel D</text>
+  <text x="480" y="80" font-size="11.5" font-weight="600" fill="#333">D at 73%: 0.73 × 0.73 rendering pixels</text>
+  <text x="480" y="98" font-size="11" fill="#333">|D| = 0.534; a band 0.5 display pixel thick</text>
+  <text x="480" y="124" font-size="11" fill="#333">band of each R inside D ∩ R:</text>
+  <rect x="480" y="136" width="14" height="12" fill="#2e8b57" fill-opacity="0.55" stroke="#2e8b57" stroke-dasharray="3 2"/>
+  <text x="502" y="146" font-size="11" fill="#333">R(0, 0): 0.084 of an overlap of 0.171</text>
+  <rect x="480" y="158" width="14" height="12" fill="#c07a1a" fill-opacity="0.55" stroke="#c07a1a" stroke-dasharray="3 2"/>
+  <text x="502" y="168" font-size="11" fill="#333">R(1, 0): 0.093 of an overlap of 0.158</text>
+  <rect x="480" y="180" width="14" height="12" fill="#1f5fa8" fill-opacity="0.55" stroke="#1f5fa8" stroke-dasharray="3 2"/>
+  <text x="502" y="190" font-size="11" fill="#333">R(0, 1): 0.012 of an overlap of 0.107</text>
+  <rect x="480" y="202" width="14" height="12" fill="#b03a6a" fill-opacity="0.55" stroke="#b03a6a" stroke-dasharray="3 2"/>
+  <text x="502" y="212" font-size="11" fill="#333">R(1, 1): 0.094 of an overlap of 0.098</text>
+  <text x="480" y="248" font-size="11.5" fill="#222">α = (0.084 + 0.093 + 0.012 + 0.094) / 0.534 = 0.53</text>
+  <text x="480" y="272" font-size="10.5" fill="#555">strength 1; every R draws the same line here,</text>
+  <text x="480" y="287" font-size="10.5" fill="#555">so the sum is the band's exact share of D</text>
+</svg>

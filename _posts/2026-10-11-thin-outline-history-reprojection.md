@@ -682,6 +682,6 @@ the depth test cannot see and the velocity test does not catch: records slid
 along a surface and copies on a face widening on screen. The
 [silhouettes]({% post_url 2026-10-11-thin-outline-silhouettes %}) post has
 the kept ratio and the foreground depth the silhouette tests read, and the
-[drawing and performance]({% post_url 2026-10-11-thin-outline-drawing-and-performance %})
-post has what the history fetch costs and how its work is kept off the
-pixels that have no records nearby.
+[tile classification]({% post_url 2026-10-11-thin-outline-tile-classification %})
+post has how the history fetch is skipped for the pixels that have no
+records nearby.

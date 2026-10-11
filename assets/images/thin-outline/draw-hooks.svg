@@ -1,0 +1,52 @@
+<svg viewBox="0 0 714 548" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="714" height="548" fill="#ffffff" stroke="#e0e0e0" rx="8"/>
+  <text x="357" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#222">Where the Outline Is Drawn in a Frame</text>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#555"/></marker></defs>
+  <rect x="150" y="56" width="250" height="40" rx="5" fill="#f4f4f4" stroke="#999" stroke-width="1"/>
+  <text x="275" y="73" font-size="11.5" font-weight="600" fill="#222" text-anchor="middle">Opaque surfaces, lighting</text>
+  <text x="275" y="88" font-size="9.5" fill="#555" text-anchor="middle">the jittered G-buffer</text>
+  <line x1="275" y1="96" x2="275" y2="109" stroke="#555" stroke-width="1.2" marker-end="url(#a)"/>
+  <rect x="150" y="110" width="250" height="40" rx="5" fill="#f4f4f4" stroke="#999" stroke-width="1"/>
+  <text x="275" y="127" font-size="11.5" font-weight="600" fill="#222" text-anchor="middle">Fog, sky haze</text>
+  <text x="275" y="142" font-size="9.5" fill="#555" text-anchor="middle">applied to scene colour</text>
+  <line x1="275" y1="150" x2="275" y2="163" stroke="#555" stroke-width="1.2" marker-end="url(#a)"/>
+  <rect x="150" y="164" width="250" height="40" rx="5" fill="#f4f4f4" stroke="#999" stroke-width="1"/>
+  <text x="275" y="181" font-size="11.5" font-weight="600" fill="#222" text-anchor="middle">Translucency</text>
+  <text x="275" y="196" font-size="9.5" fill="#555" text-anchor="middle">"After DOF" materials into a texture of their own</text>
+  <line x1="275" y1="204" x2="275" y2="217" stroke="#555" stroke-width="1.2" marker-end="url(#a)"/>
+  <rect x="150" y="218" width="250" height="40" rx="5" fill="#eef3fa" stroke="#1f5fa8" stroke-width="1.8"/>
+  <text x="275" y="235" font-size="11.5" font-weight="600" fill="#222" text-anchor="middle">Before DOF hook</text>
+  <text x="275" y="250" font-size="9.5" fill="#555" text-anchor="middle">record pass, edge pass</text>
+  <line x1="275" y1="258" x2="275" y2="271" stroke="#555" stroke-width="1.2" marker-end="url(#a)"/>
+  <rect x="150" y="272" width="250" height="40" rx="5" fill="#f4f4f4" stroke="#999" stroke-width="1"/>
+  <text x="275" y="289" font-size="11.5" font-weight="600" fill="#222" text-anchor="middle">Depth of field</text>
+  <text x="275" y="304" font-size="9.5" fill="#555" text-anchor="middle">composites the "After DOF" translucency</text>
+  <line x1="275" y1="312" x2="275" y2="325" stroke="#555" stroke-width="1.2" marker-end="url(#a)"/>
+  <rect x="150" y="326" width="250" height="40" rx="5" fill="#f4f4f4" stroke="#999" stroke-width="1"/>
+  <text x="275" y="343" font-size="11.5" font-weight="600" fill="#222" text-anchor="middle">TSR</text>
+  <text x="275" y="358" font-size="9.5" fill="#555" text-anchor="middle">the temporal upscaler</text>
+  <line x1="275" y1="366" x2="275" y2="379" stroke="#555" stroke-width="1.2" marker-end="url(#a)"/>
+  <rect x="150" y="380" width="250" height="40" rx="5" fill="#f4f4f4" stroke="#999" stroke-width="1"/>
+  <text x="275" y="405" font-size="11.5" font-weight="600" fill="#222" text-anchor="middle">Motion blur</text>
+  <line x1="275" y1="420" x2="275" y2="433" stroke="#555" stroke-width="1.2" marker-end="url(#a)"/>
+  <rect x="150" y="434" width="250" height="40" rx="5" fill="#f3ecf8" stroke="#7a4fa0" stroke-width="1.8"/>
+  <text x="275" y="459" font-size="11.5" font-weight="600" fill="#222" text-anchor="middle">After motion blur hook</text>
+  <line x1="275" y1="474" x2="275" y2="487" stroke="#555" stroke-width="1.2" marker-end="url(#a)"/>
+  <rect x="150" y="488" width="250" height="40" rx="5" fill="#f4f4f4" stroke="#999" stroke-width="1"/>
+  <text x="275" y="513" font-size="11.5" font-weight="600" fill="#222" text-anchor="middle">Bloom, tonemapping</text>
+  <path d="M140,58 L132,58 L132,342 L140,342" fill="none" stroke="#777" stroke-width="1"/>
+  <text x="126" y="200" font-size="10.5" fill="#444" text-anchor="end">rendering resolution,</text>
+  <text x="126" y="214" font-size="10.5" fill="#444" text-anchor="end">jittered</text>
+  <path d="M140,350 L132,350 L132,528 L140,528" fill="none" stroke="#777" stroke-width="1"/>
+  <text x="126" y="439" font-size="10.5" fill="#444" text-anchor="end">display resolution</text>
+  <line x1="400" y1="238" x2="420" y2="238" stroke="#1f5fa8" stroke-width="1.6"/>
+  <text x="424" y="224" font-size="10.5" fill="#1f5fa8">drawn before the upscaler: the composite and the</text>
+  <text x="424" y="238" font-size="10.5" fill="#1f5fa8">depth/velocity overwrite also run here; the outline</text>
+  <text x="424" y="252" font-size="10.5" fill="#1f5fa8">then goes through depth of field and TSR, and sits</text>
+  <text x="424" y="266" font-size="10.5" fill="#1f5fa8">under the "After DOF" translucency</text>
+  <line x1="400" y1="454" x2="420" y2="454" stroke="#7a4fa0" stroke-width="1.6"/>
+  <text x="424" y="440" font-size="10.5" fill="#7a4fa0">after the upscaler (the default): the composite runs</text>
+  <text x="424" y="454" font-size="10.5" fill="#7a4fa0">here, at display resolution, from the edge pass's</text>
+  <text x="424" y="468" font-size="10.5" fill="#7a4fa0">lines; the outline is drawn over everything</text>
+  <text x="424" y="482" font-size="10.5" fill="#7a4fa0">composited so far and stays sharp</text>
+</svg>

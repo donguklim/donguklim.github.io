@@ -690,7 +690,7 @@ this post:
 
 Of these, the presence and the spike filter are the ones that removed most
 of the flicker I saw in the City Sample, at a cost of a few thousandths of a
-millisecond. What the whole outline costs, and how the drawing after the
-upscaler reads the records, is in the
-[drawing and performance]({% post_url 2026-10-11-thin-outline-drawing-and-performance %})
+millisecond. What the whole outline costs, and how it is drawn from the
+records, is in the
+[drawing after the upscaler]({% post_url 2026-10-11-thin-outline-drawing-after-upscaler %})
 post.

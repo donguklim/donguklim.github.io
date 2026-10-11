@@ -32,9 +32,9 @@ centre, by how well the two lines' directions agreed, and by depth, with the
 blend's uncertainty tracked so that a second pass could reach one pixel
 further along the edge.
 
-Then drawing after the upscaler, described in the
-[drawing and performance]({% post_url 2026-10-11-thin-outline-drawing-and-performance %})
-post, showed that the fading and the dashes along the seams came from the
+Then drawing after the upscaler, described in
+[its own post]({% post_url 2026-10-11-thin-outline-drawing-after-upscaler %}),
+showed that the fading and the dashes along the seams came from the
 upscaler's handling of a thin, jittered outline, not from the seams. Drawn at
 display resolution from the same records, they were gone. What remained
 visible of the pixels' disagreement was something I hadn't noticed under the
@@ -478,7 +478,7 @@ loads.
 The filter was my first attempt at the fading along the seams, which
 drawing after the upscaler then removed on its own, and it did nothing for
 the flicker that remained, which the flicker post is about. The
-[drawing and performance]({% post_url 2026-10-11-thin-outline-drawing-and-performance %})
+[drawing after the upscaler]({% post_url 2026-10-11-thin-outline-drawing-after-upscaler %})
 post has the pass the filter runs in, the
 [tile classification]({% post_url 2026-10-11-thin-outline-tile-classification %})
 post how that pass runs only where the records are, and the

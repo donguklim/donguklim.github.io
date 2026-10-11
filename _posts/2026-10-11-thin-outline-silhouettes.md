@@ -450,7 +450,7 @@ None of this is needed when the outline is drawn after the upscaler, which
 is what I do by default now: the records are still built before it, but the
 line is painted at display resolution afterwards, and the upscaler never
 sees the outline. The
-[drawing and performance]({% post_url 2026-10-11-thin-outline-drawing-and-performance %})
+[drawing after the upscaler]({% post_url 2026-10-11-thin-outline-drawing-after-upscaler %})
 post compares the two.
 
 ## What the Other Posts Cover

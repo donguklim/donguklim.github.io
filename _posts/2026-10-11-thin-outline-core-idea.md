@@ -939,7 +939,7 @@ This is the rule for drawing before the upscaler. I now draw after it by
 default, at display resolution, where every display pixel sums the
 band areas of the rendering pixels it overlaps directly and the upscaler
 plays no part; the
-[drawing and performance]({% post_url 2026-10-11-thin-outline-drawing-and-performance %})
+[drawing after the upscaler]({% post_url 2026-10-11-thin-outline-drawing-after-upscaler %})
 post covers that mode, the comparison between the two, and the tilt the
 after-upscaler mode made visible.
 
