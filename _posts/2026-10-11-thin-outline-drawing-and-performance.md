@@ -12,4 +12,4 @@ upscaler against after it, the edge pass, and what the record pass costs
 and why; how the passes run only where the records are is in the
 [tile classification]({% post_url 2026-10-11-thin-outline-tile-classification %})
 post. It is part of the series on
-[the algorithm]({% post_url 2026-10-11-thin-outline-plugin %}).
+[the algorithm]({% post_url 2026-10-11-thin-outline %}).

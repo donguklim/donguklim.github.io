@@ -14,7 +14,7 @@ the records lie, a list of the tiles within reach of one, and passes
 started from that list without the CPU ever learning its length. It also
 covers what the work showed about the passes that remained, which ended up
 waiting on their own loads rather than doing too much of them. It is part of
-a [series]({% post_url 2026-10-11-thin-outline-plugin %}); the passes it
+a [series]({% post_url 2026-10-11-thin-outline %}); the passes it
 schedules are described in the
 [drawing and performance]({% post_url 2026-10-11-thin-outline-drawing-and-performance %})
 post.

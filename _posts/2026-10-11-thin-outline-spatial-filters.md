@@ -13,7 +13,7 @@ why blending the neighbours' lines, the obvious thing to do, fails on a
 static edge, and how the line is straightened through the pixels across the
 edge's axis instead. It also says what the filter is for and what it is
 not: it did not fix the flicker, which has its own post. It is part of a
-[series]({% post_url 2026-10-11-thin-outline-plugin %}) and assumes the
+[series]({% post_url 2026-10-11-thin-outline %}) and assumes the
 [core idea]({% post_url 2026-10-11-thin-outline-core-idea %}) post.
 
 ## The Seam Problem, and What Was Left of It

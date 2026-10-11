@@ -12,7 +12,7 @@ temporal upscaler. A G-buffer edge check can only say whether an edge passes
 between two rendering pixels, but accumulated over the jittered frames of a
 temporal upscaler, those yes-or-no answers pin the edge down to a line
 equation accurate to a fraction of a pixel. It is the first part of a
-[series]({% post_url 2026-10-11-thin-outline-plugin %}) whose main post has
+[series]({% post_url 2026-10-11-thin-outline %}) whose main post has
 the overview and the links to the other parts.
 
 Two words I use throughout: a **rendering pixel** is a pixel of the renderer

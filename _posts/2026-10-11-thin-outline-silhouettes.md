@@ -13,7 +13,7 @@ a back, and that changes three things: how a depth step is told apart from a
 bend in the surface, which pixel records the edge and how it remembers which
 side the background is on, and what the temporal upscaler has to be told so
 it moves the outline with the object in front. This post covers those three
-things. It is part of a [series]({% post_url 2026-10-11-thin-outline-plugin %})
+things. It is part of a [series]({% post_url 2026-10-11-thin-outline %})
 and assumes the [core idea]({% post_url 2026-10-11-thin-outline-core-idea %}).
 
 ## Creases and Silhouettes

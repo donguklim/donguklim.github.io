@@ -239,7 +239,7 @@ If you reference this work, please cite this post as:
 
 > Donguk Lim. "TAA-Compatible Thin Toon Outlines From G-Buffer Contours."
 > *Notes on Rendering* (blog), October 11, 2026.
-> <https://donguklim.github.io/rendering/npr/2026/10/11/thin-outline-plugin.html>
+> <https://donguklim.github.io/rendering/npr/2026/10/11/thin-outline.html>
 
 Or in BibTeX:
 
@@ -251,7 +251,7 @@ Or in BibTeX:
   howpublished = {Notes on Rendering (blog)},
   year         = {2026},
   month        = oct,
-  url          = {https://donguklim.github.io/rendering/npr/2026/10/11/thin-outline-plugin.html}
+  url          = {https://donguklim.github.io/rendering/npr/2026/10/11/thin-outline.html}
 }
 ```
 {% endraw %}

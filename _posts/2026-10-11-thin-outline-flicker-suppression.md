@@ -12,7 +12,7 @@ one frame and gone on the next. This post covers what flickers and why, how
 I measured it over the jitter cycle, the two suppressions I tried first and
 why they did not help, and what did: the presence of a record, a filter for
 normal spikes at sampling time, and a filter for foregrounds one pixel thin.
-It is part of a [series]({% post_url 2026-10-11-thin-outline-plugin %}) and
+It is part of a [series]({% post_url 2026-10-11-thin-outline %}) and
 assumes the [core idea]({% post_url 2026-10-11-thin-outline-core-idea %}),
 [history reprojection]({% post_url 2026-10-11-thin-outline-history-reprojection %})
 and [spatial filters]({% post_url 2026-10-11-thin-outline-spatial-filters %})

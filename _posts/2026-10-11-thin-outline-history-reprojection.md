@@ -12,7 +12,7 @@ temporal upscaler's history buffer does. This post covers how a record is
 fetched from the previous frame and moved into its new pixel, and the tests
 that decide when a record no longer describes the surface under its pixel: a
 depth test for creases, two tests for silhouettes, and a velocity test for
-both. It is part of a [series]({% post_url 2026-10-11-thin-outline-plugin %})
+both. It is part of a [series]({% post_url 2026-10-11-thin-outline %})
 and assumes the [core idea]({% post_url 2026-10-11-thin-outline-core-idea %})
 and the [silhouettes]({% post_url 2026-10-11-thin-outline-silhouettes %})
 post.

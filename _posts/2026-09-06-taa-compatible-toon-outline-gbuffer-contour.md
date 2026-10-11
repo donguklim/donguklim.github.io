@@ -16,7 +16,7 @@ categories: [rendering, npr]
 > a hard miss limit; and the outline drawn after the temporal upscaler by
 > default, so the fading described near the end of this post no longer
 > applies. The current description of the algorithm is a series of posts
-> starting with [this one]({% post_url 2026-10-11-thin-outline-plugin %});
+> starting with [this one]({% post_url 2026-10-11-thin-outline %});
 > the [core idea]({% post_url 2026-10-11-thin-outline-core-idea %}) post
 > covers the ground this post covers, as the algorithm works now. The text below
 > is left as written, for the record.
@@ -1371,7 +1371,7 @@ Real-Time Reconstruction for Path-Traced Global Illumination." In
 ## How to Cite
 
 For the current algorithm, please cite
-[the main post of the ThinOutline series]({% post_url 2026-10-11-thin-outline-plugin %})
+[the main post of the ThinOutline series]({% post_url 2026-10-11-thin-outline %})
 instead; the citation below is for this text as written in September 2026.
 
 If you reference this post, please cite it as:
