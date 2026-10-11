@@ -1,0 +1,57 @@
+<svg viewBox="0 0 620 400" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#c0392b"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="620" height="400" fill="#ffffff" stroke="#e0e0e0" rx="8"/>
+
+  <text x="310" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#222">Which Pixel Records a Silhouette: the Foreground Side</text>
+
+  <!-- ===== frame 1: B samples the foreground ===== -->
+  <text x="40" y="58" font-size="12" font-weight="600" fill="#333">frame 1: B's sample lands on the foreground</text>
+  <!-- foreground fill: Z, A, and B left of the contour -->
+  <rect x="60" y="70" width="200" height="100" fill="#c9a0dc" fill-opacity="0.45"/>
+  <polygon points="260,70 300,70 310,170 260,170" fill="#c9a0dc" fill-opacity="0.45"/>
+  <!-- pixels -->
+  <g fill="none" stroke="#333" stroke-width="1.5">
+    <rect x="60" y="70" width="100" height="100"/><rect x="160" y="70" width="100" height="100"/><rect x="260" y="70" width="100" height="100"/><rect x="360" y="70" width="100" height="100"/><rect x="460" y="70" width="100" height="100"/>
+  </g>
+  <!-- contour in B -->
+  <line x1="300" y1="70" x2="310" y2="170" stroke="#1b1b1b" stroke-width="3"/>
+  <!-- jitter dots at local (0.3, 0.55) -->
+  <g fill="#333">
+    <circle cx="90" cy="125" r="4"/><circle cx="190" cy="125" r="4"/><circle cx="290" cy="125" r="4"/><circle cx="390" cy="125" r="4"/><circle cx="490" cy="125" r="4"/>
+  </g>
+  <!-- B's right check fires -->
+  <line x1="296" y1="125" x2="384" y2="125" stroke="#c0392b" stroke-width="2" marker-end="url(#arrow-red)"/>
+  <!-- labels -->
+  <g font-size="13" font-weight="600" fill="#555" text-anchor="middle">
+    <text x="110" y="190">Z</text><text x="210" y="190">A</text><text x="310" y="190">B</text><text x="410" y="190">C</text><text x="510" y="190">D</text>
+  </g>
+  <rect x="268" y="78" width="60" height="16" rx="3" fill="#fff5f5" stroke="#c0392b" stroke-width="1"/>
+  <text x="298" y="90" text-anchor="middle" font-size="10" fill="#c0392b">B records</text>
+
+  <!-- ===== frame 2: B samples the background ===== -->
+  <text x="40" y="228" font-size="12" font-weight="600" fill="#333">frame 2: B's sample lands on the background</text>
+  <rect x="60" y="240" width="200" height="100" fill="#c9a0dc" fill-opacity="0.45"/>
+  <polygon points="260,240 300,240 310,340 260,340" fill="#c9a0dc" fill-opacity="0.45"/>
+  <g fill="none" stroke="#333" stroke-width="1.5">
+    <rect x="60" y="240" width="100" height="100"/><rect x="160" y="240" width="100" height="100"/><rect x="260" y="240" width="100" height="100"/><rect x="360" y="240" width="100" height="100"/><rect x="460" y="240" width="100" height="100"/>
+  </g>
+  <line x1="300" y1="240" x2="310" y2="340" stroke="#1b1b1b" stroke-width="3"/>
+  <!-- jitter dots at local (0.7, 0.4) -->
+  <g fill="#333">
+    <circle cx="130" cy="280" r="4"/><circle cx="230" cy="280" r="4"/><circle cx="330" cy="280" r="4"/><circle cx="430" cy="280" r="4"/><circle cx="530" cy="280" r="4"/>
+  </g>
+  <!-- A's right check fires -->
+  <line x1="236" y1="280" x2="324" y2="280" stroke="#c0392b" stroke-width="2" marker-end="url(#arrow-red)"/>
+  <g font-size="13" font-weight="600" fill="#555" text-anchor="middle">
+    <text x="110" y="360">Z</text><text x="210" y="360">A</text><text x="310" y="360">B</text><text x="410" y="360">C</text><text x="510" y="360">D</text>
+  </g>
+  <rect x="168" y="248" width="60" height="16" rx="3" fill="#fff5f5" stroke="#c0392b" stroke-width="1"/>
+  <text x="198" y="260" text-anchor="middle" font-size="10" fill="#c0392b">A records</text>
+
+  <text x="310" y="380" text-anchor="middle" font-size="11" fill="#555">Both records come through the right check, so their kept ratio is near 0: the background is on the right.</text>
+  <text x="310" y="394" text-anchor="middle" font-size="11" fill="#555">A and B are foreground pixels, so their records move with their own velocity.</text>
+</svg>

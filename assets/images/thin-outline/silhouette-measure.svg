@@ -1,0 +1,73 @@
+<svg viewBox="0 0 620 470" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="620" height="470" fill="#ffffff" stroke="#e0e0e0" rx="8"/>
+
+  <text x="310" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#222">The Depth-Edge Measure: Occlusion vs. Junction</text>
+
+  <!-- ===== upper panel: occlusion ===== -->
+  <text x="40" y="58" font-size="12" font-weight="600" fill="#333">occlusion: the far surface continues behind the near one</text>
+  <!-- camera -->
+  <polygon points="40,150 62,138 62,162" fill="#333"/>
+  <text x="34" y="182" font-size="10" fill="#555">camera</text>
+  <!-- far surface (O, C), continues behind the near one -->
+  <line x1="300" y1="100" x2="560" y2="124" stroke="#c9a0dc" stroke-width="5"/>
+  <line x1="440" y1="113" x2="560" y2="124" stroke="#c9a0dc" stroke-width="5" stroke-dasharray="6 5" stroke-opacity="0.6"/>
+  <!-- near surface (N, F) in front -->
+  <line x1="390" y1="180" x2="580" y2="176" stroke="#4e79a7" stroke-width="5"/>
+  <!-- rays -->
+  <g stroke="#bbb" stroke-width="1">
+    <line x1="62" y1="150" x2="330" y2="103"/>
+    <line x1="62" y1="150" x2="380" y2="107"/>
+    <line x1="62" y1="150" x2="430" y2="179"/>
+    <line x1="62" y1="150" x2="490" y2="178"/>
+  </g>
+  <!-- line through O and C, extended -->
+  <line x1="300" y1="100" x2="520" y2="120" stroke="#c0392b" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <!-- line through F and N, extended back -->
+  <line x1="340" y1="181" x2="580" y2="176" stroke="#2e6fa3" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <!-- gap markers -->
+  <line x1="430" y1="112" x2="430" y2="179" stroke="#c0392b" stroke-width="1.5"/>
+  <text x="438" y="150" font-size="10" fill="#c0392b">dist(N, line O–C): large</text>
+  <line x1="380" y1="107" x2="380" y2="180" stroke="#2e6fa3" stroke-width="1.5"/>
+  <text x="250" y="150" font-size="10" fill="#2e6fa3">dist(C, line F–N): large</text>
+  <!-- sample points -->
+  <circle cx="330" cy="103" r="5" fill="#222"/><text x="330" y="92" text-anchor="middle" font-size="11" font-weight="600" fill="#222">O</text>
+  <circle cx="380" cy="107" r="5" fill="#222"/><text x="380" y="96" text-anchor="middle" font-size="11" font-weight="600" fill="#222">C</text>
+  <circle cx="430" cy="179" r="5" fill="#222"/><text x="430" y="200" text-anchor="middle" font-size="11" font-weight="600" fill="#222">N</text>
+  <circle cx="490" cy="178" r="5" fill="#222"/><text x="490" y="199" text-anchor="middle" font-size="11" font-weight="600" fill="#222">F</text>
+  <text x="310" y="226" text-anchor="middle" font-size="11" fill="#333">both distances large → min is large → C is the background of a silhouette toward N</text>
+
+  <!-- ===== lower panel: junction ===== -->
+  <text x="40" y="268" font-size="12" font-weight="600" fill="#333">junction: the two surfaces meet, nothing is hidden</text>
+  <polygon points="40,360 62,348 62,372" fill="#333"/>
+  <text x="34" y="392" font-size="10" fill="#555">camera</text>
+  <!-- wall (O, C): vertical-ish, facing the camera -->
+  <line x1="420" y1="290" x2="420" y2="372" stroke="#c9a0dc" stroke-width="5"/>
+  <!-- floor (N, F): grazing, from the camera to the wall's base at (420, 372) -->
+  <line x1="200" y1="410" x2="420" y2="372" stroke="#4e79a7" stroke-width="5"/>
+  <!-- rays -->
+  <g stroke="#bbb" stroke-width="1">
+    <line x1="62" y1="360" x2="420" y2="330"/>
+    <line x1="62" y1="360" x2="420" y2="366"/>
+    <line x1="62" y1="360" x2="400" y2="375.5"/>
+    <line x1="62" y1="360" x2="340" y2="385.8"/>
+  </g>
+  <!-- line through O and C, extended downward -->
+  <line x1="420" y1="290" x2="420" y2="430" stroke="#c0392b" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <!-- line through F and N, extended back through the wall: passes through the junction, right at C -->
+  <line x1="300" y1="392.7" x2="470" y2="363.4" stroke="#2e6fa3" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <line x1="400" y1="375.5" x2="420" y2="375.5" stroke="#c0392b" stroke-width="1.5"/>
+  <text x="432" y="398" font-size="10" fill="#c0392b">dist(N, line O–C): above the threshold</text>
+  <text x="432" y="352" font-size="10" fill="#2e6fa3">dist(C, line F–N) ≈ 0</text>
+  <!-- sample points -->
+  <circle cx="420" cy="330" r="5" fill="#222"/><text x="434" y="334" font-size="11" font-weight="600" fill="#222">O</text>
+  <circle cx="420" cy="366" r="5" fill="#222"/><text x="434" y="370" font-size="11" font-weight="600" fill="#222">C</text>
+  <circle cx="400" cy="375.5" r="5" fill="#222"/><text x="398" y="366" text-anchor="middle" font-size="11" font-weight="600" fill="#222">N</text>
+  <circle cx="340" cy="385.8" r="5" fill="#222"/><text x="340" y="378" text-anchor="middle" font-size="11" font-weight="600" fill="#222">F</text>
+  <text x="310" y="446" text-anchor="middle" font-size="11" fill="#333">the line through F and N passes through C → min ≈ 0 → not a silhouette (a valley crease instead)</text>
+
+  <!-- legend -->
+  <line x1="40" y1="462" x2="58" y2="462" stroke="#c9a0dc" stroke-width="5"/><text x="64" y="466" font-size="10" fill="#333">C's surface</text>
+  <line x1="150" y1="462" x2="168" y2="462" stroke="#4e79a7" stroke-width="5"/><text x="174" y="466" font-size="10" fill="#333">N's surface</text>
+  <line x1="260" y1="462" x2="278" y2="462" stroke="#c0392b" stroke-width="1.5" stroke-dasharray="5 4"/><text x="284" y="466" font-size="10" fill="#333">line through O and C</text>
+  <line x1="410" y1="462" x2="428" y2="462" stroke="#2e6fa3" stroke-width="1.5" stroke-dasharray="5 4"/><text x="434" y="466" font-size="10" fill="#333">line through F and N</text>
+</svg>
