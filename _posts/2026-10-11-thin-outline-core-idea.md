@@ -868,16 +868,24 @@ neighbours decode the same line.
 
 The areas are computed in closed form. In the axis coordinates with the edge
 $u = A + Bv$, the part of a rectangle $[u_0, u_1] \times [v_0, v_1]$ on one
-side of a line is a one-dimensional integral of a clamped ramp,
+side of a line $u = c + Bv$ is a one-dimensional integral of a clamped ramp,
 
 $$
-\operatorname{area}\{u - Bv \le c\} = \int_{v_0}^{v_1} \operatorname{clamp}\!\big(c + Bv - u_0,\ 0,\ u_1 - u_0\big)\, dv,
+\operatorname{area}\{u - Bv \le c\} = \int_{v_0}^{v_1} \operatorname{clamp}\!\big(g(v),\ 0,\ W\big)\, dv,
+\qquad g(v) = c + Bv - u_0, \qquad W = u_1 - u_0,
 $$
 
-which splits into two integrals of $\max(g, 0)$ for a linear $g$, each with
-three cases. The band is the difference of two such half planes, at
+where $g(v)$ is how far the line lies to the right of the rectangle's left
+side at height $v$, and the clamp cuts that off at the rectangle's two
+sides. Since $\operatorname{clamp}(g, 0, W) = \max(g, 0) - \max(g - W, 0)$,
+the integral splits into two integrals of $\max(g, 0)$ for a linear $g$,
+each with three cases: both ends non-negative, both non-positive, or a
+crossing in between. The band is the difference of two such half planes, at
 $c = A \pm t\sqrt{1 + B^2}$ for a half thickness $t$ measured perpendicular
-to the edge:
+to the edge, since a perpendicular distance $t$ spans $t\sqrt{1 + B^2}$
+along the $u$ axis:
+
+![One rendering pixel drawn as a square in axis coordinates, u to the right and v down, with dashed lines at 0.6 marking the display pixel grid of 60% screen percentage. The display pixel under this frame's sample is outlined dashed and extends past the rendering pixel's right side; its part inside the rendering pixel is shaded light blue and labeled with u0, u1, v0 and v1. A black edge line u = A + Bv runs from the top of the square down and to the right, with a gray band around it between the lines u = c minus plus Bv and u = c plus plus Bv, and the part of the band inside the shaded rectangle is darker. A right triangle is drawn between the edge and the band's right boundary: a horizontal blue segment along u from a point on the edge to the boundary, labeled c plus minus A equals t times the square root of 1 plus B squared; a red segment from the same edge point perpendicular to the edge, labeled t; and a gray segment along the boundary line closing the triangle, with a right-angle mark where the red and gray segments meet](/assets/images/thin-outline/coverage-example.svg)
 
 ```hlsl
 // Integral over Length of max(g, 0), with g linear from G0 to G1.

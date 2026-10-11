@@ -1,0 +1,97 @@
+<svg viewBox="0 0 660 500" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <defs>
+    <clipPath id="cov-r"><rect x="60" y="60" width="360" height="360"/></clipPath>
+    <clipPath id="cov-rect"><rect x="276" y="60" width="144" height="216"/></clipPath>
+    <marker id="cov-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#333"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="660" height="500" fill="#ffffff" stroke="#e0e0e0" rx="8"/>
+
+  <text x="330" y="28" text-anchor="middle" font-size="14" font-weight="600" fill="#222">The Rectangle to Cover and the Band (60% Screen Percentage)</text>
+
+  <!-- the rendering pixel R = [0,1]^2 at 360 px per unit, origin (60, 60); u right, v down -->
+  <rect x="60" y="60" width="360" height="360" fill="#fafafa" stroke="#333" stroke-width="1.5"/>
+  <!-- display pixel grid at multiples of 0.6 -->
+  <g stroke="#2e6fa3" stroke-width="1" stroke-dasharray="4 3">
+    <line x1="276" y1="40" x2="276" y2="440"/>
+    <line x1="40" y1="276" x2="440" y2="276"/>
+  </g>
+  <!-- the display pixel D under the sample: u in [0.6, 1.2], v in [0, 0.6] -->
+  <rect x="276" y="60" width="216" height="216" fill="none" stroke="#2e6fa3" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <!-- D ∩ R -->
+  <rect x="276" y="60" width="144" height="216" fill="#4e79a7" fill-opacity="0.15"/>
+
+  <!-- edge u = 0.7 + 0.3 v (A = 0.7, B = 0.3); band half thickness t = 0.25, so c± = 0.7 ± 0.25·sqrt(1.09) = 0.7 ± 0.261.
+       Every line below has the same slope: +108 px in x per 360 px in y. -->
+  <polygon points="218,60 406,60 514,420 326,420" fill="#999" fill-opacity="0.25" clip-path="url(#cov-r)"/>
+  <polygon points="218,60 406,60 514,420 326,420" fill="#555" fill-opacity="0.55" clip-path="url(#cov-rect)"/>
+  <line x1="218" y1="60" x2="326" y2="420" stroke="#777" stroke-width="1" stroke-dasharray="3 3"/>
+  <line x1="406" y1="60" x2="514" y2="420" stroke="#777" stroke-width="1" stroke-dasharray="3 3" clip-path="url(#cov-r)"/>
+  <line x1="312" y1="60" x2="420" y2="420" stroke="#1b1b1b" stroke-width="2.5"/>
+  <text x="208" y="76" text-anchor="end" font-size="10" fill="#555">u = c− + Bv</text>
+  <text x="424" y="112" font-size="10" fill="#555">u = c+ + Bv</text>
+  <rect x="338" y="214" width="84" height="14" fill="#ffffff" fill-opacity="0.85"/>
+  <text x="380" y="225" text-anchor="middle" font-size="10" fill="#222">edge u = A + Bv</text>
+
+  <!-- D ∩ R outline and bounds -->
+  <rect x="276" y="60" width="144" height="216" fill="none" stroke="#2e6fa3" stroke-width="1.5"/>
+  <text x="276" y="46" text-anchor="middle" font-size="10" fill="#2e6fa3">u0</text>
+  <text x="420" y="46" text-anchor="middle" font-size="10" fill="#2e6fa3">u1</text>
+  <text x="426" y="64" font-size="10" fill="#2e6fa3">v0</text>
+  <text x="426" y="280" font-size="10" fill="#2e6fa3">v1</text>
+  <text x="280" y="296" font-size="10" fill="#2e6fa3">dashed: D, the display pixel under the sample</text>
+
+  <!-- the sample -->
+  <circle cx="296" cy="250" r="4" fill="#c0392b"/>
+  <text x="288" y="240" text-anchor="end" font-size="10" fill="#c0392b">sample</text>
+
+  <!-- right triangle at v = 0.1: P on the edge (u = 0.73), Q on the c+ line at the same v (u = 0.991),
+       F = foot of the perpendicular from P on the c+ line = P + t·(1, −B)/sqrt(1 + B²) -->
+  <!-- P = (322.8, 96), Q = (416.8, 96), F = (409.0, 70.1) -->
+  <line x1="322.8" y1="96" x2="416.8" y2="96" stroke="#2e6fa3" stroke-width="3"/>
+  <line x1="322.8" y1="96" x2="409.0" y2="70.1" stroke="#c0392b" stroke-width="3"/>
+  <line x1="409.0" y1="70.1" x2="416.8" y2="96" stroke="#444" stroke-width="2"/>
+  <polyline points="403.3,71.8 405.0,77.5 410.7,75.8" fill="none" stroke="#444" stroke-width="1.2"/>
+  <circle cx="322.8" cy="96" r="3" fill="#222"/>
+  <circle cx="416.8" cy="96" r="3" fill="#222"/>
+  <circle cx="409.0" cy="70.1" r="3" fill="#222"/>
+  <rect x="318" y="100" width="104" height="14" fill="#ffffff" fill-opacity="0.85"/>
+  <text x="370" y="111" text-anchor="middle" font-size="10" fill="#2e6fa3">c+ − A = t·√(1 + B²)</text>
+  <rect x="356" y="68" width="14" height="14" fill="#ffffff" fill-opacity="0.85"/>
+  <text x="363" y="79" text-anchor="middle" font-size="11" font-weight="600" fill="#c0392b">t</text>
+
+  <!-- axes -->
+  <line x1="60" y1="440" x2="130" y2="440" stroke="#333" stroke-width="1.2" marker-end="url(#cov-arrow)"/>
+  <text x="136" y="444" font-size="11" fill="#333">u</text>
+  <line x1="44" y1="60" x2="44" y2="130" stroke="#333" stroke-width="1.2" marker-end="url(#cov-arrow)"/>
+  <text x="38" y="146" font-size="11" fill="#333">v</text>
+  <text x="60" y="458" text-anchor="middle" font-size="10" fill="#555">0</text>
+  <text x="276" y="458" text-anchor="middle" font-size="10" fill="#2e6fa3">0.6</text>
+  <text x="420" y="458" text-anchor="middle" font-size="10" fill="#555">1</text>
+  <text x="30" y="280" text-anchor="end" font-size="10" fill="#2e6fa3">0.6</text>
+  <text x="30" y="424" text-anchor="end" font-size="10" fill="#555">1</text>
+  <text x="240" y="480" text-anchor="middle" font-size="10" fill="#555">the rendering pixel R in its axis coordinates; dashed blue lines: the display pixel grid, 0.6 rendering pixels apart</text>
+
+  <!-- annotations -->
+  <g font-size="11" fill="#333">
+    <text x="500" y="140" font-weight="600">Rectangle</text>
+    <text x="500" y="158">D ∩ R = [u0, u1] × [v0, v1]</text>
+    <text x="500" y="174">W = u1 − u0</text>
+    <text x="500" y="206" font-weight="600">Band</text>
+    <text x="500" y="224">half thickness t, measured</text>
+    <text x="500" y="240">perpendicular to the edge</text>
+    <text x="500" y="256">c± = A ± t·√(1 + B²)</text>
+    <text x="500" y="288" font-weight="600">Area</text>
+    <text x="500" y="306">left of c+ minus left of c−,</text>
+    <text x="500" y="322">each from g(v) = c + Bv − u0</text>
+  </g>
+
+  <!-- legend -->
+  <rect x="500" y="356" width="14" height="14" fill="#4e79a7" fill-opacity="0.15" stroke="#2e6fa3" stroke-width="1"/>
+  <text x="520" y="367" font-size="10" fill="#333">D ∩ R, the rectangle</text>
+  <rect x="500" y="376" width="14" height="14" fill="#999" fill-opacity="0.25"/>
+  <text x="520" y="387" font-size="10" fill="#333">the outline band</text>
+  <rect x="500" y="396" width="14" height="14" fill="#555" fill-opacity="0.55"/>
+  <text x="520" y="407" font-size="10" fill="#333">band ∩ D ∩ R, the area computed</text>
+</svg>
