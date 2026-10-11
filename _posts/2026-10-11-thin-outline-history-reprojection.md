@@ -192,14 +192,21 @@ may drift is bounded by the background test below instead.
 
 ## Which Velocity Moves the Records
 
-Every pixel fetches its history once, with its own velocity. Both record
-types belong to the surface under the pixel: creases by nature, and
-silhouettes because the foreground pixels keep them, as the silhouettes post
-explains. The one exception is the pixel at a contour on the frames when its
-sample lands on the background. Its records come from the other frames, when
-it sampled the foreground, so on these frames it fetches with the velocity
-of the neighbour its background check fired toward, the nearest one if
-several fired:
+Every pixel fetches its history with its own motion vector, because both
+kinds of record belong to the surface under the pixel: a crease record
+describes a bend of that surface, and a silhouette record is kept by a
+foreground pixel, so it describes the object in front.
+
+There is one exception. Take the pixel that contains a contour, with the
+foreground on its left. On the frames when its jittered sample lands on the
+foreground, it records silhouette samples and its motion vector is the
+foreground's. On the frames when the sample lands on the background, its
+motion vector is the background's, but the records it holds are still the
+foreground's, from the other frames. Fetching with the background's motion
+would move those records with the wrong surface. So on such a frame, which
+the pixel recognises because its background check fires, it fetches with
+the motion vector of the neighbour that check fired toward, the nearest one
+if several fired:
 
 ```hlsl
 FThinOutlineForeground FindHistoryForeground(int2 PixelPos, FThinOutlineSample Center, FThinOutlineSample Neighbours[4], FThinOutlineEdges Edges)
@@ -226,15 +233,10 @@ FThinOutlineForeground FindHistoryForeground(int2 PixelPos, FThinOutlineSample C
 }
 ```
 
-The crease records of such a pixel ride on the same fetch; only the crease
-depth test below keeps using the pixel's own depth change. Each tap's
-records feed the reprojected record of their own type, crease or silhouette,
-and the axis then keeps one of the two by the takeover rules of the
-silhouettes post. When silhouette records were still kept on the background
-side, every pixel had to search for the foreground up to two pixels away
-and fetch the history a second time with its velocity; moving the records
-to the foreground is what made one fetch with the pixel's own velocity
-possible.
+The pixel's crease records, if it has any, ride on the same fetch. Each
+tap's records feed the reprojected record of their own type, crease or
+silhouette, and the axis then keeps one of the two by the takeover rules of
+the silhouettes post.
 
 ## The Crease Depth Test
 
