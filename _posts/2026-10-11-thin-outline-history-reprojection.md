@@ -385,51 +385,31 @@ bool HasBackgroundInReach(FThinOutlineRecord Record, uint FirstIndex, uint Backg
 This test runs on the merged record, after the taps, since the background
 side is a property of the record, not of a tap.
 
-### The View-Direction Test, Tried and Shelved
+The test has no threshold on how fast the view may turn: a record is kept
+as long as its contour is still beside it, and dropped as soon as it is
+not, whatever the camera or the object did. In a camera orbit around the
+character and with the character spinning in place, at 1280×720 and 100%
+screen percentage, counting the character's drawn silhouette pixels and how
+many of them are **detached**, with no depth step within two pixels along
+their axis:
 
-Before the background test, the view-dependence of silhouettes was handled
-the way my first design proposed: reject a silhouette record when the view
-direction through the pixel has turned by more than a threshold angle since
-the record was made. The test went through two refinements, and I describe
-them because they show why a test on the view direction was the wrong
-tool.
+| Scenario | Silhouette pixels on the character | Detached |
+|---|---:|---:|
+| camera orbit, 0.5° per frame | 3,264 | 0 |
+| camera orbit, 1.5° per frame | 1,925 | 0 |
+| character spin, 0.5° per frame | 2,742 | 0 |
+| character spin, 1.5° per frame | 3,205 | 0 |
 
-The first refinement was to measure the turn in the right plane. At a
-smooth contour, the plane through the camera that contains the edge on
-screen is the surface's tangent plane. Turning the view direction within that
-plane moves the contour along itself; turning it out of the plane slides the
-contour over the surface. So only the angle between last frame's view
-direction and the current edge plane counted:
+### Why Not the View Direction
 
-$$
-\mathbf n = \frac{\mathbf r \times \Delta\mathbf r}{\lvert \mathbf r \times \Delta\mathbf r \rvert}, \qquad
-\text{reject if}\ \ \lvert\, \mathbf n \cdot \hat{\mathbf v}_{\text{prev}} \,\rvert > \sin\theta ,
-$$
-
-with $\mathbf r$ the ray through the pixel, $\Delta\mathbf r$ its change
-for a screen step along the edge, read from the record's fitted slope, and
-$\hat{\mathbf v}_{\text{prev}}$ last frame's view direction through the
-reprojected position. A camera pan along a horizontal edge no longer counted.
-
-The second refinement was for objects turning in front of a still camera.
-Their contours slide just the same, while the view direction through the
-pixel hardly moves: a character spinning at 1.5° per frame moves its contour
-points by about 0.1° of view angle per frame. What slides the contour is the
-view direction turning *relative to the surface*, so last frame's view
-direction was first turned along with the surface. The surface's turn came
-from the motion vectors, not from stored normals: two pixels inside the
-contour give a chord whose ends are the same material points in both frames,
-and the rotation taking last frame's chord to this frame's was applied to the
-view direction. G-buffer normals would not have done: next to a character's
-silhouette they turn by 10° to 23° per pixel, and the jitter moves each
-frame's sample by up to a pixel, so normals from two frames differ by degrees
-on a still character.
-
-Both refinements worked as designed, and the test was still wrong, because
-a hard threshold is all or nothing. In a camera orbit around the character
-at 1280×720 and 100% screen percentage, counting the character's drawn
-silhouette pixels and the share of them **detached**, with no depth step
-within two pixels along their axis:
+My first design handled the view-dependence of silhouettes differently:
+reject a silhouette record when the view direction through the pixel has
+turned by more than a threshold angle since the record was made, measured
+in the plane that matters, the one through the camera and the edge, and
+relative to the surface, so that an object turning in front of a still
+camera counted too. It worked as designed and was still the wrong tool,
+because a hard threshold is all or nothing. In the same orbit, with that
+test in place of the background test:
 
 | Orbit | Test off | 2° per frame | 1° | 0.5° |
 |---|---|---|---|---|
@@ -441,23 +421,9 @@ the silhouette lags: a tenth of its pixels detached at 0.5° per frame, a
 quarter at 1.5°. Faster, the vertical parts of the silhouette reset every
 frame and mostly vanish. The threshold only picks the turn rate at which lag
 turns into absence, and sharp silhouettes, such as a box's edges, which never
-slide, were rejected along with the smooth ones.
-
-The background test has no threshold on the motion at all: a record is kept
-as long as its contour is still beside it. With the records on the
-foreground and this test, on the same character:
-
-| Scenario | View-direction test, records on the background | Background test, records on the foreground |
-|---|---|---|
-| camera orbit, 0.5° per frame | 4,146 px, 422 detached (10.2%) | 3,264 px, 0 |
-| camera orbit, 1.5° per frame | 773 px, 41 detached | 1,925 px, 0 |
-| character spin, 0.5° per frame | 3,139 px, 106 detached (3.4%) | 2,742 px, 0 |
-| character spin, 1.5° per frame | 1,517 px, 18 detached | 3,205 px, 0 |
-
-No detached pixel in any scenario, and at the fast turns two to two and a
-half times the silhouette. Switching the view-direction test back on under
-the new layout made the silhouette vanish again at the fast orbit, down to
-712 pixels on the character, so the test is gone.
+slide, were rejected along with the smooth ones. The background test above
+replaced it: no detached pixel in any scenario, and at the fast turns two to
+two and a half times the silhouette the view-direction test left.
 
 ## Failed Taps: Kept, Faded or Dropped
 
