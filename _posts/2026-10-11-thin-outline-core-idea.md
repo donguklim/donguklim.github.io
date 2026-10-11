@@ -583,7 +583,7 @@ In practice that produced dashed outlines, most visibly in scenes with many
 buildings when drawing after the upscaler, so I turned the rule off and then
 removed the ratio altogether; its channel now holds the presence. Dense
 edges are handled after the fit instead, by the dense edge suppression
-described in the [spatial filters]({% post_url 2026-10-11-thin-outline-spatial-filters %})
+described in the [flicker suppression]({% post_url 2026-10-11-thin-outline-flicker-suppression %})
 post.
 
 ## The Fit and Its Reliability

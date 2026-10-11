@@ -465,8 +465,8 @@ post covers the presence for silhouette records and the filter that skips
 the silhouette checks of a foreground one pixel thin. Narrow background
 gaps between two foreground parts, an arm in front of a torso at 50% screen
 percentage, hold samples of both silhouettes in neighbouring records and
-draw noise; that is a dense-edge case for the
-[spatial filters]({% post_url 2026-10-11-thin-outline-spatial-filters %})
+draw noise; that is a case for the dense edge suppression of the
+[flicker suppression]({% post_url 2026-10-11-thin-outline-flicker-suppression %})
 post.
 
 Two limits of the measure remain. A foreground part one pixel thin with the

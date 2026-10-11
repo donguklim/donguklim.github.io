@@ -94,11 +94,12 @@ Per frame, the work falls into three steps:
   and the depth, background and velocity tests that decide when a record is
   no longer about the surface under its pixel.
 - [Spatial filters]({% post_url 2026-10-11-thin-outline-spatial-filters %}):
-  why blending neighbouring lines fails on a static edge and what to blend
-  instead, and the dense and isolated edge suppression.
+  why blending neighbouring lines fails on a static edge, and the slope
+  through the centre crossings of the neighbours that is fitted instead.
 - [Flicker suppression]({% post_url 2026-10-11-thin-outline-flicker-suppression %}):
   what still flickers after the upscaler and why, measured over jitter
-  cycles, and the presence and spike filter that remove most of it.
+  cycles, the dense and isolated edge suppression that were tried against
+  it first, and the presence and spike filter that remove most of it.
 - [Drawing and performance]({% post_url 2026-10-11-thin-outline-drawing-and-performance %}):
   coverage of the display pixel, drawing before the upscaler against after
   it, and what the implementation costs and why, including how its passes
