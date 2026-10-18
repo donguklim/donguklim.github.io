@@ -137,6 +137,79 @@ both types and converted to rendering pixels by the screen percentage, so
 an outline half a display pixel thick is half a display pixel thick at any
 screen percentage.
 
+### Beads on a Diagonal, and the Coverage Curve
+
+Exact coverage has one effect I had not expected. A band one display pixel
+wide along an 18° edge climbs one row every three columns, so in one
+column it sits centred on a row and covers that pixel almost fully, and a
+column or two later it sits on the border between two rows and covers
+each half. The alpha is spread exactly in both cases, and yet the second
+column looks far lighter: the line reads as a chain of beads. I first
+suspected the spatial filter, but the
+[spatial filters]({% post_url 2026-10-11-thin-outline-spatial-filters %})
+post's measurement put the per-pixel lines on one straight line to 0.04
+pixels, and a perfectly straight line painted the same way showed the same
+beads.
+
+The cause is where the alpha is applied. The composite lerps the scene
+colour toward the line colour in linear light, and the eye does not see
+linear light: a pixel left with half its luminance reads as about three
+quarters of its lightness. In CIE L\*, the standard lightness scale, a
+black line that fills one pixel of a white surface removes 92 units, and
+the same line split over two half-covered pixels removes 22 from each, 44
+in all. The single-pixel column looks twice as dark as its neighbour.
+
+The remedy I chose keeps the band and the pass as they are and bends the
+alpha before the lerp:
+
+$$
+\alpha' = 1 - (1 - \alpha)^{\gamma},
+$$
+
+with $\gamma = 2.2$, the exponent of the sRGB curve, and $\alpha$ the
+display pixel's coverage times strength. Text rasterizers do the same
+under the names gamma-adjusted coverage and stem darkening. A fully
+covered pixel is unchanged, $\alpha' = 1$; a half-covered one gets
+$\alpha' = 0.78$ instead of 0.5, which in linear light is the darkness
+the eye expects of half a line. In the one-dimensional model of a hard
+band crossing the pixel grid at every phase, the lightness removed per
+column swings from 44 to 92 units with plain coverage and from 86 to 95
+with the curve, while the darkest pixel of a column stays as dark as
+before. In HLSL it is one function applied to the pixel's summed alpha,
+with the silhouette and crease shares scaled alike so the colour split
+stays:
+
+```hlsl
+float ApplyCoverageGamma(float Alpha)
+{
+	return 1.0 - pow(max(1.0 - Alpha, 0.0), CoverageGamma);
+}
+```
+
+Two screenshots of the same view at 50%, the curve on at the left and off
+at the right, four times zoomed. The slanted edge of the block and the top
+of the wall are solid lines with the curve and break into dashes without
+it:
+
+![Two crops of the same green block seen from the side, each 280 by 80 display pixels zoomed four times and separated by a magenta bar. On the left, with the coverage curve, the dark outline along the block's slanted top-left edge and along the top of the wall behind it are continuous, evenly dark lines; on the right, without it, the same edges are chains of short dark dashes separated by lighter gaps where the band straddles two pixel rows](/assets/images/thin-outline/coverage-gamma-right.png)
+
+![Two crops of a grey wall against a purple sky, each 300 by 80 display pixels zoomed four times and separated by a magenta bar. The wall's top edge runs almost horizontally with a slope of 0.06; on the left, with the coverage curve, it is a single dark line, on the right, without it, the line fades and breaks every sixteen pixels where it moves from one row to the next](/assets/images/thin-outline/coverage-gamma-left.png)
+
+Measured along the wall's top in those screenshots, the lightness removed
+per column went from 71 ± 10 units to 89 ± 9: a darker line with a smaller
+swing. What the curve does not do is make the pixels equal: zoomed in, the
+fully covered pixel is still black beside two dark-grey ones, so a
+pixel-level inspection still shows a pattern; the curve evens the darkness
+per column, which is what the eye sums at a viewing distance. It also
+assumes the usual display response over the mid-tones. The exact way would
+be to blend after the tonemapper, in the display's own encoding, which
+makes the lerp perceptual for free; I did not want the outline to depend
+on another post-processing step or on which tonemapper a project uses,
+and the curve gets most of the way there inside the existing pass. The
+other option, a softer band profile that ramps off over a display pixel,
+also reduces the beads, but by cutting the dark columns down rather than
+filling the light ones in, at the price of a lighter line.
+
 ## What Each Mode Trades
 
 | | Before the upscaler | After the upscaler |
@@ -292,8 +365,9 @@ The plugin, ThinOutline, is at
 Unreal Engine 5.8 with TSR. Its settings are under Project Settings,
 Plugins, Thin Outline:
 
-- **General:** enabling the outlines, and drawing after the upscaler (on by
-  default) or before it.
+- **General:** enabling the outlines, drawing after the upscaler (on by
+  default) or before it, and the coverage curve's exponent (2.2; 1 is plain
+  coverage).
 - **Silhouette** and **Crease:** whether to draw each type, its colour, its
   thickness in display pixels, and the detection thresholds and scales of
   each type's check.
@@ -310,7 +384,7 @@ before it, with the overwrite, is the one that does.
 |---|---|---|
 | Record pass | samples the jittered G-buffer, updates the records | rendering resolution, before depth of field, every pixel |
 | Edge pass | chooses, filters and suppresses each rendering pixel's edge once | rendering resolution, listed tiles |
-| Composite after the upscaler (default) | sums each display pixel's band coverage from the lines it overlaps | display resolution, after motion blur, listed tiles |
+| Composite after the upscaler (default) | sums each display pixel's band coverage from the lines it overlaps, bends it by the coverage curve | display resolution, after motion blur, listed tiles |
 | Composite before the upscaler | passes the coverage of the display pixel under the sample, for TSR to average | rendering resolution, listed tiles |
 | Overwrite (before the upscaler only) | writes the foreground's depth and velocity under silhouettes | listed tiles, a fixed cost |
 

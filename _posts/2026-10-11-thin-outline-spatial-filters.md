@@ -10,9 +10,12 @@ Each rendering pixel reconstructs its edge from its own pooled record, and
 nothing so far makes neighbouring pixels agree with each other. This post
 covers the spatial filter that runs on the chosen edge before it is drawn:
 why blending the neighbours' lines, the obvious thing to do, fails on a
-static edge, and how the line is straightened through the pixels across the
-edge's axis instead. It also says what the filter is for and what it is
-not: it did not fix the flicker, which has its own post. It is part of a
+static edge, and how the line is refitted through the pixels across the
+edge's axis instead: its slope, and since October 2026 its position too,
+through a run of five pixels. It also says what the filter is for and what
+it is not: it did not fix the flicker, which has its own post, and it does
+not remove the beads of a thin band on a diagonal, which the drawing post
+does. It is part of a
 [series]({% post_url 2026-10-11-thin-outline %}) and assumes the
 [core idea]({% post_url 2026-10-11-thin-outline-core-idea %}) post.
 
@@ -258,7 +261,7 @@ post.
 
 ### The Weights
 
-Four weights go into the fit: one per point, and one for the pixel's own
+One weight goes into the fit per point, and one for the pixel's own
 slope, which is kept as a prior. Each point is weighted by the inverse
 variance of its centre crossing, the standard error of the core idea post
 computed from that row's pooled fit, and the two neighbours' weights are
@@ -284,6 +287,17 @@ division, so that a perfect fit of zero residual, which two distinct jitter
 positions produce, gets a large but finite weight instead of swamping the
 rest.
 
+The run does not stop at the two neighbours. The pixels two rows away,
+$A_2$ at $v = -1.5$ and $B_2$ at $v = 2.5$, join the fit as a second pair
+with a gate of their own, $g_2 = \exp(-(d_2/\sigma)^2)$ with $d_2$ the
+distance between $p$'s crossing and the midpoint of theirs, which is
+again zero on any straight edge and grows at a corner, and with the same
+inverse-variance weights. A pair with one member missing adds nothing: a
+one-sided far point could only be judged with the own slope. The run is
+three, five or seven pixels across the axis, five by default. If a
+neighbour at distance one is missing on either side, an edge end or a
+corner, the own fit is kept as it is.
+
 ### The Fitted Slope
 
 With these weights the slope minimizes
@@ -292,7 +306,8 @@ $$
 \sum_{q \in \{A, p, B\}} w_q\,(u_q - a - b\,v_q)^2 + w_b\,(b - b_p)^2 ,
 $$
 
-a weighted least-squares line through the three points with a penalty for
+a weighted least-squares line through the points of the run, the sum
+over $A_2, A, p, B, B_2$ when all five are in, with a penalty for
 leaving the own slope. With the weighted means $\bar v = \sum_q w_q v_q /
 \sum_q w_q$ and $\bar u = \sum_q w_q u_q / \sum_q w_q$ the solution is
 
@@ -314,51 +329,77 @@ $1/0.26^2 = 15$: the prior's share is $15 / (356 + 15)$, about 4%, the
 figure the next section arrives at from the other direction. On a record
 with few distinct samples, whose slope standard error is large, the prior
 is nothing; on a perfect fit, whose standard error of 0 is floored at 0.001
-pixels, it is everything. In HLSL, once both neighbours have a valid fit:
+pixels, it is everything. In HLSL the points go into running sums, one
+pair at a time, each pair behind its own gate:
 
 ```hlsl
-// The neighbours' centre crossings are in this pixel's coordinates already (no offset along the axis); they sit at
-// v = -0.5 and v = 1.5.
-const float BeforeCrossing = Before.Intercept + 0.5 * Before.Slope;
-const float AfterCrossing = After.Intercept + 0.5 * After.Slope;
-const float Collinearity = 0.5 * (BeforeCrossing + AfterCrossing) - OwnCrossing;
-const float Gate = exp(-Pow2(Collinearity / SpatialFilterSigma));
+void AddCrossing(inout FThinOutlineCrossingSums Sums, float Weight, float V, float U)
+{
+	Sums.W += Weight;
+	Sums.Wv += Weight * V;
+	Sums.Wu += Weight * U;
+	Sums.Wvv += Weight * V * V;
+	Sums.Wvu += Weight * V * U;
+}
 
-const float BeforeWeight = Gate / Pow2(max(Before.CrossingStandardError, THIN_OUTLINE_MIN_STANDARD_ERROR));
-const float OwnWeight = 1.0 / Pow2(max(Own.CrossingStandardError, THIN_OUTLINE_MIN_STANDARD_ERROR));
-const float AfterWeight = Gate / Pow2(max(After.CrossingStandardError, THIN_OUTLINE_MIN_STANDARD_ERROR));
+// The pair of across fits at distance Across (Before at -Across, After at +Across), gated together.
+void AddCrossingPair(inout FThinOutlineCrossingSums Sums, FThinOutlineEdgeFit Before, FThinOutlineEdgeFit After, float Across, float OwnCrossing)
+{
+	if (!Before.bValid || !After.bValid)
+	{
+		return;
+	}
+	// The neighbours' centre crossings are in this pixel's coordinates already; they sit at v = 0.5 -/+ Across.
+	const float BeforeCrossing = Before.Intercept + 0.5 * Before.Slope;
+	const float AfterCrossing = After.Intercept + 0.5 * After.Slope;
+	const float Collinearity = 0.5 * (BeforeCrossing + AfterCrossing) - OwnCrossing;
+	const float Gate = exp(-Pow2(Collinearity / SpatialFilterSigma));
+	AddCrossing(Sums, Gate / Pow2(max(Before.CrossingStandardError, THIN_OUTLINE_MIN_STANDARD_ERROR)), 0.5 - Across, BeforeCrossing);
+	AddCrossing(Sums, Gate / Pow2(max(After.CrossingStandardError, THIN_OUTLINE_MIN_STANDARD_ERROR)), 0.5 + Across, AfterCrossing);
+}
+```
+
+and once the own point and the pairs at distance one and two are in (both
+neighbours at distance one valid, or nothing happens):
+
+```hlsl
 // The edge line's slope has twice the record line's standard error.
 const float SlopeWeight = 1.0 / Pow2(max(2.0 * Own.SlopeStandardError, THIN_OUTLINE_MIN_STANDARD_ERROR));
 
-const float TotalWeight = BeforeWeight + OwnWeight + AfterWeight;
-const float MeanV = (-0.5 * BeforeWeight + 0.5 * OwnWeight + 1.5 * AfterWeight) / TotalWeight;
-const float MeanU = (BeforeWeight * BeforeCrossing + OwnWeight * OwnCrossing + AfterWeight * AfterCrossing) / TotalWeight;
-const float3 DeltaV = float3(-0.5, 0.5, 1.5) - MeanV;
-const float3 DeltaU = float3(BeforeCrossing, OwnCrossing, AfterCrossing) - MeanU;
-const float3 Weights = float3(BeforeWeight, OwnWeight, AfterWeight);
-const float Svv = dot(Weights, DeltaV * DeltaV);
-const float Svu = dot(Weights, DeltaV * DeltaU);
+const float MeanV = Sums.Wv / Sums.W;
+const float MeanU = Sums.Wu / Sums.W;
+const float Svv = Sums.Wvv - MeanV * Sums.Wv;
+const float Svu = Sums.Wvu - MeanV * Sums.Wu;
 const float Slope = (Svu + SlopeWeight * Own.Slope) / (Svv + SlopeWeight);
+const float Crossing = MeanU + Slope * (0.5 - MeanV);
 
 Candidate.Fit.Slope = Slope;
-Candidate.Fit.Intercept = OwnCrossing - 0.5 * Slope;
+Candidate.Fit.Intercept = Crossing - 0.5 * Slope;
 ```
 
-With equal weights and both neighbours accepted, $\hat b = (u_B - u_A)/2$:
-on the static edge 0, and the sawtooth is gone. With a neighbour on one side
-only, an edge end or a corner, the own fit is kept as it is. A one-sided
-test cannot tell a slanted edge from a parallel one without using the own
-slope, which is the very thing the filter distrusts, and edge ends are rare.
-With neither, the own fit is kept too.
+With equal weights and only the first pair accepted, $\hat b = (u_B -
+u_A)/2$: on the static edge 0, and the sawtooth is gone. A one-sided test
+cannot tell a slanted edge from a parallel one without using the own slope,
+which is the very thing the filter distrusts, and edge ends are rare, so
+with a neighbour on one side only the own fit is kept as it is.
 
-Only the slope is replaced, as the last two lines say; the own centre
-crossing stays. Replacing the crossing as well would smooth genuine position
-disagreement between rows, but a position change is a fraction of a pixel
-that coverage painting turns into a few percent of thickness, and keeping
-the crossing has a second use: the dense edge suppression of the
+The last two lines move the centre crossing too: the pixel's position
+becomes the fitted line's value at its own centre, $\hat u_p = \bar u +
+\hat b\,(\tfrac12 - \bar v)$, the inverse-variance blend of its own
+crossing with where the neighbours say the line runs. For the first version
+of the filter I kept the own crossing, reasoning that a position change is
+a fraction of a pixel that coverage painting turns into a few percent of
+thickness. A diagonal edge showed what that fraction does. Along an 18°
+crease, 1,813 pixels long, the crossings scattered 0.041 pixels rms about
+one straight line; after the upscaler at 50% each rendering pixel paints
+its own line clipped to its own square, so that scatter showed as a small
+step of the band at every rendering pixel's border, and the band's centre
+wandered by ±0.17 display pixels. Moving the crossing onto the line
+through five brought the scatter to 0.015 pixels and the wander to ±0.06.
+The dense edge suppression of the
 [flicker suppression]({% post_url 2026-10-11-thin-outline-flicker-suppression %})
-post compares crossings, so its comparison is the same with or without the
-filter.
+post compares the crossings the filter produces, which move by a few
+hundredths of a pixel, well inside its tolerance.
 
 ### Why the Within-Pixel Slopes Get Almost No Weight
 
@@ -390,6 +431,21 @@ slope as the gate closes" is as close to optimal as a $3 \times 3$ window
 allows. One pass is enough, too: the iterations of my first filter existed to
 reach farther along the edge for line averaging, which the shared error
 makes pointless.
+
+A longer run across the axis is another matter, because on a slanted
+edge the rows' crossing errors are not shared, and then more points do
+help. The slope through crossings one row apart has variance
+$\mathrm{SE}(u)^2 / S_{vv}$ with $S_{vv} = \sum_q (v_q - \bar v)^2$: 2
+for three rows, 10 for five, 28 for seven, so five rows make the slope
+$\sqrt 5$ times steadier than three and seven only another $\sqrt{2.8}$. On
+the 18° crease the own slopes ranged from 0.10 to 0.88 for a true slope
+of 0.32, three rows left a slope error of 0.042 rms, five 0.012 and seven
+0.007; five is the default, since seven costs two more pooled fits for
+little. One pass of five is also better than two passes of three: a second
+pass would refit through the crossings the first produced, which with
+slopes only is the same input twice, and with positions becomes a
+smoothing that spreads each correction one row further, through an extra
+pass, instead of one line through five measured points.
 
 ### Pooling Across the Axis Instead
 
@@ -461,6 +517,33 @@ neighbour rows' fits come from the same reprojected records as the pixel's
 own, so nothing new moves; a disocclusion resets rows unevenly, which the
 gate and the inverse-variance weights are there to cover.
 
+### On a Diagonal Edge
+
+The run of five and the moved crossing came from a diagonal edge, a box
+rotated so that its creases and silhouettes ran at 18° on screen, where
+the drawn outline showed a small staircase. The staircase turned out to
+be mostly the painting of a thin band, which the
+[drawing after the upscaler]({% post_url 2026-10-11-thin-outline-drawing-after-upscaler %})
+post takes up; what the filter could still improve was measured on that
+edge with the Python mirror of the edge pass, on a converged capture at
+50% after the upscaler:
+
+| Along the 18° edge | Three rows, slope only | Five rows, slope and position |
+|---|---|---|
+| Crossing scatter about the straight line, rms | 0.041 px | 0.015 px |
+| Slope error, rms | 0.042 | 0.012 |
+| Wander of the band's centre, 10th to 90th percentile | ±0.17 display px | ±0.06 display px |
+| Frame-to-frame spread of a pixel's crossing, median over ten frames | 0.010 px | 0.004 px |
+| Frame-to-frame spread of a pixel's slope | 0.009 | 0.002 |
+
+Every pixel of that edge chose the same axis, so the axis selection had no
+part in the stair, and the crossings sat on one straight line to 0.04
+pixels before the change: the filter was already doing what three rows
+allow, and the gain came from the two extra rows and from moving the
+position. The cost of the longer run and the position, over the first
+version: +6% of the outline's time after the upscaler at 50% and +4%
+before it at 100%, two more pooled fits per drawn pixel.
+
 ## What the Filter Is For
 
 The filter runs once per rendering pixel, on the edge the axis selection
@@ -468,12 +551,12 @@ chose and before the band's coverage is computed, and it is the first of
 three steps there: the two suppressions of the
 [flicker suppression]({% post_url 2026-10-11-thin-outline-flicker-suppression %})
 post follow it, the dense one comparing the centre crossings the filter
-keeps, and the isolated one reusing the two neighbour fits the filter
-loads.
+produces, and the isolated one reusing the two nearest neighbour fits the
+filter loads.
 
 | What it fixes | What it does not |
 |---|---|
-| The shared slope error: the sawtooth below 100% screen percentage after the upscaler, and the noisy slopes of records with few distinct samples | Position disagreement between rows, since the crossing is kept; and the flicker |
+| The shared slope error: the sawtooth below 100% screen percentage after the upscaler, and the noisy slopes of records with few distinct samples; the scatter of the positions along a straight edge, within the run of five | The beads of a band thinner than two pixels on a diagonal, which are the painting's, not the lines'; and the flicker |
 
 The filter was my first attempt at the fading along the seams, which
 drawing after the upscaler then removed on its own, and it did nothing for
