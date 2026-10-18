@@ -113,8 +113,9 @@ Behind those shares are a handful of causes.
    test off as an experiment, which only a static view allows, halved the
    count. The
    [history reprojection]({% post_url 2026-10-11-thin-outline-history-reprojection %})
-   post shows this case and the answer: a failed record is kept rather than
-   dropped.
+   post has the rule this led to: a silhouette record is kept through a
+   frame on which its contour is missed, while a record whose surface's
+   depth is gone from under it is dropped.
 2. **One edge sampled as two types.** A depth step next to a surface seen at
    a grazing angle is close to the silhouette threshold, so the checks call
    it a silhouette on some phases and a crease on others. Each axis keeps
@@ -138,7 +139,8 @@ Behind those shares are a handful of causes.
    silhouette candidate whose band barely touches the pixel; silhouettes
    are chosen first, so it hides a converged crease for that frame.
 
-The first cause was the largest, and keeping failed records, together with
+The first cause was the largest, and keeping records through failed tests,
+which today means through a missed contour only, together with
 the takeover rules between the two types that the
 [silhouettes]({% post_url 2026-10-11-thin-outline-silhouettes %}) post
 describes, brought the count from 256 and 107 to 103 and 34 over the
@@ -429,10 +431,11 @@ half the detection threshold, a test also run on frames when the pixel has a sil
 record's pixel has a depth edge measure toward either neighbour along the
 axis above half the silhouette threshold, whichever side is nearer, so the
 contour pixel finds its silhouette both on the frames when its sample is on
-the foreground and on those when it is on the background. And no history
-test failed this frame: a failed depth, foreground or background test
-counts as not found, which is how the failed records of the history post
-fade. A crease record also loses the frame to a silhouette sample, which is
+the foreground and on those when it is on the background. And the
+background test passed this frame: a silhouette record whose contour was
+not seen counts as not found, which is how the kept records of the history
+post fade, while a tap that fails a depth test is left out before the
+presence is asked. A crease record also loses the frame to a silhouette sample, which is
 how a silhouette takes a crease's axis over on a still pixel: a stray
 silhouette sample once per jitter cycle dents the crease, while a contour
 that moves in samples a silhouette on every frame and takes over as the
@@ -496,13 +499,15 @@ strengths, 0.18 and 0.39, rather than between drawn and missing.
 ### Ghosts, Failed Records, and the Cost
 
 A ghost is drawn for three or four frames, fading, and emptied on the
-eleventh frame without its edge. A record that fails its history tests is
-treated the same way: it is dropped after about a dozen failed frames in a
-row, and recovers from a single bad phase per cycle. Records on moving pixels are still dropped at once when a
-test fails, by the moving gate of the history reprojection post. The
-footprints of a walking character were the one ghost for which three or
-four faint frames were still too many, and the velocity test of that post
-removes them before the presence is asked.
+eleventh frame without its edge. A silhouette record whose contour the
+checks missed this frame is treated the same way: it is dropped after about
+a dozen such frames in a row, and recovers from a single bad phase per
+cycle. On moving pixels such records are still dropped at once, by the
+moving gate of the history reprojection post, and a record whose depth test
+fails is left out at any speed, before the presence is asked, as are the
+footprints of a walking character, the one ghost for which three or four
+faint frames were still too many: the velocity test of that post removes
+them.
 
 The presence costs about 0.002 ms at 1280×720 and 73%, or less than I could
 measure: the update is a multiply-add and a compare per record, the ramp one
@@ -681,7 +686,7 @@ this post:
 
 | Step | Where | What it fixes | What it does not |
 |---|---|---|---|
-| Keeping failed records (history reprojection post) | history | Records reset once per jitter cycle at depth steps and slivers | Records that pass every test |
+| Keeping a record through a missed contour (history reprojection post) | history | Silhouette records reset once per jitter cycle where the check misses the contour | Records whose surface is gone, dropped at once; records that pass every test |
 | Dense edge suppression | drawing | Tangles of lines where three or more edges crowd within two pixels | The flicker of dense edges; isolated pairs, including one-pixel geometry |
 | Isolated edge suppression | drawing | Specks of one or two pixels, among them what is left of the grooves | The flicker of lines; it removes 0.6% of the outline |
 | Presence | records and drawing | Edges found on few recent frames: pops, junctions, ghosts | The footprints of a walking character, which fade too slowly (the velocity test) |
