@@ -40,12 +40,13 @@
   <path d="M140,350 L132,350 L132,528 L140,528" fill="none" stroke="#777" stroke-width="1"/>
   <text x="126" y="439" font-size="10.5" fill="#444" text-anchor="end">display resolution</text>
   <line x1="400" y1="238" x2="420" y2="238" stroke="#1f5fa8" stroke-width="1.6"/>
-  <text x="424" y="224" font-size="10.5" fill="#1f5fa8">drawn before the upscaler: the composite and the</text>
-  <text x="424" y="238" font-size="10.5" fill="#1f5fa8">depth/velocity overwrite also run here; the outline</text>
-  <text x="424" y="252" font-size="10.5" fill="#1f5fa8">then goes through depth of field and TSR, and sits</text>
-  <text x="424" y="266" font-size="10.5" fill="#1f5fa8">under the "After DOF" translucency</text>
+  <text x="424" y="210" font-size="10.5" fill="#1f5fa8">drawn before the upscaler (the default): the</text>
+  <text x="424" y="224" font-size="10.5" fill="#1f5fa8">composite and the depth/velocity overwrite also</text>
+  <text x="424" y="238" font-size="10.5" fill="#1f5fa8">run here; the outline then goes through depth of</text>
+  <text x="424" y="252" font-size="10.5" fill="#1f5fa8">field and TSR, and sits under the "After DOF"</text>
+  <text x="424" y="266" font-size="10.5" fill="#1f5fa8">translucency</text>
   <line x1="400" y1="454" x2="420" y2="454" stroke="#7a4fa0" stroke-width="1.6"/>
-  <text x="424" y="440" font-size="10.5" fill="#7a4fa0">after the upscaler (the default): the composite runs</text>
+  <text x="424" y="440" font-size="10.5" fill="#7a4fa0">after the upscaler: the composite runs</text>
   <text x="424" y="454" font-size="10.5" fill="#7a4fa0">here, at display resolution, from the edge pass's</text>
   <text x="424" y="468" font-size="10.5" fill="#7a4fa0">lines; the outline is drawn over everything</text>
   <text x="424" y="482" font-size="10.5" fill="#7a4fa0">composited so far and stays sharp</text>

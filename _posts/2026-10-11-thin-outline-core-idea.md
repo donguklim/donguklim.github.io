@@ -6,7 +6,7 @@ categories: [rendering, npr]
 hidden: true
 ---
 
-This post is the core of an algorithm for drawing toon outlines from the G-buffer that are thinner 
+This post explains the core of an algorithm for drawing toon outlines from the G-buffer that are thinner 
 than a rendering pixel and stay crisp under a temporal upscaler. 
 A G-buffer edge check can only say whether an edge passes between two rendering pixels, 
 but accumulated over the jittered frames of a temporal upscaler, 
@@ -26,7 +26,7 @@ Engine plugin; the code is at
 
 ## The Pixel-Thickness Problem
 
-One common approach to toon style outlines is to locate contours by inspecting
+One common approach to toon-style outlines is to locate contours by inspecting
 G-buffer data: compare depth, normal or object-ID samples between
 neighbouring pixels and flag an edge wherever the discontinuity crosses a
 threshold. Without a temporal upscaler that works well. With one (TAAU,
@@ -102,8 +102,8 @@ The rest of this post is about where the line comes from.
 
 ## What a G-Buffer Check Really Tests
 
-Take the simplest G-buffer algorithm as the example. For a target pixel, 
-it checks whether the depth or normal differs from each of its four axial neighbours, up, down, left and right, 
+Take the simplest G-buffer algorithm as an example. For a target pixel, 
+it checks whether the depth or normal differs from that of each of its four axial neighbours, up, down, left and right, 
 by more than a threshold. 
 If any neighbour differs, the target is marked as containing an outline.
 
@@ -164,9 +164,8 @@ The check is skipped across a depth discontinuity, and it fires when the measure
 threshold (0.25 each by default), with a strength that rises linearly above
 the threshold and saturates at 1. 
 
-
 A **silhouette** check compares depths, with a measure built from world positions that stays zero on a plane seen at
-any angle; the [silhouettes]({% post_url 2026-10-11-thin-outline-silhouettes %})post describes it. 
+any angle; the [silhouettes]({% post_url 2026-10-11-thin-outline-silhouettes %}) post describes it. 
 
 A pixel with a silhouette toward any neighbour runs no crease checks at all. 
 Everything below applies to both kinds; where silhouettes differ, that post says so.
@@ -188,7 +187,7 @@ than any single frame's one-pixel-wide detection. I use OLS; the rest of this po
 
 ![Same three-pixel row and left-neighbor band as before, but the colored sample pairs are replaced with many small black dots scattered across the hatched band, accumulated over many frames. A red trend line fitted through these dots via OLS regression runs through the middle of the parallelogram, parallel to the true black edge line](/assets/images/taa-toon-outline/ols-edge-fit-left.svg)
 
-This sounds like you need to store every sampled points over frames. It doesn't. 
+This sounds like you need to store every sample point over the frames. You don't. 
 
 OLS can be computed from data accumulated temporally, with decay, without keeping any sample position around. 
 
@@ -623,10 +622,10 @@ and treating an axis whose own record was co-triggered as having no edge.
 
 In practice that produced dashed outlines, most visibly in scenes with many
 buildings when drawing after the upscaler, so I turned the rule off and then removed the ratio altogether; 
-its channel now holds the "presence" value used for flickering artifact.
+its channel now holds the "presence" value used against flickering artifacts.
 
 Dense edges are handled after the fit instead, by the dense edge suppression 
-described in the [flicker suppression]({% post_url 2026-10-11-thin-outline-flicker-suppression %})post.
+described in the [flicker suppression]({% post_url 2026-10-11-thin-outline-flicker-suppression %}) post.
 
 ## The Fit and Its Reliability
 
@@ -802,7 +801,7 @@ because an unstable position only slides the line within the pixel,
 while an unstable slope means the pixel doesn't know which way the edge runs,
 which is a much stronger sign that it is looking through the wrong axis. 
 
-The[spatial filters]({% post_url 2026-10-11-thin-outline-spatial-filters %})
+The [spatial filters]({% post_url 2026-10-11-thin-outline-spatial-filters %})
 post has one more step that runs on the chosen edge before it is drawn.
 
 ## Drawing Where the Band Crosses
@@ -1006,8 +1005,8 @@ The thickness is given in display pixels and converted to rendering pixels by th
 A candidate whose band covers less than a ten-thousandth of the pixel is dropped: 
 a band merely touching the pixel's corner left a rounding residue that could win the selection with no coverage to show.
 
-This is the rule for drawing before the upscaler. In case of drawing after upscaler at display resolution, 
-every display pixel sums the band areas of the rendering pixels it overlaps directly and the upscaler.
+This is the rule for drawing before the upscaler. When the outline is drawn after the upscaler, at display resolution, 
+every display pixel sums the band areas of the rendering pixels it overlaps directly, without the upscaler.
 
 The [drawing after the upscaler]({% post_url 2026-10-11-thin-outline-drawing-after-upscaler %})
 post covers that mode, the comparison between the two, and the tilt the

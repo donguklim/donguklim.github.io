@@ -36,7 +36,7 @@ Before the tiles, the passes did not know this. The record pass has to run
 everywhere, since a new edge can appear anywhere, but the passes that draw
 the outline ran on every pixel too, and each pixel loaded its records and
 its neighbours' before it found they were empty. The worst of them was the
-drawing after the upscaler, the default. It runs once per *display* pixel,
+drawing after the upscaler, then the default. It runs once per *display* pixel,
 and at 73% a display pixel overlaps about 1.73 rendering pixels per axis,
 about three in all, so it repeated every rendering pixel's loads and fits
 three times. Per pass, at base clocks (the GPU locked to its base clock so
@@ -50,7 +50,7 @@ that the times repeat) on an RTX 5080, static camera:
 | **In-game** (normal clocks, the whole plugin) | **0.152 ms** | **0.205 ms** |
 
 At 73% the drawing pass was three quarters of the plugin's time, three times
-the record pass, and the default mode cost twice what drawing before the
+the record pass, and drawing after the upscaler cost twice what drawing before the
 upscaler cost at the same resolution (0.098 ms in-game). These numbers, and
 every number in this post until the last section, were measured before the
 edge pass existed: the drawing passes then still selected and filtered the
@@ -262,7 +262,7 @@ multiprocessor and cycle, the multiprocessors at 0.3% of their throughput). The
 depth from a pixel shader into the scene depth, whose compression has to be
 resolved, and it is paid once per pass whatever is drawn. The quads stay,
 since they are not slower, but the pass is a fixed cost as long as it writes
-depth that way. Drawing before the upscaler is not the default, so I did not
+depth that way. Drawing before the upscaler was not the default then, so I did not
 push this further; its gain is the drawing pass's.
 
 ## The Record Pass Skips Empty History
@@ -328,7 +328,7 @@ post explains why that number matters for the record pass).
 
 The figure shows the passes of a frame as they run now:
 
-![A diagram of the passes in three rows. The first row, before the upscaler at rendering resolution in both drawing modes: the record pass on every rendering pixel, then the record mask with one integer per square, then classify and setup over rendering tiles writing a list and indirect arguments, then the edge pass, started indirectly on the listed tiles. A dashed arrow from the record mask loops back to the record pass, labelled next frame: skip the history where its taps' blocks were empty. The second row, drawing before the upscaler: the composite, indirect on the same list and in place, and the depth and velocity overwrite, an indirect draw of a quad per tile, both fed from the edge pass. The third row, the default, drawing after the upscaler at display resolution: the temporal upscaler, then classify and setup over display tiles, fed by the record mask, then the composite, indirect on the listed display tiles and in place, which reads the edge pass's lines, one per rendering pixel. Blue boxes run only on the listed tiles, started indirectly from the count on the GPU](/assets/images/thin-outline/tile-passes.svg)
+![A diagram of the passes in three rows. The first row, before the upscaler at rendering resolution in both drawing modes: the record pass on every rendering pixel, then the record mask with one integer per square, then classify and setup over rendering tiles writing a list and indirect arguments, then the edge pass, started indirectly on the listed tiles. A dashed arrow from the record mask loops back to the record pass, labelled next frame: skip the history where its taps' blocks were empty. The second row, the default, drawing before the upscaler: the composite, indirect on the same list and in place, and the depth and velocity overwrite, an indirect draw of a quad per tile, both fed from the edge pass. The third row, drawing after the upscaler at display resolution: the temporal upscaler, then classify and setup over display tiles, fed by the record mask, then the composite, indirect on the listed display tiles and in place, which reads the edge pass's lines, one per rendering pixel. Blue boxes run only on the listed tiles, started indirectly from the count on the GPU](/assets/images/thin-outline/tile-passes.svg)
 
 In-game, the whole plugin, at normal clocks, 1280×720 display, static view,
 before the edge pass:

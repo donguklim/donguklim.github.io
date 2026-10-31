@@ -10,8 +10,8 @@ The records live at rendering resolution, before the temporal upscaler,
 but nothing forces the outline to be drawn there. This post covers where in
 the frame the outline is painted: before the upscaler, where it goes
 through TSR like any other pixel, or after it, at display resolution, where
-each display pixel takes the exact coverage of the band. It explains why
-drawing after the upscaler became the default, what it costs, the edge pass
+each display pixel takes the exact coverage of the band. It explains what
+drawing after the upscaler showed, what it costs, the edge pass
 that made it cheap, and where the remaining time goes. It is the last part
 of a [series]({% post_url 2026-10-11-thin-outline %}) and assumes the
 [core idea]({% post_url 2026-10-11-thin-outline-core-idea %}) post.
@@ -24,7 +24,7 @@ samples. In Unreal it runs at the hook before depth of field, after the
 opaque surfaces, the fog and the translucency have been rendered. What
 happens to the outline after that depends on where it is painted:
 
-![A vertical list of the stages of a frame, top to bottom: opaque surfaces and lighting (the jittered G-buffer); fog and sky haze, applied to scene colour; translucency, with "After DOF" materials rendered into a texture of their own; the Before DOF hook, outlined in blue, where the record pass and the edge pass run; depth of field, which composites the "After DOF" translucency; TSR, the temporal upscaler; motion blur; the After motion blur hook, outlined in purple; bloom and tonemapping. A bracket on the left marks everything down to TSR as rendering resolution, jittered, and everything after as display resolution. A blue note at the Before DOF hook says that when drawing before the upscaler the composite and the depth and velocity overwrite also run there, and the outline then goes through depth of field and TSR and sits under the "After DOF" translucency. A purple note at the After motion blur hook says that drawing after the upscaler, the default, runs the composite there at display resolution from the edge pass's lines, drawn over everything composited so far, and stays sharp](/assets/images/thin-outline/draw-hooks.svg)
+![A vertical list of the stages of a frame, top to bottom: opaque surfaces and lighting (the jittered G-buffer); fog and sky haze, applied to scene colour; translucency, with "After DOF" materials rendered into a texture of their own; the Before DOF hook, outlined in blue, where the record pass and the edge pass run; depth of field, which composites the "After DOF" translucency; TSR, the temporal upscaler; motion blur; the After motion blur hook, outlined in purple; bloom and tonemapping. A bracket on the left marks everything down to TSR as rendering resolution, jittered, and everything after as display resolution. A blue note at the Before DOF hook says that when drawing before the upscaler, the default, the composite and the depth and velocity overwrite also run there, and the outline then goes through depth of field and TSR and sits under the "After DOF" translucency. A purple note at the After motion blur hook says that drawing after the upscaler runs the composite there at display resolution from the edge pass's lines, drawn over everything composited so far, and stays sharp](/assets/images/thin-outline/draw-hooks.svg)
 
 - **Before the upscaler**, the outline is painted into the scene colour at
   rendering resolution, and TSR accumulates it with everything else. Each
@@ -53,7 +53,7 @@ drawing mode as a switch, to compare the two on the same records. Drawn
 after the upscaler, the fading and the dashed lines were gone. They had
 come from TSR's handling of a thin outline that changes with the jitter,
 not from the records. I did not take apart which of TSR's heuristics did
-it: drawing after it removed the question, and it became the default.
+it: drawing after it removed the question.
 
 It also showed something TSR had been hiding. Below 100% screen percentage
 some lines came out as a two-row sawtooth: every rendering pixel along a
@@ -365,8 +365,8 @@ The plugin, ThinOutline, is at
 Unreal Engine 5.8 with TSR. Its settings are under Project Settings,
 Plugins, Thin Outline:
 
-- **General:** enabling the outlines, drawing after the upscaler (on by
-  default) or before it, and the coverage curve's exponent (2.2; 1 is plain
+- **General:** enabling the outlines, drawing before the upscaler (the
+  default) or after it, and the coverage curve's exponent (2.2; 1 is plain
   coverage).
 - **Silhouette** and **Crease:** whether to draw each type, its colour, its
   thickness in display pixels, and the detection thresholds and scales of
@@ -374,9 +374,17 @@ Plugins, Thin Outline:
 - The other categories (presence, spike filter, velocity test, estimator)
   hold the parameters of the steps the other posts describe.
 
-Drawing after the upscaler is the right choice unless the outline has to go
-under depth of field, motion blur or "After DOF" translucency; then drawing
-before it, with the overwrite, is the one that does.
+Drawing before the upscaler, the default, treats the outline like the rest
+of the scene: it goes under depth of field, motion blur and "After DOF"
+translucency, and the upscaler accumulates it with everything else. TSR
+makes some thin lines fade, but drawn after the upscaler, with no history
+behind it, the outline gets noisy in scenes full of small structures, such
+as a city or a village with grass, and drawing before DLSS 4.5 gave good
+results. TSR is the standard, and I think throwing away everything an
+upscaler does for the outline is generally not a good trade. Drawing after
+the upscaler keeps the line sharp and exactly as thick as set, but draws it
+over all of those effects and costs more below 100%; it is the one to choose
+when a crisp line matters more than a steady one.
 
 ## Summary
 
@@ -384,10 +392,12 @@ before it, with the overwrite, is the one that does.
 |---|---|---|
 | Record pass | samples the jittered G-buffer, updates the records | rendering resolution, before depth of field, every pixel |
 | Edge pass | chooses, filters and suppresses each rendering pixel's edge once | rendering resolution, listed tiles |
-| Composite after the upscaler (default) | sums each display pixel's band coverage from the lines it overlaps, bends it by the coverage curve | display resolution, after motion blur, listed tiles |
-| Composite before the upscaler | passes the coverage of the display pixel under the sample, for TSR to average | rendering resolution, listed tiles |
+| Composite after the upscaler | sums each display pixel's band coverage from the lines it overlaps, bends it by the coverage curve | display resolution, after motion blur, listed tiles |
+| Composite before the upscaler (default) | passes the coverage of the display pixel under the sample, for TSR to average | rendering resolution, listed tiles |
 | Overwrite (before the upscaler only) | writes the foreground's depth and velocity under silhouettes | listed tiles, a fixed cost |
 
 The records are where the algorithm is; drawing is where the upscaler can
-either help or get in the way. For a thin outline that changes with the
-jitter, keeping the upscaler out of it was what made the outline steady.
+either help or get in the way. Keeping the upscaler out of it removes the
+fading TSR causes on a thin outline that changes with the jitter; keeping
+it in smooths the noise of a scene full of small structures, which is why
+the outline is drawn before the upscaler by default.

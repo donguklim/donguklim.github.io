@@ -5,7 +5,7 @@ date: 2026-10-11 16:00:00 +0900
 categories: [rendering, npr]
 ---
 
-This is an algorithm for drawing toon style outlines from G-buffer data alone that are 
+This is an algorithm for drawing toon-style outlines from G-buffer data alone that are 
 thinner than one rendering pixel and stay crisp under a temporal upscaler such as TSR. 
 This post replaces my [post from September]({% post_url 2026-09-06-taa-compatible-toon-outline-gbuffer-contour %}),
 which described the first design; the algorithm changed in several places
@@ -52,15 +52,16 @@ Each frame, the G-buffer is sampled at that frame's jittered sub-pixel position,
 so each frame's detection says whether an edge passes between two jittered sample points. 
 
 Over the frames of the upscaler's jitter sequence, those answers trace out the shape of the region 
-where the edge is detectable, and from that region each rendering pixel can reconstruct the edge's 
-line segment equation by using statistical method:
+where the edge is detectable, and from that region each rendering pixel can reconstruct the equation of the edge's 
+line by using a statistical method:
 [ordinary least squares](https://en.wikipedia.org/wiki/Ordinary_least_squares).
 
 The line is then drawn with any thickness you like. 
-It can be thinner than rendering pixel size and even thinner than display pixel size. 
+It can be thinner than a rendering pixel, and even thinner than a display pixel. 
 The outline no longer depends on the screen percentage.
 
 Two kinds of edges are drawn: 
+
 - **creases**, where the normal changes abruptly on a continuous surface.
 - **silhouettes**, where the depth jumps between a foreground and a background. 
 
@@ -93,9 +94,9 @@ Per frame, the work falls into three steps:
 
 Every picture below was taken at 50% screen percentage, so a rendering pixel is two display pixels wide. 
 Each scene is shown under five different settings: 
+
 - no outline; 
-- a plain outline drawn at rendering resolution and blurred as much as the screen percentage(50%) to make it look like thin;
-- outline a post-process material gives; 
+- a plain outline drawn at rendering resolution and blurred in proportion to the screen percentage (50%) to make it look thin, the kind of outline a post-process material gives;
 - the thin outline drawn before the upscaler under TSR; 
 - the same thin outline drawn before DLSS; 
 - and the thin outline drawn after the upscaler, at display resolution. 
@@ -107,7 +108,7 @@ so that the pixels can be compared.
 
 ### A Toon-Style Scene
 
-A sample character from VRoid Studio in front of a fantasy style town. 
+A sample character from VRoid Studio in front of a fantasy-style town. 
 This is the kind of scene the outline is meant for.
 
 <table>
@@ -133,8 +134,8 @@ The full crops, at display resolution:
 
 ![The same scene with a plain outline: dark lines two display pixels wide along the character, the stones of the wall, the buildings and the grass, with visible steps along every slanted edge.](/assets/images/thin-outline/comparison/fantasy_provencal_plain_outline.jpg)
 
-*A plain outline, one rendering pixel wide and blurred as much as the screen
-percentage. At 50% screen percentage, outline strength is halved. It is still two display pixels wide.*
+*A plain outline, one rendering pixel wide and blurred in proportion to the screen
+percentage. At 50% screen percentage, the outline's strength is halved. It is still two display pixels wide.*
 
 ![The same scene with the thin outline drawn before the upscaler under TSR: thin dark lines along the character and the wall, softened and slightly spread by the upscaler.](/assets/images/thin-outline/comparison/fantasy_provencal_thin_outline_tsr.jpg)
 
@@ -149,7 +150,7 @@ percentage. At 50% screen percentage, outline strength is halved. It is still tw
 *The thin outline drawn after the upscaler.*
 
 The town is the free Fab pack
-[Stylized Provencal](https://fab.com/s/498d7348d149); the character was from [VRoid Studio](https://vroid.com/en/studio).
+[Stylized Provencal](https://fab.com/s/498d7348d149); the character is a sample model from [VRoid Studio](https://vroid.com/en/studio).
 
 ### The Third-Person Template
 
@@ -174,7 +175,7 @@ The full crops:
 
 ![The same scene with a plain outline: dark lines two display pixels wide along the pillar's edges, the wall and the ramp, stepped along the slanted edges.](/assets/images/thin-outline/comparison/thrid_person_plain_outline.jpg)
 
-*A plain outline, one rendering pixel wide and thinned by the screen
+*A plain outline, one rendering pixel wide and blurred in proportion to the screen
 percentage.*
 
 ![The same scene with the thin outline drawn before the upscaler under TSR: thin dark lines along the pillar's edges, the wall and the ramp, softened by the upscaler.](/assets/images/thin-outline/comparison/thrid_person_thin_outline_tsr.jpg)
@@ -197,17 +198,17 @@ Screenshots of the same five conditions in Epic's City Sample are at the
 - [The core idea]({% post_url 2026-10-11-thin-outline-core-idea %}): how a
   temporal least-squares record per pixel and axis reconstructs the edge
   and how records are stored.
-- [Silhouettes]({% post_url 2026-10-11-thin-outline-silhouettes %}): Some complexities silhouettes have.
+- [Silhouettes]({% post_url 2026-10-11-thin-outline-silhouettes %}): the complications that silhouettes add.
 - [History reprojection]({% post_url 2026-10-11-thin-outline-history-reprojection %}):
   how a record follows its surface from frame to frame.
 - [Spatial filters]({% post_url 2026-10-11-thin-outline-spatial-filters %}):
-  Applying spatial filter to make outline more consistent over space.
+  applying a spatial filter to make the outline more consistent from pixel to pixel.
 - [Flicker suppression]({% post_url 2026-10-11-thin-outline-flicker-suppression %}):
-  How to suppress outline flickering artifacts.
+  how to suppress outline flickering artifacts.
 - [Tile classification]({% post_url 2026-10-11-thin-outline-tile-classification %}):
-  running the drawing passes only on the tiles within reach of an outline record
+  running the drawing passes only on the tiles within reach of an outline record.
 - [Drawing after the upscaler]({% post_url 2026-10-11-thin-outline-drawing-after-upscaler %}):
-  drawing outline after upscaler or before the upscaler.
+  drawing the outline after the upscaler or before it.
 
 ## The Implementation
 
@@ -332,7 +333,7 @@ than to compare pixels.
 
 ![The same city view with a plain outline: dark lines two display pixels wide along every building edge, window frame, car and tree branch, which thicken the whole picture.](/assets/images/thin-outline/comparison/city_sample_plain_outline.jpg)
 
-*A plain outline, one rendering pixel wide and thinned by the screen
+*A plain outline, one rendering pixel wide and blurred in proportion to the screen
 percentage. On a scene this dense, a line two display pixels wide darkens
 every facade.*
 
