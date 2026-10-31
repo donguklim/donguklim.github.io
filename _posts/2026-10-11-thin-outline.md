@@ -14,6 +14,14 @@ because one page would be uncomfortable to read. It replaces my
 which described the first design; the algorithm changed in several places
 while I implemented it, and this series describes what it does now.
 
+![Five crops of the same toon character's face, blue hair and a bow tie against a sky, a barn and a hedge, rendered at 50% screen percentage, each labelled: no outline; a plain outline one rendering pixel wide, which draws thick dark lines around the hair, the face and the clothes; the thin outline drawn before the upscaler under TSR and under DLSS, whose lines are thin but softened; and the thin outline drawn after the upscaler, whose lines are crisp and about one display pixel wide. Under each face, the 167 by 152 display pixels inside a red rectangle on the hair's edge are enlarged three times without smoothing: the plain outline is a stepped line two pixels wide, the lines drawn before the upscaler are soft and spread, and the line drawn after it is one pixel wide and follows the edge's slant.](/assets/images/thin-outline/intro-comparison-zoomed.png)
+
+*The same face at 50% screen percentage without an outline, with a plain
+G-buffer outline one rendering pixel wide, and with the thin outline drawn
+before the upscaler (TSR, DLSS) and after it. Under each, the pixels inside
+the red rectangle enlarged three times. The full pictures are in the
+[results](#results).*
+
 ## The Problem
 
 A common way to draw toon outlines is to look for contours in the G-buffer:
