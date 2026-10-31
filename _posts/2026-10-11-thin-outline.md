@@ -77,6 +77,121 @@ Per frame, the work falls into three steps:
    velocity under silhouette pixels so that it moves the outline with the
    object in front.
 
+## Results
+
+Every picture below was taken at 50% screen percentage, so a rendering pixel
+is two display pixels wide. Each scene is shown under five conditions: no
+outline; a plain outline, which is the same G-buffer edge checks drawn one
+rendering pixel wide and thinned by the screen percentage, the kind of
+outline a post-process material gives; the thin outline drawn before the
+upscaler under TSR; the same before DLSS; and the thin outline drawn after
+the upscaler, at display resolution. The thin outline is set to about one
+display pixel in every shot.
+
+The small crops are the same rectangle of display pixels from each picture,
+enlarged without smoothing so that the pixels can be compared. What to look
+for: the plain outline is a staircase of two-pixel steps, since its line is
+one rendering pixel wide and the upscaler can only enlarge it; the thin
+outline drawn before the upscaler is smoothed by the upscaler's history
+blend, which spreads a line thinner than a rendering pixel over its
+neighbours; and the thin outline drawn after the upscaler is the line as the
+algorithm reconstructed it, about one display pixel wide with exact coverage
+at its ends and along its slant.
+
+### A Toon-Style Scene
+
+A character made in VRoid Studio in front of a stylized town. This is the
+kind of scene the outline is meant for. The crop is the edge of the
+character's hair against the sky and a barn roof behind it.
+
+<table>
+<tr>
+<td><img src="/assets/images/thin-outline/comparison/fantasy_provencal_no_outline_zoomed.png" alt="A 167 by 152 display-pixel crop at 50% screen percentage, enlarged three times without smoothing: the edge of blue hair against a sky and a wooden barn roof, with no outline drawn; the hair meets the sky without a line." style="image-rendering: pixelated; width: 501px; max-width: 100%;"><br><em>No outline</em></td>
+<td><img src="/assets/images/thin-outline/comparison/fantasy_provencal_plain_outline_zoomed.png" alt="The same crop with a plain outline: a dark line along the hair's edge and the roof's edges that is two display pixels wide and steps by two pixels at a time, the staircase of a line drawn one rendering pixel wide at 50% screen percentage and enlarged by the upscaler." style="image-rendering: pixelated; width: 501px; max-width: 100%;"><br><em>Plain outline</em></td>
+</tr>
+<tr>
+<td><img src="/assets/images/thin-outline/comparison/fantasy_provencal_thin_outline_tsr_zoomed.png" alt="The same crop with the thin outline drawn before the upscaler under TSR: the line along the hair and the roof is thin but soft, spread over two or three display pixels by the upscaler's history blend." style="image-rendering: pixelated; width: 501px; max-width: 100%;"><br><em>Thin outline, before the upscaler (TSR)</em></td>
+<td><img src="/assets/images/thin-outline/comparison/fantasy_provencal_thin_outline_dlss_zoomed.png" alt="The same crop with the thin outline drawn before the upscaler under DLSS: the line is thin and somewhat sharper than under TSR, but still blurred by the upscaler." style="image-rendering: pixelated; width: 501px; max-width: 100%;"><br><em>Thin outline, before the upscaler (DLSS)</em></td>
+</tr>
+<tr>
+<td><img src="/assets/images/thin-outline/comparison/fantasy_provencal_thin_outline_after_upscaler_zoomed.png" alt="The same crop with the thin outline drawn after the upscaler: a crisp dark line about one display pixel wide along the hair's edge and the roof, following the slant of the edge with partial coverage on the pixels it crosses, and no two-pixel steps." style="image-rendering: pixelated; width: 501px; max-width: 100%;"><br><em>Thin outline, after the upscaler</em></td>
+<td></td>
+</tr>
+</table>
+
+The full crops, at display resolution:
+
+![The character in a blue dress with long blue hair standing on a dirt path before a stone wall, with a stylized town, trees and grass behind, rendered at 50% screen percentage with no outline.](/assets/images/thin-outline/comparison/fantasy_provencal_no_outline.jpg)
+
+*No outline.*
+
+![The same scene with a plain outline: dark lines two display pixels wide along the character, the stones of the wall, the buildings and the grass, with visible steps along every slanted edge.](/assets/images/thin-outline/comparison/fantasy_provencal_plain_outline.jpg)
+
+*A plain outline, one rendering pixel wide and thinned by the screen
+percentage. At 50% it is still two display pixels wide, and every slanted
+edge is a staircase.*
+
+![The same scene with the thin outline drawn before the upscaler under TSR: thin dark lines along the character and the wall, softened and slightly spread by the upscaler.](/assets/images/thin-outline/comparison/fantasy_provencal_thin_outline_tsr.jpg)
+
+*The thin outline drawn before the upscaler, TSR. The upscaler spreads a
+line thinner than a rendering pixel over its neighbours.*
+
+![The same scene with the thin outline drawn before the upscaler under DLSS: thin dark lines along the character and the wall, somewhat sharper than under TSR.](/assets/images/thin-outline/comparison/fantasy_provencal_thin_outline_dlss.jpg)
+
+*The thin outline drawn before the upscaler, DLSS.*
+
+![The same scene with the thin outline drawn after the upscaler: crisp dark lines about one display pixel wide along the character, the stones and the buildings, without steps.](/assets/images/thin-outline/comparison/fantasy_provencal_thin_outline_after_upscaler.jpg)
+
+*The thin outline drawn after the upscaler.*
+
+The town is the free Fab pack
+[Stylized Provencal](https://fab.com/s/498d7348d149); the character was made
+in [VRoid Studio](https://vroid.com/en/studio).
+
+### The Third-Person Template
+
+The engine's third-person template, which is where I checked the outline's
+quality while building the algorithm. The crop is the corner of a pillar
+against the sky, with the slanted edge of a wall behind it. There is no
+enlarged crop of the scene without an outline; the full picture is below.
+
+<table>
+<tr>
+<td><img src="/assets/images/thin-outline/comparison/thrid_person_plain_outline_zoomed.png" alt="A 275 by 145 display-pixel crop at 50% screen percentage, enlarged twice without smoothing: a grey pillar face against a blue sky at the left edge, and the slanted top edge of a wall in the lower left corner, with a plain outline. The outline is two display pixels wide and steps by two pixels along the slant." style="image-rendering: pixelated; width: 550px; max-width: 100%;"><br><em>Plain outline</em></td>
+<td><img src="/assets/images/thin-outline/comparison/thrid_person_thin_outline_tsr_zoomed.png" alt="The same crop with the thin outline drawn before the upscaler under TSR: the line along the pillar's edge is thin but soft, spread over neighbouring display pixels by the upscaler." style="image-rendering: pixelated; width: 550px; max-width: 100%;"><br><em>Thin outline, before the upscaler (TSR)</em></td>
+</tr>
+<tr>
+<td><img src="/assets/images/thin-outline/comparison/thrid_person_thin_outline_dlss_zoomed.png" alt="The same crop with the thin outline drawn before the upscaler under DLSS: the line along the pillar's edge is thin and a little sharper than under TSR, still blurred." style="image-rendering: pixelated; width: 550px; max-width: 100%;"><br><em>Thin outline, before the upscaler (DLSS)</em></td>
+<td><img src="/assets/images/thin-outline/comparison/thrid_person_thin_outline_after_upscaler_zoomed.png" alt="The same crop with the thin outline drawn after the upscaler: a crisp line about one display pixel wide along the pillar's edge and the wall's slanted top, with partial coverage along the slant and no steps." style="image-rendering: pixelated; width: 550px; max-width: 100%;"><br><em>Thin outline, after the upscaler</em></td>
+</tr>
+</table>
+
+The full crops:
+
+![A tall grey pillar in front of a sky and a low wall, with a green ramp on the left and a green cylinder on the right, on a tiled floor, rendered at 50% screen percentage with no outline.](/assets/images/thin-outline/comparison/thrid_person_no_outline.jpg)
+
+*No outline.*
+
+![The same scene with a plain outline: dark lines two display pixels wide along the pillar's edges, the wall and the ramp, stepped along the slanted edges.](/assets/images/thin-outline/comparison/thrid_person_plain_outline.jpg)
+
+*A plain outline, one rendering pixel wide and thinned by the screen
+percentage.*
+
+![The same scene with the thin outline drawn before the upscaler under TSR: thin dark lines along the pillar's edges, the wall and the ramp, softened by the upscaler.](/assets/images/thin-outline/comparison/thrid_person_thin_outline_tsr.jpg)
+
+*The thin outline drawn before the upscaler, TSR.*
+
+![The same scene with the thin outline drawn before the upscaler under DLSS: thin dark lines along the pillar's edges, the wall and the ramp.](/assets/images/thin-outline/comparison/thrid_person_thin_outline_dlss.jpg)
+
+*The thin outline drawn before the upscaler, DLSS.*
+
+![The same scene with the thin outline drawn after the upscaler: crisp dark lines about one display pixel wide along the pillar's edges, the wall and the ramp, without steps.](/assets/images/thin-outline/comparison/thrid_person_thin_outline_after_upscaler.jpg)
+
+*The thin outline drawn after the upscaler.*
+
+Screenshots of the same five conditions in Epic's City Sample are at the
+[bottom of this post](#city-sample-screenshots).
+
 ## The Parts
 
 - [The core idea]({% post_url 2026-10-11-thin-outline-core-idea %}): why a
@@ -117,7 +232,9 @@ a source build of 5.8:
 <https://github.com/donguklim/thin-outline-plugin>. The posts quote short
 pieces of its HLSL where a formula is clearer as code, and the numbers they
 give were measured with it, under TSR, in the engine's third-person
-template, the City Sample and Stack O Bot. Its settings, drawing modes and
+template, the City Sample and Stack O Bot; the pictures above were taken in
+the third-person template, the City Sample and a scene built from a Fab
+pack. Its settings, drawing modes and
 costs are described in the
 [drawing after the upscaler]({% post_url 2026-10-11-thin-outline-drawing-after-upscaler %})
 post. The algorithm needs a temporal upscaler whose jitter is uniform over
@@ -225,6 +342,38 @@ The implementation was then built the same way, over about two weeks: I
 decided what to try and judged the results in the engine, and Fable wrote
 the code, the Python mirrors of the shaders that checked it, and the notes
 that these posts are drawn from.
+
+## City Sample Screenshots
+
+The same five conditions in Epic's City Sample, a photoreal city rather than
+a toon scene, from a high viewpoint over an intersection and a square with
+trees. These are whole frames at 50% screen percentage, scaled down from
+3840 by 2040 to 1920 wide, so the lines are shown at half their display
+size; they are here to show how the outline behaves on a scene with a great
+many edges, the facades, the windows, the bare trees and the cars, rather
+than to compare pixels.
+
+![An aerial view of a city intersection at dusk, with brick and stone facades, lit windows, parked cars, a crosswalk and a square with bare trees, rendered at 50% screen percentage with no outline.](/assets/images/thin-outline/comparison/city_sample_no_outline.jpg)
+
+*No outline.*
+
+![The same city view with a plain outline: dark lines two display pixels wide along every building edge, window frame, car and tree branch, which thicken the whole picture.](/assets/images/thin-outline/comparison/city_sample_plain_outline.jpg)
+
+*A plain outline, one rendering pixel wide and thinned by the screen
+percentage. On a scene this dense, a line two display pixels wide darkens
+every facade.*
+
+![The same city view with the thin outline drawn before the upscaler under TSR: thin dark lines along the building edges, windows, cars and branches, softened by the upscaler.](/assets/images/thin-outline/comparison/city_sample_thin_outline_tsr.jpg)
+
+*The thin outline drawn before the upscaler, TSR.*
+
+![The same city view with the thin outline drawn before the upscaler under DLSS: thin dark lines along the building edges, windows, cars and branches.](/assets/images/thin-outline/comparison/city_sample_thin_outline_dlss.jpg)
+
+*The thin outline drawn before the upscaler, DLSS.*
+
+![The same city view with the thin outline drawn after the upscaler: crisp lines about one display pixel wide along the building edges, windows, cars and branches.](/assets/images/thin-outline/comparison/city_sample_thin_outline_after_upscaler.jpg)
+
+*The thin outline drawn after the upscaler.*
 
 ## References
 
