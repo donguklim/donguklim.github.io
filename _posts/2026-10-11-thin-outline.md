@@ -5,32 +5,30 @@ date: 2026-10-11 16:00:00 +0900
 categories: [rendering, npr]
 ---
 
-This is an algorithm for drawing toon outlines from G-buffer data alone that
-are thinner than one rendering pixel and stay crisp under a temporal upscaler
-such as TSR. This post states the problem, gives the idea in short, and links
-to the posts that explain each part; the parts are separate pages only
-because one page would be uncomfortable to read. It replaces my
-[post from September]({% post_url 2026-09-06-taa-compatible-toon-outline-gbuffer-contour %}),
+This is an algorithm for drawing toon style outlines from G-buffer data alone that are 
+thinner than one rendering pixel and stay crisp under a temporal upscaler such as TSR. 
+This post replaces my [post from September]({% post_url 2026-09-06-taa-compatible-toon-outline-gbuffer-contour %}),
 which described the first design; the algorithm changed in several places
 while I implemented it, and this series describes what it does now.
 
 ![Five crops of the same toon character's face, blue hair and a bow tie against a sky, a barn and a hedge, rendered at 50% screen percentage, each labelled: no outline; a plain outline one rendering pixel wide, which draws thick dark lines around the hair, the face and the clothes; the thin outline drawn before the upscaler under TSR and under DLSS, whose lines are thin but softened; and the thin outline drawn after the upscaler, whose lines are crisp and about one display pixel wide. Under each face, the 167 by 152 display pixels inside a red rectangle on the hair's edge are enlarged three times without smoothing: the plain outline is a stepped line two pixels wide, the lines drawn before the upscaler are soft and spread, and the line drawn after it is one pixel wide and follows the edge's slant.](/assets/images/thin-outline/intro-comparison-zoomed.png)
 
-*The same face at 50% screen percentage without an outline, with a plain
-G-buffer outline one rendering pixel wide, and with the thin outline drawn
+*The scene at 50% screen percentage without an outline, with a plain
+G-buffer outline one rendering pixel wide and blurred, and with the thin outline drawn
 before the upscaler (TSR, DLSS) and after it. Under each, the pixels inside
 the red rectangle enlarged three times. The full pictures are in the
 [results](#results).*
 
 ## The Problem
 
-A common way to draw toon outlines is to look for contours in the G-buffer:
-compare the depth and normal of neighbouring pixels and flag an edge where
-they differ by more than a threshold. This works well until a temporal
-upscaler (TAAU, TSR, DLSS, FSR, XeSS) enters the pipeline. The upscaler
-renders the scene at a reduced internal resolution, the **screen
-percentage**, and reconstructs a full display-resolution image from it over
-time. A G-buffer contour detector only has samples at rendering resolution,
+A common way to draw outlines is to look for contours in the G-buffer:
+compare the depth and normal of neighbouring pixels and flag an edge where they differ by more than a threshold. 
+This works well until a temporal upscaler (TAAU, TSR, DLSS, FSR, XeSS) enters the pipeline. 
+
+The upscaler renders the scene at a reduced internal resolution set by the **screen
+percentage**, and reconstructs a full display-resolution image from it over time. 
+
+A G-buffer contour detector only has samples at rendering resolution,
 so the thinnest outline it can produce is one rendering pixel wide, and after
 upscaling that becomes about `1 / screen_percentage` display pixels: two at
 50% screen percentage, four at 25%.
@@ -40,27 +38,33 @@ upscaling that becomes about `1 / screen_percentage` display pixels: two at
 Geometry-based outlines, such as an inverted hull, don't have this problem:
 the outline is a mesh, rasterized at a slightly different sub-pixel jitter
 every frame, and the upscaler accumulates those jittered samples into an
-anti-aliased, sub-pixel-accurate edge like any other geometry. A G-buffer
-detector's output is a yes-or-no per rendering pixel on a fixed grid, so the
-upscaler has nothing finer to accumulate. The outline gets thicker, in
-display pixels, exactly when the screen percentage drops.
+anti-aliased, sub-pixel-accurate edge like any other geometry. 
+
+A G-buffer detector's output is a yes-or-no per rendering pixel on a fixed grid, 
+so the upscaler has nothing finer to accumulate. The outline gets thicker, in display pixels, 
+exactly when the screen percentage is less than 100%.
 
 ## The Idea in Short
 
-The algorithm turns the detector's yes-or-no answers into a line. Each frame,
-the G-buffer is sampled at that frame's jittered sub-pixel position, so each
-frame's detection says whether an edge passes between two jittered sample
-points. Over the frames of the upscaler's jitter sequence, those answers
-trace out the shape of the region where the edge is detectable, and from
-that region each rendering pixel reconstructs the edge's line equation by
-ordinary least squares, from a handful of running statistics it keeps from
-frame to frame. The line is then drawn with any thickness you like, measured
-in display pixels, with exact coverage per pixel. The outline no longer
-depends on the screen percentage.
+The algorithm turns the detector's yes-or-no answers into a line segment. 
 
-Two kinds of edges are drawn: **creases**, where the normal changes abruptly
-on a continuous surface, and **silhouettes**, where the depth jumps between a
-foreground and a background. Both are reconstructed the same way, with one
+Each frame, the G-buffer is sampled at that frame's jittered sub-pixel position, 
+so each frame's detection says whether an edge passes between two jittered sample points. 
+
+Over the frames of the upscaler's jitter sequence, those answers trace out the shape of the region 
+where the edge is detectable, and from that region each rendering pixel can reconstruct the edge's 
+line segment equation by using statistical method:
+[ordinary least squares](https://en.wikipedia.org/wiki/Ordinary_least_squares).
+
+The line is then drawn with any thickness you like. 
+It can be thinner than rendering pixel size and even thinner than display pixel size. 
+The outline no longer depends on the screen percentage.
+
+Two kinds of edges are drawn: 
+- **creases**, where the normal changes abruptly on a continuous surface.
+- **silhouettes**, where the depth jumps between a foreground and a background. 
+
+Both are reconstructed the same way, with one
 record per pixel and per inducer axis (horizontal: the left and right checks;
 vertical: the top and bottom checks), and each record is either a crease or a
 silhouette record.
@@ -87,30 +91,24 @@ Per frame, the work falls into three steps:
 
 ## Results
 
-Every picture below was taken at 50% screen percentage, so a rendering pixel
-is two display pixels wide. Each scene is shown under five conditions: no
-outline; a plain outline, which is the same G-buffer edge checks drawn one
-rendering pixel wide and thinned by the screen percentage, the kind of
-outline a post-process material gives; the thin outline drawn before the
-upscaler under TSR; the same before DLSS; and the thin outline drawn after
-the upscaler, at display resolution. The thin outline is set to about one
-display pixel in every shot.
+Every picture below was taken at 50% screen percentage, so a rendering pixel is two display pixels wide. 
+Each scene is shown under five different settings: 
+- no outline; 
+- a plain outline drawn at rendering resolution and blurred as much as the screen percentage(50%) to make it look like thin;
+- outline a post-process material gives; 
+- the thin outline drawn before the upscaler under TSR; 
+- the same thin outline drawn before DLSS; 
+- and the thin outline drawn after the upscaler, at display resolution. 
 
-The small crops are the same rectangle of display pixels from each picture,
-enlarged without smoothing so that the pixels can be compared. What to look
-for: the plain outline is a staircase of two-pixel steps, since its line is
-one rendering pixel wide and the upscaler can only enlarge it; the thin
-outline drawn before the upscaler is smoothed by the upscaler's history
-blend, which spreads a line thinner than a rendering pixel over its
-neighbours; and the thin outline drawn after the upscaler is the line as the
-algorithm reconstructed it, about one display pixel wide with exact coverage
-at its ends and along its slant.
+The thin outline is set to about one display pixel in every shot.
+
+The small crops are the same rectangle of display pixels from each picture, enlarged without smoothing 
+so that the pixels can be compared.
 
 ### A Toon-Style Scene
 
-A character made in VRoid Studio in front of a stylized town. This is the
-kind of scene the outline is meant for. The crop is the edge of the
-character's hair against the sky and a barn roof behind it.
+A sample character from VRoid Studio in front of a fantasy style town. 
+This is the kind of scene the outline is meant for.
 
 <table>
 <tr>
@@ -135,14 +133,12 @@ The full crops, at display resolution:
 
 ![The same scene with a plain outline: dark lines two display pixels wide along the character, the stones of the wall, the buildings and the grass, with visible steps along every slanted edge.](/assets/images/thin-outline/comparison/fantasy_provencal_plain_outline.jpg)
 
-*A plain outline, one rendering pixel wide and thinned by the screen
-percentage. At 50% it is still two display pixels wide, and every slanted
-edge is a staircase.*
+*A plain outline, one rendering pixel wide and blurred as much as the screen
+percentage. At 50% screen percentage, outline strength is halved. It is still two display pixels wide.*
 
 ![The same scene with the thin outline drawn before the upscaler under TSR: thin dark lines along the character and the wall, softened and slightly spread by the upscaler.](/assets/images/thin-outline/comparison/fantasy_provencal_thin_outline_tsr.jpg)
 
-*The thin outline drawn before the upscaler, TSR. The upscaler spreads a
-line thinner than a rendering pixel over its neighbours.*
+*The thin outline drawn before the upscaler, TSR.*
 
 ![The same scene with the thin outline drawn before the upscaler under DLSS: thin dark lines along the character and the wall, somewhat sharper than under TSR.](/assets/images/thin-outline/comparison/fantasy_provencal_thin_outline_dlss.jpg)
 
@@ -153,15 +149,11 @@ line thinner than a rendering pixel over its neighbours.*
 *The thin outline drawn after the upscaler.*
 
 The town is the free Fab pack
-[Stylized Provencal](https://fab.com/s/498d7348d149); the character was made
-in [VRoid Studio](https://vroid.com/en/studio).
+[Stylized Provencal](https://fab.com/s/498d7348d149); the character was from [VRoid Studio](https://vroid.com/en/studio).
 
 ### The Third-Person Template
 
-The engine's third-person template, which is where I checked the outline's
-quality while building the algorithm. The crop is the corner of a pillar
-against the sky, with the slanted edge of a wall behind it. There is no
-enlarged crop of the scene without an outline; the full picture is below.
+The engine's third-person template, which is where I checked the outline's basic quality while building the algorithm.
 
 <table>
 <tr>
@@ -202,36 +194,20 @@ Screenshots of the same five conditions in Epic's City Sample are at the
 
 ## The Parts
 
-- [The core idea]({% post_url 2026-10-11-thin-outline-core-idea %}): why a
-  G-buffer check detects an edge in a parallelogram of jitter offsets, how a
+- [The core idea]({% post_url 2026-10-11-thin-outline-core-idea %}): how a
   temporal least-squares record per pixel and axis reconstructs the edge
-  from that, how records are stored, pooled with their neighbours, fitted and
-  trusted, and how each pixel paints the part of the outline band that
-  crosses it.
-- [Silhouettes]({% post_url 2026-10-11-thin-outline-silhouettes %}): the
-  depth-edge measure, which side records a silhouette, why the records are
-  kept on the foreground pixels, and the depth and velocity overwrite that
-  makes the upscaler move the outline with the object in front.
+  and how records are stored.
+- [Silhouettes]({% post_url 2026-10-11-thin-outline-silhouettes %}): Some complexities silhouettes have.
 - [History reprojection]({% post_url 2026-10-11-thin-outline-history-reprojection %}):
-  how a record follows its surface from frame to frame, the bilinear taps,
-  and the depth, background and velocity tests that decide when a record is
-  no longer about the surface under its pixel.
+  how a record follows its surface from frame to frame.
 - [Spatial filters]({% post_url 2026-10-11-thin-outline-spatial-filters %}):
-  why blending neighbouring lines fails on a static edge, and the line
-  through the centre crossings of five pixels across the axis that is
-  fitted instead, slope and position.
+  Applying spatial filter to make outline more consistent over space.
 - [Flicker suppression]({% post_url 2026-10-11-thin-outline-flicker-suppression %}):
-  what still flickers after the upscaler and why, measured over jitter
-  cycles, the dense and isolated edge suppression that were tried against
-  it first, and the presence and spike filter that remove most of it.
+  How to suppress outline flickering artifacts.
 - [Tile classification]({% post_url 2026-10-11-thin-outline-tile-classification %}):
-  running the drawing passes only on the tiles within reach of a record,
-  and why the passes that remained were waiting on their loads rather than
-  doing too much.
+  running the drawing passes only on the tiles within reach of an outline record
 - [Drawing after the upscaler]({% post_url 2026-10-11-thin-outline-drawing-after-upscaler %}):
-  coverage of the display pixel, drawing before the upscaler against after
-  it, the coverage curve that keeps a thin diagonal line from beading, and
-  what the implementation costs and why.
+  drawing outline after upscaler or before the upscaler.
 
 ## The Implementation
 
@@ -239,23 +215,14 @@ I implemented the algorithm as an Unreal Engine plugin, ThinOutline, against
 a source build of 5.8:
 <https://github.com/donguklim/thin-outline-plugin>. The posts quote short
 pieces of its HLSL where a formula is clearer as code, and the numbers they
-give were measured with it, under TSR, in the engine's third-person
-template, the City Sample and Stack O Bot; the pictures above were taken in
-the third-person template, the City Sample and a scene built from a Fab
-pack. Its settings, drawing modes and
-costs are described in the
-[drawing after the upscaler]({% post_url 2026-10-11-thin-outline-drawing-after-upscaler %})
-post. The algorithm needs a temporal upscaler whose jitter is uniform over
-the pixel, as TSR's Halton sequence is; without temporal anti-aliasing every
-sample sits at the pixel centre and nothing can be reconstructed, and a
-Gaussian jitter such as legacy TAA's biases the reconstruction.
+give were measured with it.
 
 ## Limitations
 
 - **Sub-pixel details.** The algorithm samples as finely as the G-buffer and
   no finer. Every check compares two samples one rendering pixel apart and
   the reconstruction assumes a full pixel-wide band around each edge in
-  which that comparison fires. A thin wire, a small hole or a narrow gap
+  which that comparison fires. A thin wire, a small hole or a narrow gap thinner than a rendering pixel
   breaks that assumption: the checks fire only on the few frames where the
   two samples happen to straddle the detail, and its edges are reconstructed
   partially or not at all. Geometry one pixel thin is deliberately dropped at
@@ -279,8 +246,6 @@ Gaussian jitter such as legacy TAA's biases the reconstruction.
   jitter in a simulation moves the error to the other sign. It is a property
   of fitting lines to a short, lopsided point set, not a logic bug, and it is
   gone from 50% screen percentage on, where the sequence has 37 positions.
-- **Silhouette thickness** is limited to about one rendering pixel beyond
-  the edge, on the background side.
 
 ## How I Came Up with the Algorithm
 
