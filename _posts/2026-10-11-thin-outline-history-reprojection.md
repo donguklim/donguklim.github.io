@@ -338,20 +338,6 @@ bool IsForegroundInPlace(FThinOutlineRecord Record, float CenterDepth, float Fir
 }
 ```
 
-#### Why One Neighbour Is Enough
-
-In my first layout, the records were kept on the background side, and the test had to reach two pixels toward the
-foreground. The pixel one outside the contour sees its foreground two pixels away, on the frames when the contour pixel
-samples the background. In a static view, with records on the background side and a 2% tolerance:
-
-| Pixels compared with the foreground depth | Rejected at 100% | at 50% |
-|---|---:|---:|
-| the pixel and one step | 35% | 40% |
-| the pixel, one and two steps | 2.7% | 3.5% |
-
-The remaining few percent did not depend on the tolerance. They were records whose foreground really had moved, such as
-the animated character's head against the sky. With the records on the foreground, one step is enough.
-
 #### Why a 5% Tolerance
 
 The 5% tolerance comes from the same place as the crease threshold. A foreground seen at a grazing angle changes depth
@@ -401,27 +387,6 @@ bool HasBackgroundInReach(FThinOutlineRecord Record, uint FirstIndex, uint Backg
 This test runs on the merged record, after the taps, since the background side is a property of the record, not of a
 tap.
 
-#### No Threshold on the Turn Rate
-
-The test has no threshold on how fast the view may turn. A record is kept as long as its contour is still beside it,
-and dropped as soon as it is not, whatever the camera or the object did. The exception is a still pixel, where a
-missed contour first only sinks the record's presence (see [the moving gate](#the-moving-gate) below).
-
-I measured it in a camera orbit around the character and with the character spinning in place, at 1280×720 and 100%
-screen percentage. The table counts the character's drawn silhouette pixels, and how many of them are **detached**,
-with no depth step within two pixels along their axis:
-
-| Scenario | Silhouette pixels on the character | Detached |
-|---|---:|---:|
-| camera orbit, 0.5° per frame | 3,264 | 0 |
-| camera orbit, 1.5° per frame | 1,925 | 0 |
-| character spin, 0.5° per frame | 2,742 | 0 |
-| character spin, 1.5° per frame | 3,205 | 0 |
-
-That was measured when every record that failed the background test was dropped at once. With the current rule, the
-same test project leaves 0 to 7 detached records per frame in the orbit at 0.5° per frame, and 1 to 5 in the spin at
-1.5° per frame (12 frames each): the handful that the [moving gate](#the-moving-gate) below lets through.
-
 ### Why Not the View Direction
 
 My first design handled the view-dependence of silhouettes differently. It rejected a silhouette record when the view
@@ -431,8 +396,10 @@ measured:
 - in the plane that matters, the one through the camera and the edge;
 - relative to the surface, so that an object turning in front of a still camera counted too.
 
-It worked as designed and was still the wrong tool, because a hard threshold is all or nothing. In the same orbit, with
-that test in place of the background test:
+It worked as designed and was still the wrong tool, because a hard threshold is all or nothing. I measured it in a
+camera orbit around the character, at 1280×720 and 100% screen percentage. The table counts the character's drawn
+silhouette pixels, and the share of them that are **detached**, with no depth step within two pixels along their
+axis:
 
 | Orbit | Test off | 2° per frame | 1° | 0.5° |
 |---|---|---|---|---|
@@ -446,8 +413,9 @@ that test in place of the background test:
 So the threshold only picks the turn rate at which lag turns into absence. And sharp silhouettes, such as a box's
 edges, which never slide, were rejected along with the smooth ones.
 
-The background test above replaced it. It leaves no detached pixel in any scenario. At the fast turns, it keeps two to
-two and a half times the silhouette that the view-direction test left.
+The background test above replaced it. It has no threshold on how fast the view may turn: a record stays while its
+contour is beside it. At the fast turns, it kept two to two and a half times the silhouette that the view-direction
+test left, and its detached pixels are the handful that [the moving gate](#the-moving-gate) below lets through.
 
 ## Failed Taps: Left Out, or Kept Through a Missed Contour
 
@@ -521,8 +489,8 @@ missed contour usually means that the contour has slid away over the surface, an
 
 When I measured it without the gate, kept silhouette records trailed moving contours: 6% of the drawn silhouette pixels
 were detached under a camera pan, 11% under a camera orbit at 0.5° per frame and 19% at 1.5°. With the gate, and
-failed depth taps left out at any speed, the pan, the orbit and a spinning character leave a handful of detached pixels
-per frame.
+failed depth taps left out at any speed, the pan, the orbit and a spinning character leave a handful of detached
+records per frame: 0 to 7 in the orbit at 0.5° per frame, and 1 to 5 in the spin at 1.5° per frame (12 frames each).
 
 ## The Velocity Test
 
@@ -629,21 +597,6 @@ gets a lighter record once.
 The test applies to both record types, because it is a test of the tap's surface, not of its edge. A silhouette record
 of the foot on a floor pixel usually fails the background test anyway. But a part of the foot within two pixels keeps
 the background in reach.
-
-### Why Not a Forward Projection
-
-I tried a second form first: move each tap forward to this frame by its own stored velocity, and keep it only if it
-still overlaps the pixel. The camera's share of a tap's motion has to be taken to be the fetch's, for the same reason as
-above. Once it is, the forward projection is the same comparison, with the tap's bilinear offset folded in:
-
-- a tap already 0.9 pixels off on one side fails from 0.1 pixels of extra motion;
-- a tap 0.1 pixels off fails only from 0.9.
-
-So the same foot at the same speed was caught or missed by its sub-pixel alignment, which alternates pixel by pixel
-along a trail. In a test, the forward projection cleared only the faster of the two feet.
-
-The two forms cost the same. And the velocity match has a threshold that means one thing: how differently from the
-fetching pixel a tap's surface may have moved, in pixels per frame.
 
 ### What It Catches
 
