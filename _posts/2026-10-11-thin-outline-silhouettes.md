@@ -346,22 +346,29 @@ but the band is drawn by B and its background neighbour C. So the pool has to re
 
 ![Five square pixels in a row labeled Z, A, B, C and D, with the same nearly vertical black contour inside B and the foreground shaded purple on the left. A gray band of outline thickness runs along the contour on its right, the background side, filling the right part of B and the left part of C. Under the row, brackets show the pools: B and C pool the records of A and B, A pools them as well but the band lies outside it, and D pools nothing. Small record icons sit under A and B only. A caption says the band is drawn by B and C from the records A and B hold, and that A draws nothing because the band lies entirely outside it](/assets/images/thin-outline/silhouette-band-pool.svg)
 
-The rule, per axis and per background side:
+A pixel doesn't know in advance on which side of it the background lies. So on each axis it tries both sides: once
+assuming the background lies to the right (or below), and once to the left (or above). Every silhouette record
+already says on which side its own background lies, through its kept ratio. For one assumed background side, with
+the foreground on the opposite side, the pixel builds its pool by three rules:
 
-- A pixel pools the silhouette records of itself, of the two pixels toward the foreground, and of the one pixel
-  toward the background.
-- Of these, it pools only the records whose own background lies on that side.
-- It pools at all only if it, or its foreground-side neighbour, holds such a record.
+1. **Only records that agree.** A record takes part only if its own background lies on the assumed side.
+2. **Only next to a record.** If neither the pixel nor its neighbour toward the foreground holds such a record, the
+   pool stays empty.
+3. **Four pixels.** Otherwise, the pixel pools the agreeing records of four pixels: itself, the two pixels toward the
+   foreground, and the one pixel toward the background.
 
-Of the two sides, the one with more samples is drawn. In the figure:
+The pixel builds a pool for each of the two sides and draws the side whose pool holds more samples.
 
-- B pools A and B;
-- C pools A and B;
-- A pools A and B as well, but its band falls entirely outside its square;
-- D has no record in itself or in C, and draws nothing.
+In the figure, the background lies to the right of the contour, and A and B hold records of that side:
 
-The band therefore can't reach further than about one rendering pixel past the edge: only the two pixels next to it
-ever draw it.
+- B pools A and B: its own record and its foreground neighbour's.
+- C pools A and B: its foreground neighbour B holds a record, and A is the second pixel toward the foreground.
+- A pools A and B as well, since B is its one pixel toward the background. But the band falls entirely outside A's
+  square, so A draws nothing.
+- D pools nothing: neither D nor its foreground neighbour C holds a record.
+
+So the band never reaches further than about one rendering pixel past the edge. Only the pixel that contains the edge
+and its neighbour toward the background ever draw it.
 
 ```hlsl
 // The silhouette records of one background side, pooled: those of the pixel, of the two pixels toward the foreground
@@ -391,17 +398,22 @@ FThinOutlineRecord GetSilhouetteFitRecord(FThinOutlineAxisRecords AxisRecords, b
 
 ### What the Two Extra Rules Are For
 
-The reach toward the background and the required record come from two failures under motion. My first rule pooled the
-pixel and the two pixels toward the foreground. It called a pixel foreground, not allowed to draw, when its neighbour
-toward the background held a record of that side.
+Rules 2 and 3, the record required next to the pixel and the reach toward the background, come from two failures
+under motion.
 
-- **A missing layer.** Under a steady camera pan, the contour moves about 1.6 pixels per frame. For a while, a third
-  pixel on the background side still holds valid records of the same edge, from the frames when it was the
-  foreground. The guard then stopped the pixel that contained the edge from drawing, and one layer of the outline was
-  missing along the character's vertical sides. Reaching one pixel toward the background fixed this.
-- **A faint second row.** A pixel two outside the edge that pooled only one of the two records got a fit from half
-  the data. Its slope alone tilted the band into the pixel, and showed as a faint second outline row. Requiring a
-  record in the pixel or its foreground neighbour fixed this.
+My first rule was simpler. A pixel pooled itself and the two pixels toward the foreground, and nothing toward the
+background. To keep the foreground pixels from drawing, it also had a guard. If the pixel's neighbour toward the
+background held a record, the pixel was taken to be part of the foreground, and drew nothing on that side.
+
+- **A missing layer.** Under a steady camera pan, the contour moves about 1.6 pixels per frame. For a while, a pixel
+  further out on the background side still holds valid records of the same edge, from the frames when it was the
+  foreground. The guard saw that record next to the pixel that contained the edge, and took this pixel for
+  foreground. So the pixel that should have drawn the band drew nothing, and one layer of the outline was missing
+  along the character's vertical sides. Pooling that neighbour's record, instead of using it as a guard, fixed this.
+- **A faint second row.** A pixel two pixels outside the edge could pool one of the edge's two records but not the
+  other. Its fit came from half the data, and its slope alone tilted the band into the pixel. That showed as a faint
+  second row of outline. Requiring a record in the pixel or its foreground neighbour fixed this: a pixel two outside
+  the edge has neither, so its pool stays empty.
 
 ### Silhouettes Before Creases
 

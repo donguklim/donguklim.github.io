@@ -609,23 +609,38 @@ Two more results:
 - On the GPU, with a static camera, a near-horizontal crease that had come out dashed became nearly continuous.
   Diagonal and vertical creases were unchanged.
 
-### What Happened to the Co-Trigger Ratio
+### Co-Trigger Ratio (Not Used Now)
 
-The pooling above assumes that a single edge crosses the pixel along the axis. With two edges less than a pixel
-apart, a sample landing on the sliver between them fires both checks of the axis in the same frame.
+My first design kept one more statistic in every record, the co-trigger ratio. The algorithm no longer uses it, but
+it shows where the pooling above stops working.
 
-My first design kept a decayed count of these **co-trigger** frames per record, and used the ratio as a reliability
-signal:
+**What a co-trigger is.** The pooling assumes that a single edge crosses the pixel along the axis. Now take two edges
+less than a pixel apart, with a sliver of a third surface between them. A jittered sample that lands inside the
+sliver differs from both neighbours at once. So it fires both checks of the axis, the left and the right one, in the
+same frame. I called that a **co-trigger**.
 
-- co-triggered records were left out of the fit;
-- an axis whose own record was co-triggered was treated as having no edge.
+![A single pixel containing two closely spaced edges, splitting it into three vertical bands: gray bands on the left and right matching the neighboring pixels' surfaces, and a narrow purple sliver between the two edges representing a third surface. A highlighted jitter sample inside the purple sliver has arrows pointing to both neighbors, labeled as a co-trigger point that registers as detected by both the left- and right-inducer checks at once](/assets/images/taa-toon-outline/co-trigger-dense-edges.svg)
 
-In practice, that produced dashed outlines, most visibly in scenes with many buildings when drawing after the
-upscaler. So I turned the rule off, and then removed the ratio altogether. Its channel now holds the "presence" value
-used against flickering artifacts.
+**The ratio.** Next to its sample count, every record kept a count of its co-triggered frames, decayed the same way.
+The **co-trigger ratio** was the share of the record's frames that were co-triggered: 0 for a clean edge, approaching
+1 for a pixel that sees two edges on most frames.
 
-Dense edges are now handled after the fit, by the dense edge suppression described in the
-[flicker suppression]({% post_url 2026-10-11-thin-outline-flicker-suppression %}) post.
+**Its purpose.** A co-triggered sample is recorded by both checks of the axis, so the record mixes the samples of two
+edges. The line fitted through them describes neither edge. The ratio was the reliability signal for that case, and
+my first design used it to keep such records out of the drawing:
+
+- a record whose ratio was above a small threshold (0.05) was left out of the pool;
+- an axis whose own record was above it was treated as having no edge, and a pixel with both axes out drew nothing.
+
+**Why it was removed.** In practice, leaving the co-triggered records out made dashed outlines. They were most
+visible in large maps with many buildings, with the outline drawn after the upscaler. The ratio also caught only part
+of the problem: the case where one sample fires both checks at once. Edges that are dense without being quite that
+close slipped past it.
+
+So I turned the rule off, and later removed the ratio altogether. Dense edges are now handled after the fit, by the
+dense edge suppression described in the
+[flicker suppression]({% post_url 2026-10-11-thin-outline-flicker-suppression %}) post. The ratio's channel in the
+record now holds the "presence" value, which the same post explains.
 
 ## The Fit and Its Reliability
 
