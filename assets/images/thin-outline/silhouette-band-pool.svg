@@ -29,9 +29,9 @@
 
   <!-- pools -->
   <g font-size="11" fill="#333" text-anchor="middle">
-    <text x="110" y="236">A: pools Z, A</text>
-    <text x="110" y="250" fill="#777">only its own record,</text>
-    <text x="110" y="264" fill="#777">band outside: draws nothing</text>
+    <text x="110" y="236">A: pools A, B</text>
+    <text x="110" y="250" fill="#777">but the band lies outside:</text>
+    <text x="110" y="264" fill="#777">draws nothing</text>
     <text x="310" y="236" font-weight="600">B: pools A, B</text>
     <text x="310" y="250" font-weight="600">draws</text>
     <text x="410" y="236" font-weight="600">C: pools A, B</text>

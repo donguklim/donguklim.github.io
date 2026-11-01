@@ -189,7 +189,7 @@ Bilinear taps with the range drop are the combination I kept. It gives:
 
 - thin lines on the vertical and diagonal creases alike;
 - no band of stranded records;
-- the most outline on the edges moving along themselves.
+- about 20% more outline than the nearest fetch on the edges moving along themselves.
 
 ### Why Silhouette Records Have No Range Drop
 
@@ -404,7 +404,8 @@ tap.
 #### No Threshold on the Turn Rate
 
 The test has no threshold on how fast the view may turn. A record is kept as long as its contour is still beside it,
-and dropped as soon as it is not, whatever the camera or the object did.
+and dropped as soon as it is not, whatever the camera or the object did. The exception is a still pixel, where a
+missed contour first only sinks the record's presence (see [the moving gate](#the-moving-gate) below).
 
 I measured it in a camera orbit around the character and with the character spinning in place, at 1280×720 and 100%
 screen percentage. The table counts the character's drawn silhouette pixels, and how many of them are **detached**,
@@ -416,6 +417,10 @@ with no depth step within two pixels along their axis:
 | camera orbit, 1.5° per frame | 1,925 | 0 |
 | character spin, 0.5° per frame | 2,742 | 0 |
 | character spin, 1.5° per frame | 3,205 | 0 |
+
+That was measured when every record that failed the background test was dropped at once. With the current rule, the
+same test project leaves 0 to 7 detached records per frame in the orbit at 0.5° per frame, and 1 to 5 in the spin at
+1.5° per frame (12 frames each): the handful that the [moving gate](#the-moving-gate) below lets through.
 
 ### Why Not the View Direction
 
@@ -534,8 +539,8 @@ floor behind each foot. The tests above all let it through:
 
 Silhouette records have their two guards against the same slide. A crease record has only its depth, and a crease
 joins two surfaces without a depth step, by definition. (A hard limit on frames without a crease removed these
-footprints, but it blinked every crease that is found on some frames only. The flicker suppression post tells that
-story.)
+footprints, but it blinked every crease that is found on some frames only. The flicker suppression post explains
+why.)
 
 What differs between the foot and the floor is their **motion**: the foot's pixel moved on its own last frame, and the
 floor's did not. So each pixel stores, with its records, the velocity they moved with. A tap whose stored velocity

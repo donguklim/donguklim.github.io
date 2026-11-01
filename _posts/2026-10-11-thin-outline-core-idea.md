@@ -648,7 +648,9 @@ $$
 $$
 
 Instead of the intercept's standard error, I compute the standard error of the line's position at the pixel's
-centre, $v = \tfrac12$. That is the least uncertain point of the line, and it is uncorrelated with the slope:
+centre, $v = \tfrac12$. The line's least uncertain point is at the samples' mean height $\mu_v$, where its position
+is uncorrelated with the slope. The jitter covers the pixel evenly, so $\mu_v$ is usually close to $\tfrac12$, and the
+centre is nearly as good:
 
 $$
 \mathrm{SE}(E(\tfrac12)) = 2\,s\,\sqrt{\frac1n\left(1 + \frac{(\tfrac12 - \mu_v)^2}{\sigma_v^2}\right)}.

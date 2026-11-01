@@ -8,9 +8,10 @@ hidden: true
 
 Drawn after the upscaler, the outline no longer fades or breaks into dashes. But on some surfaces, at some distances,
 it flickers: a line is there on one frame and gone on the next. This post covers what flickers and why, and how I
-measured it over the jitter cycle. It covers the two suppressions I tried first and why they did not help, and then
-what did: the presence of a record, a filter for normal spikes at sampling time, and a filter for foregrounds one
-pixel thin. It is part of a [series]({% post_url 2026-10-11-thin-outline %}) and assumes the
+measured it over the jitter cycle. It covers the two suppressions I tried first, which remove tangles of dense edges
+and isolated specks but did not stop the flicker. Then it covers what did: the presence of a record, a filter for
+normal spikes at sampling time, and a filter for foregrounds one pixel thin. It is part of a
+[series]({% post_url 2026-10-11-thin-outline %}) and assumes the
 [core idea]({% post_url 2026-10-11-thin-outline-core-idea %}),
 [history reprojection]({% post_url 2026-10-11-thin-outline-history-reprojection %}) and
 [spatial filters]({% post_url 2026-10-11-thin-outline-spatial-filters %}) posts.
@@ -114,9 +115,9 @@ Behind those shares are five causes.
    covers the pixel on some phases only.
 4. **The three-sample minimum.** At 73%, a fit needs a pooled sample count of about 4.4 to hold three distinct
    samples. A pool that hovers around it switches the fit on and off. I simulated fading the outline in over the
-   distinct-sample count instead, and it was worse (47 against 98 flickering pixels). These records get their samples
-   on some phases only, so their count rises and falls within every cycle. The fade turns that into a pulsing line,
-   while the hard minimum only flips when the count crosses it.
+   distinct-sample count instead, and it was worse: 98 flickering rendering pixels with the fade, against 47 with the
+   hard minimum. These records get their samples on some phases only, so their count rises and falls within every cycle.
+   The fade turns that into a pulsing line, while the hard minimum only flips when the count crosses it.
 5. **Two edges in one pixel.** At a corner, both axes have a converged edge with nearly the same slope error. The rule
    then prefers the smaller slope, and both slopes are noise around zero: a coin toss every frame. And a single stray
    silhouette sample on the other axis gives a valid silhouette candidate whose band barely touches the pixel.
@@ -152,8 +153,8 @@ silhouettes) and on the tiles of a building (dense creases), each from a certain
 
 The cause: once edges sit only a pixel or two apart along a pixel's axis, the jitter decides which of them each
 pixel's checks pick up on a given frame. The records of the pixels between them mix the samples of several edges, and
-the line fitted from a mixed record wanders from frame to frame. Drawn before the upscaler, the outline never settled,
-and the upscaler blurred it. Drawn after the upscaler, the wandering is visible as it is.
+the line fitted from a mixed record wanders from frame to frame. Drawn before the upscaler, the outline never settles,
+and the upscaler blurs it. Drawn after the upscaler, the wandering is visible as it is.
 
 My first rule, for a pixel with a horizontal-axis edge, looked at the two pixels to its left and the two to its
 right. It suppressed the edge when:
@@ -232,7 +233,7 @@ return Pow2(NeighbourCrossing - OwnCrossing) > Pow2(DenseEdgeTolerance) * Differ
 The third test replaces my first rule's "both distance-1 neighbours". A neighbour that draws the same edge is not
 evidence of density, however many of them there are.
 
-The containment test of the first rule came from a wrong first version, which counted *any* record two steps away. A
+The first test's containment condition came from a wrong first version, which counted *any* record two steps away. A
 pixel drawing the band near its boundary then counted its own edge's record, two steps away in the next pixel but
 one, as another edge. With the either-side trigger below, that version removed 56% of the outline alpha of my test
 scene; with the containment test, 17%.
@@ -542,9 +543,9 @@ The presence alone, against the reference with everything off at the top of this
 
 ## The Normal-Spike Filter
 
-The presence keeps a pop from drawing. But the pop still feeds the records three samples at a sharp edge's strength,
-and a groove that pops on one frame in three draws faintly. The cleaner fix is not to sample a pop at all. That is the
-idea of filtering thin geometry at sampling time from my
+The presence keeps a pop from drawing. But each pop still gives three records a sample at a sharp edge's strength:
+the spike's and its two neighbours'. A groove that pops on one frame in three draws faintly. The cleaner fix is not
+to sample a pop at all. That is the idea of filtering thin geometry at sampling time from my
 [first post]({% post_url 2026-09-06-taa-compatible-toon-outline-gbuffer-contour %}), applied to the normal.
 
 ### Which Checks Are Skipped

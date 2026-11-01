@@ -149,7 +149,7 @@ The cause is where the alpha is applied. The composite lerps the scene colour to
 and the eye does not see linear light. A pixel left with half its luminance reads as about three quarters of its
 lightness.
 
-In CIE L\*, the standard lightness scale, a black line on a white surface removes:
+In CIE L\*, the standard lightness scale, a black line on a white surface of luminance 0.8 (L\* 92) removes:
 
 - 92 units when it fills one pixel;
 - 22 from each of two half-covered pixels, 44 in all, when it is split over them.
@@ -165,7 +165,7 @@ $$
 $$
 
 with $\gamma = 2.2$, the exponent of the sRGB curve, and $\alpha$ the display pixel's coverage times strength. Text
-rasterizers do the same, under the names gamma-adjusted coverage and stem darkening.
+rasterizers do the same, under the name gamma-adjusted coverage.
 
 - A fully covered pixel is unchanged: $\alpha' = 1$.
 - A half-covered one gets $\alpha' = 0.78$ instead of 0.5. In linear light, that is the darkness the eye expects of
@@ -302,8 +302,7 @@ only moved the work into a pass of its own.
 
 These are the costs of the whole algorithm in-game:
 
-- at its default settings (presence, spike filter, spatial filter, dense and isolated suppression and the velocity
-  test on);
+- with the presence, spike filter, spatial filter, dense and isolated suppression and the velocity test on;
 - at 1280×720 display on an RTX 5080;
 - in the static view of my test scene;
 - as medians of in-game profiles at normal clocks.
@@ -357,6 +356,9 @@ warps. Each thread of a shader reserves as many as the program holds at its heav
 | 96 | 20 |
 | 128 | 16 |
 
+The table gives what the registers allow. The warp counts I quote below are measured averages, and they stay lower,
+because some of the 48 places stand empty at the end of the pass and between thread groups.
+
 Two consequences shaped the record pass:
 
 1. **The heaviest point counts even if it rarely runs.** A branch that one pixel in fifty takes, holding more values
@@ -390,7 +392,8 @@ That made twelve measures where only four differ. Two changes took the pass from
 
 #### What Is Still Open
 
-Additions since then raised the pass one register step, to about 111 registers per thread and 14 resident warps.
+Additions since then raised the pass one register step, to about 111 registers per thread, and cut its measured
+resident warps from 17 to 14.
 Getting back below that step would be worth about 15% of a latency-bound pass. It is the main open item of the
 implementation, together with the edge checks themselves, which every pixel runs every frame.
 

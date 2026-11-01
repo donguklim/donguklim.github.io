@@ -76,8 +76,8 @@ as a step.
 
 That one-sided measure has a blind spot: a concave junction. Take a camera-facing wall that meets a floor seen at a
 grazing angle. The wall pixel C just above the corner has the first floor pixel as its N. That N is nearer than C,
-and off the wall's line by 1.3% to 2.6% of the depth in my level. So C read as a silhouette, and the debug views
-showed the junction as a mix of silhouette and crease.
+and off the wall's line by 1.3% to 2.6% of the depth in my level. So C read as a silhouette, and the pixels along
+the junction became a mix of silhouette and crease.
 
 Nothing is hidden at a junction, though: C's surface and N's surface *meet*. What the check has to decide is whether
 C's sampled point is the background of an occluding contour. The junction is told apart by looking from N's side as
@@ -344,7 +344,7 @@ display pixels converted to rendering pixels. The kept ratio of the pooled recor
 Which records a pixel pools is the part that took a few tries. The records are kept by the foreground pixels A and B,
 but the band is drawn by B and its background neighbour C. So the pool has to reach across the contour:
 
-![Five square pixels in a row labeled Z, A, B, C and D, with the same nearly vertical black contour inside B and the foreground shaded purple on the left. A gray band of outline thickness runs along the contour on its right, the background side, filling the right part of B and the left part of C. Under the row, brackets show the pools: B pools the records of A and B, C pools the records of A and B as well, and A and D pool nothing. Small record icons sit under A and B only. A caption says the band is drawn by B and C from the records A and B hold, and that A draws nothing because the band lies entirely outside it](/assets/images/thin-outline/silhouette-band-pool.svg)
+![Five square pixels in a row labeled Z, A, B, C and D, with the same nearly vertical black contour inside B and the foreground shaded purple on the left. A gray band of outline thickness runs along the contour on its right, the background side, filling the right part of B and the left part of C. Under the row, brackets show the pools: B and C pool the records of A and B, A pools them as well but the band lies outside it, and D pools nothing. Small record icons sit under A and B only. A caption says the band is drawn by B and C from the records A and B hold, and that A draws nothing because the band lies entirely outside it](/assets/images/thin-outline/silhouette-band-pool.svg)
 
 The rule, per axis and per background side:
 
@@ -357,7 +357,7 @@ Of the two sides, the one with more samples is drawn. In the figure:
 
 - B pools A and B;
 - C pools A and B;
-- A pools Z and A, finds nothing but its own record, and its band falls entirely outside its square;
+- A pools A and B as well, but its band falls entirely outside its square;
 - D has no record in itself or in C, and draws nothing.
 
 The band therefore can't reach further than about one rendering pixel past the edge: only the two pixels next to it
@@ -495,18 +495,20 @@ The velocity is copied in its encoded form, which covers both kinds of pixel:
   foreground's camera motion.
 
 The compositing shader can't write the depth and velocity textures it reads. So it writes the two values to transient
-textures. A separate full-screen pass then copies them into the scene depth and the velocity texture the upscaler is
-handed, with the depth test forced to pass.
+textures. A separate pass then copies them into the scene depth and the velocity texture the upscaler is handed,
+with the depth test forced to pass. It draws one quad per screen tile with records nearby, not the whole screen (the
+[tile classification]({% post_url 2026-10-11-thin-outline-tile-classification %}) post).
 
-In a static frame of my test level, that pass overwrote 8,117 pixels, every one of them to the depth the compositor
-had picked, and no other pixel changed. Depth of field, motion blur and the next frame's screen-space reflections see
-the foreground's depth at those pixels too.
+In a static frame of my test level at 100% screen percentage, that pass overwrote 8,567 pixels, every one of them to
+the depth the compositor had picked, and no other pixel changed, inside or outside the 1,570 tiles of 14,400 it drew.
+Depth of field, motion blur and the next frame's screen-space reflections see the foreground's depth at those pixels
+too.
 
 ### Drawing After the Upscaler
 
 None of this is needed when the outline is drawn after the upscaler, the other drawing mode; drawing before the
-upscaler, with this overwrite, is the default. In that other mode, the records are still built before the upscaler, but the line is painted at display resolution afterwards, and the upscaler never
-sees the outline. The
+upscaler, with this overwrite, is the default. In that other mode, the records are still built before the upscaler,
+but the line is painted at display resolution afterwards, and the upscaler never sees the outline. The
 [drawing after the upscaler]({% post_url 2026-10-11-thin-outline-drawing-after-upscaler %})
 post compares the two.
 

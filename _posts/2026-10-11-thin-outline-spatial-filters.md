@@ -30,7 +30,8 @@ and weighted every neighbour by:
 - its uncertainty;
 - how far its line passed from the target's centre;
 - how well the two lines' directions agreed;
-- depth.
+- depth;
+- how much its record mixed in a second edge.
 
 It tracked the blend's uncertainty, so that a second pass could reach one pixel further along the edge.
 
@@ -255,7 +256,7 @@ not needed:
 
 ### The Co-Trigger Weight, Tried and Dropped
 
-One gate of the first filter did go into the plugin at first.
+The last of the first filter's weights, for a record that mixes in a second edge, did go into the plugin at first.
 
 The pooling of the core idea post assumes that a single edge crosses the pixel along the axis. With two edges less
 than a pixel apart, a jittered sample that lands on the sliver between them fires *both* checks of the axis in one
@@ -306,7 +307,7 @@ the rest.
 The run does not stop at the two neighbours. The pixels two rows away, $A_2$ at $v = -1.5$ and $B_2$ at $v = 2.5$,
 join the fit as a second pair:
 
-- with a gate of their own, $g_2 = \exp(-(d_2/\sigma)^2)$, where $d_2$ is the distance between $p$'s crossing and the
+- with a gate of their own, $g_2 = \exp(-(d_2/\sigma_c)^2)$, where $d_2$ is the distance between $p$'s crossing and the
   midpoint of theirs; like $d$, it is zero on any straight edge and grows at a corner;
 - with the same inverse-variance weights.
 
@@ -325,8 +326,8 @@ $$
 \sum_{q \in \{A, p, B\}} w_q\,(u_q - a - b\,v_q)^2 + w_b\,(b - b_p)^2 .
 $$
 
-This is a weighted least-squares line through the points of the run, with a penalty for leaving the own slope. When
-all five points are in, the sum runs over $A_2, A, p, B, B_2$. With the weighted means
+This is a weighted least-squares line through the points of the run, with a penalty for leaving the own slope. The sum
+is written for three rows; when all five points are in, it runs over $A_2, A, p, B, B_2$. With the weighted means
 $\bar v = \sum_q w_q v_q / \sum_q w_q$ and $\bar u = \sum_q w_q u_q / \sum_q w_q$, the solution is
 
 $$
@@ -450,7 +451,7 @@ in every row, and averaging rows does not help it.
 
 The right weight of every within-pixel slope, the target's and the neighbours', is therefore about zero whenever both
 neighbours are accepted: 4% at most under independence, nothing under the shared error. The rule "slope from the
-crossings, fall back to the own slope as the gate closes" is as close to optimal as a $3 \times 3$ window allows.
+crossings, fall back to the own slope as the gate closes" is as close to optimal as three rows allow.
 
 One pass is enough, too. The iterations of my first filter existed to reach farther along the edge for line
 averaging, which the shared error makes pointless.
@@ -498,8 +499,8 @@ against it:
 - it changes the fit that the axis selection and the band test depend on;
 - it triple-counts samples in the standard errors.
 
-The fit-level version costs the same record loads, three pooled fits per axis instead of one. It keeps the selection
-untouched, and it gates explicitly.
+With three rows, as first built, the fit-level version costs the same record loads: three pooled fits per axis instead
+of one (the run of five adds two more). It keeps the selection untouched, and it gates explicitly.
 
 ## What the Filter Changed
 
@@ -520,18 +521,19 @@ is off on the left and on on the right:
 
 ### Creases and Silhouettes
 
-The change is hard to see at a glance, and clear pixel by pixel. That is why I first built the filter for creases
-only, and then had it applied to silhouettes too. On that 50% frame, a crease pixel was filtered when both its
-neighbour rows had valid crease fits. The counts and the slope changes:
+I first built the filter for creases only. After looking at zoomed screenshots, where the change is hard to see at a
+glance and clear pixel by pixel, I had it applied to silhouettes too. On a 50% frame with both filtered, a crease pixel
+was filtered when both its neighbour rows had valid crease fits. The counts and the slope changes:
 
 | On the 50% frame | Drawn pixels filtered | Median slope change (px per px) | Pixels whose slope changed by more than 0.5 |
 |---|---|---|---|
-| Creases | 3,197 of 3,622 | 0.11 | 235 |
+| Creases | 3,177 of 3,615 | 0.11 | 237 |
 | Silhouettes | 4,443 of 4,570 | 0.07 (90th percentile 0.22) | 8 |
 
-- **Creases.** The median change is the shared error of the static edges. The 235 pixels above 0.5 all had an own
-  slope standard error above 3. They were records with few distinct samples, whose own slope was noise, on edges whose
-  neighbour crossings agreed, so the filter straightened them.
+- **Creases.** The median change is the shared error of the static edges. The crease pixels above 0.5 all had an own
+  slope standard error above 3 (checked on the first 50% frame, filtered for creases only, where they were 235). They
+  were records with few distinct samples, whose own slope was noise, on edges whose neighbour crossings agreed, so the
+  filter straightened them.
 - **Silhouettes moved less.** Their records are the better converged ones, since the foreground keeps them and the
   kept ratio decides the side. So their own slopes were nearer the neighbours' to begin with.
 

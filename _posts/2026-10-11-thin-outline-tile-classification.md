@@ -73,11 +73,12 @@ The rest of this post:
 Unreal already does this in several places. Its motion blur classifies tiles before filtering. Substrate's lighting
 and MegaLights do the same with more classes. The pattern is three small passes before the real work:
 
-1. **Classify.** One thread per tile decides whether the tile needs work. The threads of a thread group count their
+1. **Clear.** A tiny pass sets the counter that holds the list's length to zero.
+2. **Classify.** One thread per tile decides whether the tile needs work. The threads of a thread group count their
    listed tiles in group shared memory. One thread then reserves that many slots in a global **tile list**, with a
    single atomic add. Each thread writes its tile's coordinate into its slot.
-2. **Setup.** One thread copies the list's length into **indirect arguments**: the group counts a dispatch takes.
-3. **The work, dispatched indirectly.** The GPU reads the group count from the buffer the setup wrote. Each thread
+3. **Setup.** One thread copies the list's length into **indirect arguments**: the group counts a dispatch takes.
+4. **The work, dispatched indirectly.** The GPU reads the group count from the buffer the setup wrote. Each thread
    group takes the tile at its own index in the list and works on that tile's pixels.
 
 The CPU never learns how many tiles there are, so nothing is read back and nothing waits. And since a thread group
