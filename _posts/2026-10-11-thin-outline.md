@@ -5,11 +5,11 @@ date: 2026-10-11 16:00:00 +0900
 categories: [rendering, npr]
 ---
 
-This is an algorithm for drawing toon-style outlines from G-buffer data alone that are 
-thinner than one rendering pixel and stay crisp under a temporal upscaler such as TSR. 
-This post replaces my [post from September]({% post_url 2026-09-06-taa-compatible-toon-outline-gbuffer-contour %}),
-which described the first design; the algorithm changed in several places
-while I implemented it, and this series describes what it does now.
+This is an algorithm for drawing toon-style outlines from G-buffer data alone. The outlines are thinner than one
+rendering pixel and stay crisp under a temporal upscaler such as TSR. This post replaces my
+[post from September]({% post_url 2026-09-06-taa-compatible-toon-outline-gbuffer-contour %}), which described the
+first design. The algorithm changed in several places while I implemented it, and this series describes what it does
+now.
 
 ![Five crops of the same toon character's face, blue hair and a bow tie against a sky, a barn and a hedge, rendered at 50% screen percentage, each labelled: no outline; a plain outline one rendering pixel wide, which draws thick dark lines around the hair, the face and the clothes; the thin outline drawn before the upscaler under TSR and under DLSS, whose lines are thin but softened; and the thin outline drawn after the upscaler, whose lines are crisp and about one display pixel wide. Under each face, the 167 by 152 display pixels inside a red rectangle on the hair's edge are enlarged three times without smoothing: the plain outline is a stepped line two pixels wide, the lines drawn before the upscaler are soft and spread, and the line drawn after it is one pixel wide and follows the edge's slant.](/assets/images/thin-outline/intro-comparison-zoomed.png)
 
@@ -21,90 +21,96 @@ the red rectangle enlarged three times. The full pictures are in the
 
 ## The Problem
 
-A common way to draw outlines is to look for contours in the G-buffer:
-compare the depth and normal of neighbouring pixels and flag an edge where they differ by more than a threshold. 
-This works well until a temporal upscaler (TAAU, TSR, DLSS, FSR, XeSS) enters the pipeline. 
+A common way to draw outlines is to look for contours in the G-buffer. You compare the depth and normal of
+neighbouring pixels, and flag an edge where they differ by more than a threshold. This works well until a temporal
+upscaler (TAAU, TSR, DLSS, FSR, XeSS) enters the pipeline.
 
-The upscaler renders the scene at a reduced internal resolution set by the **screen
-percentage**, and reconstructs a full display-resolution image from it over time. 
+The upscaler renders the scene at a reduced internal resolution, set by the **screen percentage**. Over time, it
+reconstructs a full display-resolution image from it.
 
-A G-buffer contour detector only has samples at rendering resolution,
-so the thinnest outline it can produce is one rendering pixel wide, and after
-upscaling that becomes about `1 / screen_percentage` display pixels: two at
-50% screen percentage, four at 25%.
+A G-buffer contour detector only has samples at rendering resolution. So the thinnest outline it can draw is one
+rendering pixel wide. After upscaling, that becomes about `1 / screen_percentage` display pixels: two at 50% screen
+percentage, four at 25%.
 
 ![A one-render-pixel-wide G-buffer contour becomes two display pixels wide after upscaling from 50% screen percentage](/assets/images/taa-toon-outline/pixel-thickness-upscale.svg)
 
-Geometry-based outlines, such as an inverted hull, don't have this problem:
-the outline is a mesh, rasterized at a slightly different sub-pixel jitter
-every frame, and the upscaler accumulates those jittered samples into an
-anti-aliased, sub-pixel-accurate edge like any other geometry. 
+Geometry-based outlines, such as an inverted hull, don't have this problem. Their outline is a mesh, rasterized at a
+slightly different sub-pixel jitter every frame. The upscaler accumulates those jittered samples into an anti-aliased,
+sub-pixel-accurate edge, like any other geometry.
 
-A G-buffer detector's output is a yes-or-no per rendering pixel on a fixed grid, 
-so the upscaler has nothing finer to accumulate. The outline gets thicker, in display pixels, 
-exactly when the screen percentage is less than 100%.
+A G-buffer detector's output is a yes or no per rendering pixel, on a fixed grid. The upscaler has nothing finer to
+accumulate. So the outline gets thicker in display pixels exactly when the screen percentage is below 100%.
 
 ## The Idea in Short
 
-The algorithm turns the detector's yes-or-no answers into a line segment. 
+The algorithm turns the detector's yes-or-no answers into a line segment:
 
-Each frame, the G-buffer is sampled at that frame's jittered sub-pixel position, 
-so each frame's detection says whether an edge passes between two jittered sample points. 
+1. Each frame, the G-buffer is sampled at that frame's jittered sub-pixel position. So each frame's detection says
+   whether an edge passes between two jittered sample points.
+2. Over the frames of the upscaler's jitter sequence, those answers trace out the region where the edge is
+   detectable.
+3. From that region, each rendering pixel reconstructs the equation of the edge's line with a statistical method,
+   [ordinary least squares](https://en.wikipedia.org/wiki/Ordinary_least_squares).
 
-Over the frames of the upscaler's jitter sequence, those answers trace out the shape of the region 
-where the edge is detectable, and from that region each rendering pixel can reconstruct the equation of the edge's 
-line by using a statistical method:
-[ordinary least squares](https://en.wikipedia.org/wiki/Ordinary_least_squares).
+The line is then drawn with any thickness you like, even thinner than a rendering pixel or a display pixel. The
+outline no longer depends on the screen percentage.
 
-The line is then drawn with any thickness you like. 
-It can be thinner than a rendering pixel, and even thinner than a display pixel. 
-The outline no longer depends on the screen percentage.
+### Creases and Silhouettes
 
-Two kinds of edges are drawn: 
+Two kinds of edges are drawn:
 
-- **creases**, where the normal changes abruptly on a continuous surface.
-- **silhouettes**, where the depth jumps between a foreground and a background. 
+- **creases**, where the normal changes abruptly on a continuous surface;
+- **silhouettes**, where the depth jumps between a foreground and a background.
 
-Both are reconstructed the same way, with one
-record per pixel and per inducer axis (horizontal: the left and right checks;
-vertical: the top and bottom checks), and each record is either a crease or a
-silhouette record.
+Both are reconstructed the same way. Each pixel keeps one record per **inducer axis**:
 
-Per frame, the work falls into three steps:
+- the horizontal axis: the left and right checks;
+- the vertical axis: the top and bottom checks.
 
-1. **Recording**, at rendering resolution, before the upscaler. Every
-   rendering pixel fetches last frame's records at the position the motion
-   vectors point to, tests whether they still belong to the same surface,
-   decays them, runs this frame's crease and silhouette checks on the
-   jittered G-buffer, and adds the samples that fired to the records.
-2. **Reconstruction**, once per rendering pixel. Each pixel pools its record
-   with its neighbours', fits the edge, picks between the horizontal and
-   vertical candidate, filters the line against its neighbours', suppresses
-   edges that are crowded or too short, and scales the edge's strength by how
-   consistently it has been found. The result is one line per rendering
-   pixel.
-3. **Drawing.** Each display pixel is painted by the exact area of the
-   outline band around that line inside it. This can happen after the
-   upscaler, at display resolution, or before it, at rendering resolution,
-   where the upscaler then has to be told the foreground's depth and
-   velocity under silhouette pixels so that it moves the outline with the
-   object in front.
+Each record is either a crease record or a silhouette record.
+
+### The Three Steps of a Frame
+
+**Recording**, at rendering resolution, before the upscaler. Every rendering pixel:
+
+- fetches last frame's records at the position the motion vectors point to;
+- tests whether they still belong to the same surface;
+- decays them;
+- runs this frame's crease and silhouette checks on the jittered G-buffer;
+- adds the samples that fired to the records.
+
+**Reconstruction**, once per rendering pixel. Each pixel:
+
+- pools its record with its neighbours';
+- fits the edge;
+- picks between the horizontal and vertical candidates;
+- filters the line against its neighbours' lines;
+- suppresses edges that are crowded or too short;
+- scales the edge's strength by how consistently the edge has been found.
+
+The result is one line per rendering pixel.
+
+**Drawing.** Each display pixel is painted by the exact area of the outline band around that line inside it. This
+happens in one of two places:
+
+- before the upscaler (the default), at rendering resolution. The upscaler then has to be told the foreground's depth
+  and velocity under silhouette pixels, so that it moves the outline with the object in front;
+- after the upscaler, at display resolution.
 
 ## Results
 
-Every picture below was taken at 50% screen percentage, so a rendering pixel is two display pixels wide. 
-Each scene is shown under five different settings: 
+Every picture below was taken at 50% screen percentage, so a rendering pixel is two display pixels wide. Each scene
+is shown under five settings:
 
-- no outline; 
-- a plain outline drawn at rendering resolution and blurred in proportion to the screen percentage (50%) to make it look thin, the kind of outline a post-process material gives;
-- the thin outline drawn before the upscaler under TSR; 
-- the same thin outline drawn before DLSS; 
-- and the thin outline drawn after the upscaler, at display resolution. 
+- no outline;
+- a plain outline, drawn at rendering resolution and blurred in proportion to the screen percentage (50%) to make it
+  look thin: the kind of outline a post-process material gives;
+- the thin outline drawn before the upscaler, under TSR;
+- the same thin outline drawn before DLSS;
+- the thin outline drawn after the upscaler, at display resolution.
 
-The thin outline is set to about one display pixel in every shot.
-
-The small crops are the same rectangle of display pixels from each picture, enlarged without smoothing 
-so that the pixels can be compared.
+The thin outline is set to about one display pixel in every shot. The small crops are the same rectangle of display
+pixels from each picture, enlarged without smoothing so that the pixels can be compared.
 
 ### A Toon-Style Scene
 
@@ -212,81 +218,83 @@ Screenshots of the same five conditions in Epic's City Sample are at the
 
 ## The Implementation
 
-I implemented the algorithm as an Unreal Engine plugin, ThinOutline, against
-a source build of 5.8:
-<https://github.com/donguklim/thin-outline-plugin>. The posts quote short
-pieces of its HLSL where a formula is clearer as code, and the numbers they
-give were measured with it.
+I implemented the algorithm as an Unreal Engine plugin, ThinOutline, against a source build of 5.8:
+<https://github.com/donguklim/thin-outline-plugin>. The posts quote short pieces of its HLSL where a formula is
+clearer as code. The numbers they give were measured with it.
 
 ## Limitations
 
-- **Sub-pixel details.** The algorithm samples as finely as the G-buffer and
-  no finer. Every check compares two samples one rendering pixel apart and
-  the reconstruction assumes a full pixel-wide band around each edge in
-  which that comparison fires. A thin wire, a small hole or a narrow gap thinner than a rendering pixel
-  breaks that assumption: the checks fire only on the few frames where the
-  two samples happen to straddle the detail, and its edges are reconstructed
-  partially or not at all. Geometry one pixel thin is deliberately dropped at
-  sampling time.
-- **Statistical noise.** The lines are estimates from samples accumulated
-  over time, so they carry variance. A record that has just appeared or been
-  reset wobbles until enough frames have accumulated; a converged record
-  still keeps a residual wobble, because the decay caps how many samples it
-  effectively holds; and every yes-or-no decision made from an estimate, such
-  as which axis to draw, turns a little noise near the threshold into a
-  visible flip. Much of the series, from the pooling to the presence and the
-  spatial filter, is about keeping that noise from turning into dashed or
-  blinking outlines.
-- **Fog and translucency.** Drawing after the upscaler paints the outline
-  over everything composited before it, fog and translucency included;
-  drawing before it sits under some of the translucency but is not fogged
-  either.
-- **A small bias at 100% screen percentage.** TSR's jitter sequence has 11
-  positions there, and the 11-point Halton set is not mirror-symmetric, so
-  lines of one slope sign are drawn about 0.1 pixels off. Mirroring the
-  jitter in a simulation moves the error to the other sign. It is a property
-  of fitting lines to a short, lopsided point set, not a logic bug, and it is
-  gone from 50% screen percentage on, where the sequence has 37 positions.
+### Sub-Pixel Details
+
+The algorithm samples as finely as the G-buffer, and no finer. Every check compares two samples one rendering pixel
+apart. The reconstruction assumes a band one full pixel wide around each edge, in which that comparison fires.
+
+A thin wire, a small hole or a narrow gap thinner than a rendering pixel breaks that assumption. The checks fire only
+on the few frames where the two samples happen to straddle the detail, so its edges are reconstructed partially or
+not at all. Geometry one pixel thin is deliberately dropped at sampling time.
+
+### Statistical Noise
+
+The lines are estimates from samples accumulated over time, so they carry variance:
+
+- a record that has just appeared or been reset wobbles until enough frames have accumulated;
+- a converged record still keeps a residual wobble, because the decay caps how many samples it effectively holds;
+- every yes-or-no decision made from an estimate, such as which axis to draw, turns a little noise near the threshold
+  into a visible flip.
+
+Much of the series, from the pooling to the presence and the spatial filter, is about keeping that noise from turning
+into dashed or blinking outlines.
+
+### Fog and Translucency
+
+Drawing after the upscaler paints the outline over everything composited before it, fog and translucency included.
+Drawing before the upscaler puts the outline under some of the translucency, but the outline is not fogged either.
+
+### A Small Bias at 100% Screen Percentage
+
+TSR's jitter sequence has 11 positions there, and the 11-point Halton set is not mirror-symmetric. So lines of one
+slope sign are drawn about 0.1 pixels off; mirroring the jitter in a simulation moves the error to the other sign.
+It is a property of fitting lines to a short, lopsided point set, not a logic bug. It is gone from 50% screen
+percentage on, where the sequence has 37 positions.
 
 ## How I Came Up with the Algorithm
 
-I was working on outlines, and I started with a simple G-buffer algorithm:
-check the four axial neighbours of each pixel and decide whether to paint it
-with the outline. To make the result look thin, I blurred it.
+I was working on outlines, and I started with a simple G-buffer algorithm. It checked the four axial neighbours of
+each pixel and decided whether to paint the pixel with the outline. To make the result look thin, I blurred it.
 
-Then I had an idea: record the extreme position, along the inducer's axis,
-at which the G-buffer check detected the edge. For the left inducer, I
-recorded the minimum x at which the outline was detected, for the right
-inducer the maximum x, and for the vertical inducers the same with y. The
-outline was then painted only when the jittered sample position fell within
-that recorded range. I asked Claude Fable to implement it.
+Then I had an idea: record the extreme position along the inducer's axis at which the G-buffer check detected the
+edge.
+
+- For the left inducer, I recorded the minimum x at which the outline was detected.
+- For the right inducer, I recorded the maximum x.
+- For the vertical inducers, I did the same with y.
+
+The outline was then painted only when the jittered sample position fell within that recorded range. I asked Claude
+Fable to implement it.
 
 Of course, that only worked for axis-aligned edges. A single extreme along
 one axis can't describe a slanted edge, so diagonal edges came out jagged.
 
-So I went back to the blurring method, and then found that dense outlines
-flickered. My first fix was to accumulate the outline's strength over time,
-as an alpha value. That made the outline worse and the jagging stronger:
-every jittered sample within a rendering pixel now produced the same result,
-so the upscaler had no sub-pixel detail left to reconstruct.
+So I went back to the blurring method, and then found that dense outlines flickered. My first fix was to accumulate
+the outline's strength over time, as an alpha value. That made the outline worse and the jagging stronger. Every
+jittered sample within a rendering pixel now produced the same result, so the upscaler had no sub-pixel detail left
+to reconstruct.
 
-Next, inspired by the SVGF paper, I asked Fable to add a weighted temporal
-filter: a temporal estimator tracked the variance of each pixel's outline
-alpha, and the filter was applied only to pixels with high variance. (This
-method is no longer used.)
+Next, inspired by the SVGF paper, I asked Fable to add a weighted temporal filter. A temporal estimator tracked the
+variance of each pixel's outline alpha, and the filter was applied only to pixels with high variance. (This method is
+no longer used.)
 
-Then I came up with another idea. I had been recording only the minimum or
-maximum along one axis. What if I recorded both the minimum and the maximum
-along the inducer's axis, together with the other coordinate at the moment
-each occurred? For the left inducer, say the detected position with the
-smallest x so far was (0.1, 0.2) and the one with the largest x was
-(0.8, 0.7). I'd record both points. If a later sample detected the edge at
-(0.9, 0.77), it would replace (0.8, 0.7). Those extreme points trace out the
-parallelogram-shaped region where the edge can be detected, and from that
-shape, the edge's line segment itself. To let stale records be replaced, the
-recorded extremes would decay over time, the minimum creeping up and the
-maximum creeping down, so an old extreme would eventually lose to a fresh
-sample.
+Then I came up with another idea. I had been recording only the minimum or maximum along one axis. What if I recorded
+both the minimum and the maximum along the inducer's axis, together with the other coordinate at the moment each
+occurred?
+
+For the left inducer, say the detected position with the smallest x so far was (0.1, 0.2), and the one with the
+largest x was (0.8, 0.7). I'd record both points. If a later sample detected the edge at (0.9, 0.77), it would
+replace (0.8, 0.7). Those extreme points trace out the parallelogram-shaped region where the edge can be detected,
+and from that shape comes the edge's line segment itself.
+
+To let stale records be replaced, the recorded extremes would decay over time: the minimum creeping up and the
+maximum creeping down. An old extreme would eventually lose to a fresh sample.
 
 I asked Fable about this idea, and its answer came down to four points:
 
@@ -312,20 +320,17 @@ making everything else creak. Looking back, it went like this:
    maximum values along the inducer's axis.
 4. Fable finally came up with the fix for the critical problem in my idea.
 
-The implementation was then built the same way, over about two weeks: I
-decided what to try and judged the results in the engine, and Fable wrote
-the code, the Python mirrors of the shaders that checked it, and the notes
-that these posts are drawn from.
+The implementation was then built the same way, over about two weeks. I decided what to try and judged the results
+in the engine. Fable wrote the code, the Python mirrors of the shaders that checked it, and the notes that these
+posts are drawn from.
 
 ## City Sample Screenshots
 
-The same five conditions in Epic's City Sample, a photoreal city rather than
-a toon scene, from a high viewpoint over an intersection and a square with
-trees. These are whole frames at 50% screen percentage, scaled down from
-3840 by 2040 to 1920 wide, so the lines are shown at half their display
-size; they are here to show how the outline behaves on a scene with a great
-many edges, the facades, the windows, the bare trees and the cars, rather
-than to compare pixels.
+The same five conditions in Epic's City Sample: a photoreal city rather than a toon scene, seen from a high viewpoint
+over an intersection and a square with trees. These are whole frames at 50% screen percentage, scaled down from 3840
+by 2040 to 1920 wide, so the lines are shown at half their display size. They are here to show how the outline
+behaves on a scene with a great many edges (the facades, the windows, the bare trees and the cars), not to compare
+pixels.
 
 ![An aerial view of a city intersection at dusk, with brick and stone facades, lit windows, parked cars, a crosswalk and a square with bare trees, rendered at 50% screen percentage with no outline.](/assets/images/thin-outline/comparison/city_sample_no_outline.jpg)
 
